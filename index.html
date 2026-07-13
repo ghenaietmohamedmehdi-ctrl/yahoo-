@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خريطة قرية أستريكس وأوبيليكس التفاعلية</title>
+    <style>
+        /* تصنيفات أساسية لتصفير الهوامش */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* حاوية الخريطة الذكية - تحافظ على أبعاد 16:9 وتملأ الشاشة */
+        .map-container {
+            position: relative;
+            width: 100vw;
+            height: 56.25vw; /* نسبة الـ 16:9 الافتراضية */
+            max-height: 100vh;
+            max-width: 177.78vh; 
+            background-image: url('map.jpg'); /* استدعاء صورتك النظيفة */
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        /* الهيكل الموحد لكل مرحلة (اللافتة + الزر) */
+        .stage-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .stage-node:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* تصميم لافتة الاسم ثلاثية الأبعاد الاحترافية */
+        .name-tag {
+            background: linear-gradient(135deg, #ffffff, #e6e6e6);
+            color: #1a1a1a;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 -2px 0 #b3b3b3;
+            border: 1px solid #808080;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        /* تصميم زر الضغط التفاعلي الدائري */
+        .stage-button {
+            width: 22px;
+            height: 22px;
+            background-color: #ffcc00;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            margin-top: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+            cursor: pointer;
+            animation: pulse-orange 2s infinite;
+        }
+
+        /* تأثير النبض للمراحل المفتوحة */
+        @keyframes pulse-orange {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 204, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+        }
+
+        /* قفل المراحل المغلقة وتغيير ألوانها للرمادي */
+        .stage-node.locked {
+            cursor: not-allowed;
+        }
+        .stage-node.locked .name-tag {
+            background: linear-gradient(135deg, #555, #444);
+            color: #888;
+            border-color: #333;
+            box-shadow: none;
+        }
+        .stage-node.locked .stage-button {
+            background-color: #555;
+            border-color: #777;
+            animation: none;
+            cursor: not-allowed;
+        }
+
+        /* تمييز المرحلة النهائية للشيخ بلون سحري أخضر */
+        .stage-node.final .stage-button {
+            background-color: #2ed573;
+            animation: pulse-green 1.5s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(46, 213, 115, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="map-container">
+
+    <div class="stage-node" style="top: 12%; left: 15%;" onclick="playStage('المقدمة: إيديفيكس 🐾', false)">
+        <div class="name-tag">إيديفيكس (Idefix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node" style="top: 30%; left: 24%;" onclick="playStage('المرحلة 1: أستريكس ⚔️', false)">
+        <div class="name-tag">أستريكس (Asterix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node locked" style="top: 24%; left: 48%;" onclick="playStage('المرحلة 2: أوبيليكس 🪨', true)">
+        <div class="name-tag">أوبيليكس (Obelix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node locked" style="top: 20%; left: 70%;" onclick="playStage('المرحلة 3: الزعيم 🛡️', true)">
+        <div class="name-tag">الزعيم (Vitalstatistix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node locked" style="top: 38%; left: 86%;" onclick="playStage('المرحلة 4: الحداد 🔨', true)">
+        <div class="name-tag">الحداد (Fulliautomatix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node locked" style="top: 66%; left: 20%;" onclick="playStage('المرحلة 5: متجر الأسماك 🐟', true)">
+        <div class="name-tag">أونهيجينيكس (Unhygienix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node locked" style="top: 60%; left: 78%;" onclick="playStage('المرحلة 6: المغني 🎵', true)">
+        <div class="name-tag">كاكوفونيكس (Cacofonix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+    <div class="stage-node final locked" style="top: 83%; left: 50%;" onclick="playStage('المرحلة النهائية: الجرعة السحرية 🧪', true)">
+        <div class="name-tag">الشيخ غيتافيكس (Getafix)</div>
+        <div class="stage-button"></div>
+    </div>
+
+</div>
+
+<script>
+    // الدالة التفاعلية عند الضغط على أي زر
+    function playStage(stageName, isLocked) {
+        if (isLocked) {
+            alert("🔒 هذه المرحلة مغلقة حالياً! يجب عليك الفوز بالمراحل السابقة أولاً.");
+        } else {
+            alert("🎮 مرحباً بك في " + stageName + "\nجاري الانتقال للعب...");
+            // هنا مستقبلاً يمكنك تغيير الرابط ليفتح لعبة فرعية:
+            // window.location.href = "stage1.html";
+        }
+    }
+</script>
+</body>
+</html>

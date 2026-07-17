@@ -13,7 +13,7 @@
     --pink-light: #ffb7c5;
     --pearl-white: #eef1f8;
     --luxury-gold: #ffd700;
-    --space-bg: #000000; /* سواد الليل التام */
+    --space-bg: #000000;
     --card-glass: rgba(20, 20, 25, 0.85);
     --card-border: rgba(188, 94, 255, 0.3);
     --green-success: #00e676;
@@ -65,7 +65,7 @@
 
   main { max-width: 600px; margin: 0 auto; padding: 0 0 80px; }
 
-  /* ---- ADVENTURE MAP (TOP TO BOTTOM) ---- */
+  /* ---- ADVENTURE MAP ---- */
   .map-container {
     position: relative; width: 100%; min-height: 1250px; margin-top: 20px;
     background: 
@@ -77,7 +77,6 @@
     border: 1px solid rgba(255,255,255,0.05);
   }
 
-  /* Purple Owl Hub at Top */
   .owl-hub {
     position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
     z-index: 10; text-align: center; width: 100%;
@@ -90,7 +89,6 @@
 
   .energy-beam-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
-  /* Stage Nodes */
   .stage-node {
     position: absolute; transform: translate(-50%, -50%);
     display: flex; flex-direction: column; align-items: center; z-index: 5;
@@ -128,7 +126,6 @@
     border: 1px solid var(--card-border); white-space: nowrap;
   }
 
-  /* Player Position Tracker Sparkle (No Samurai Head) */
   .player-marker {
     position: absolute; transform: translate(-50%, -120%); font-size: 32px; z-index: 10;
     filter: drop-shadow(0 0 15px var(--luxury-gold)); animation: pulseGlow 1.5s infinite ease-in-out;
@@ -136,7 +133,7 @@
   }
   @keyframes pulseGlow { 0%, 100% { transform: translate(-50%, -120%) scale(1); opacity: 0.9; } 50% { transform: translate(-50%, -120%) scale(1.2); opacity: 1; } }
 
-  /* ---- FLASHCARDS & STUDY VIEW ---- */
+  /* ---- FLASHCARDS ---- */
   .view-header { display: flex; align-items: center; gap: 12px; margin: 16px; }
   .btn-back {
     background: var(--card-glass); border: 1px solid var(--card-border);
@@ -172,11 +169,14 @@
   .card-arabic { font-size: 22px; font-weight: 900; color: #aae2ff; text-align: center; }
 
   /* ---- QUIZ INTERFACE ---- */
-  .quiz-box { background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 24px; padding: 24px 16px; margin: 16px; text-align: center; }
-  .quiz-prompt { font-size: 14px; color: var(--pink-light); font-weight: 700; margin-bottom: 8px; }
+  .quiz-box { background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 24px; padding: 24px 16px; margin: 16px; text-align: center; position: relative;}
+  
+  /* Quiz Progress Counter */
+  .quiz-progress { position: absolute; top: 12px; right: 16px; font-size: 13px; color: var(--luxury-gold); font-weight: bold; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px;}
+
+  .quiz-prompt { font-size: 14px; color: var(--pink-light); font-weight: 700; margin-top: 15px; margin-bottom: 8px; }
   .quiz-main-display { font-family: 'Zen Maru Gothic', sans-serif; font-size: 42px; font-weight: 900; color: #fff; margin: 10px 0; }
   
-  /* Hidden Audio Trigger during Question */
   .quiz-audio-autobtn { background: var(--neon-purple); border: none; color: #fff; width: 55px; height: 55px; border-radius: 50%; font-size: 22px; cursor: pointer; box-shadow: 0 0 15px var(--neon-purple); margin: 10px auto 0; }
 
   .options-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
@@ -241,13 +241,13 @@
   </div>
   <div class="progress-container">
     <div>المستوى: <span id="hudLevel">1</span></div>
-    <div>الكلمات المنجزة: <span id="hudDoneWords">0</span></div>
+    <div>الكلمات المنجزة: <span id="hudDoneWords">0</span> / 73</div>
     <div class="xp-bar-wrap"><div class="xp-bar-fill" id="hudXpBar"></div></div>
   </div>
 </div>
 
 <main>
-  <!-- 1. MAP VIEW (TOP TO BOTTOM JOURNEY) -->
+  <!-- 1. MAP VIEW -->
   <div class="app-view active" id="view-map">
     <div style="text-align: center; margin: 16px 16px 0;">
       <h2 style="margin: 0; font-size: 20px; color: #fff;">مسار التعلم من الأعلى إلى الأسفل</h2>
@@ -263,8 +263,8 @@
 
     <div class="final-stage-card">
       <div style="font-size: 36px;">👑</div>
-      <h3 style="color: var(--luxury-gold); margin: 6px 0 4px;">الاختبار النهائي الشامل</h3>
-      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 12px;">امتحان مجمع لكافة مفردات المراحل الستة.</p>
+      <h3 style="color: var(--luxury-gold); margin: 6px 0 4px;">الاختبار النهائي الشامل (73 كلمة)</h3>
+      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 12px;">امتحان مجمع لكافة المفردات التي تعلمتها في جميع المراحل.</p>
       <button class="btn-action purple" id="btnFinalExam" style="width: 100%;" disabled>🔒 أكمل الزهور لفتح الامتحان</button>
     </div>
   </div>
@@ -287,6 +287,7 @@
   <!-- 3. QUIZ RUNNER VIEW -->
   <div class="app-view" id="view-quiz">
     <div class="quiz-box">
+      <div class="quiz-progress" id="quizProgress">السؤال 1 / 10</div>
       <div class="quiz-prompt" id="quizPrompt">استمع جيداً واعرف الخيار</div>
       <div class="quiz-main-display" id="quizMainDisplay">🌸</div>
       <button class="quiz-audio-autobtn" id="btnQuizVoice">🔊 تكرار الصوت</button>
@@ -300,7 +301,7 @@
       <div class="cert-icon" style="font-size: 55px;">🏆</div>
       <h2 style="color: var(--luxury-gold); margin: 8px 0;">شهادة تميز وإتقان</h2>
       <p style="font-size: 17px; font-weight: bold; margin: 12px 0 4px;">تهانينا الحارة للأخت سعاد ولمهدي سنسيه</p>
-      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 20px;">تم اجتياز تحدي الهيراغانا والترجمة الشاملة من الأعلى إلى الأسفل بنجاح منقطع النظير وبمعدل ممتع وممتاز.</p>
+      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 20px;">تم اجتياز التحدي الشامل لجميع الكلمات (73 كلمة) بنجاح منقطع النظير وبمعدل ممتع وممتاز.</p>
       <div style="font-size: 24px; color: var(--luxury-gold); margin-bottom: 20px;">⭐⭐⭐⭐⭐</div>
       <button class="btn-action purple" id="btnCertHome" style="width: 80%;">العودة للقائمة الرئيسية</button>
     </div>
@@ -320,35 +321,61 @@
 <canvas class="fwork-canvas" id="fwCanvas"></canvas>
 
 <script>
+// تمت زيادة الكلمات ليصبح الإجمالي 73 كلمة كما طلبت!
 const CONFIG = {
   stages: [
     { key: "st1", num: "①", name: "الأصوات الأساسية", words: [
       { k: "あさ", m: "صباح", e: "🌅" }, { k: "あき", m: "خريف", e: "🍂" },
       { k: "くつ", m: "حذاء", e: "👟" }, { k: "かわ", m: "نهر", e: "🏞️" },
-      { k: "さいふ", m: "محفظة", e: "👛" }, { k: "さかな", m: "سمك", e: "🐟" }
-    ]},
+      { k: "さいふ", m: "محفظة", e: "👛" }, { k: "さかな", m: "سمك", e: "🐟" },
+      { k: "いぬ", m: "كلب", e: "🐕" }, { k: "ねこ", m: "قطة", e: "🐈" },
+      { k: "はな", m: "زهرة", e: "🌸" }, { k: "とり", m: "طائر", e: "🐦" },
+      { k: "ひと", m: "شخص", e: "🧍" }, { k: "いえ", m: "منزل", e: "🏠" },
+      { k: "くち", m: "فم", e: "👄" }
+    ]}, // 13 كلمة
     { key: "st2", num: "②", name: "صوت النون ん", words: [
       { k: "ほん", m: "كتاب", e: "📖" }, { k: "にほん", m: "اليابان", e: "🇯🇵" },
-      { k: "ぱんだ", m: "باندا", e: "🐼" }, { k: "かんぱい", m: "نخبكم", e: "🥂" }
-    ]},
-    { key: "st3", num: "③", name: "المد الصوتي المستقبلي", words: [
+      { k: "ぱんだ", m: "باندا", e: "🐼" }, { k: "かんぱい", m: "نخبكم", e: "🥂" },
+      { k: "みかん", m: "يوسفي", e: "🍊" }, { k: "てんき", m: "طقس", e: "🌤️" },
+      { k: "しんぶん", m: "جريدة", e: "📰" }, { k: "かばん", m: "حقيبة", e: "👜" },
+      { k: "じかん", m: "وقت", e: "⏳" }, { k: "せんせい", m: "معلم", e: "👨‍🏫" },
+      { k: "でんわ", m: "هاتف", e: "☎️" }, { k: "おんがく", m: "موسيقى", e: "🎵" }
+    ]}, // 12 كلمة
+    { key: "st3", num: "③", name: "المد الصوتي", words: [
       { k: "いい", m: "جيد", e: "👍" }, { k: "とけい", m: "ساعة", e: "⏰" },
-      { k: "おかあさん", m: "الأم", e: "👩" }, { k: "おとうさん", m: "الأب", e: "👨" }
-    ]},
+      { k: "おかあさん", m: "الأم", e: "👩" }, { k: "おとうさん", m: "الأب", e: "👨" },
+      { k: "おにいさん", m: "الأخ الأكبر", e: "👦" }, { k: "おねえさん", m: "الأخت الكبرى", e: "👧" },
+      { k: "ゆうがた", m: "مساء", e: "🌆" }, { k: "くうき", m: "هواء", e: "💨" },
+      { k: "おおきい", m: "كبير", e: "🐘" }, { k: "ちいさい", m: "صغير", e: "🐜" },
+      { k: "とおい", m: "بعيد", e: "🔭" }, { k: "ほうき", m: "مكنسة", e: "🧹" }
+    ]}, // 12 كلمة
     { key: "st4", num: "④", name: "الأصوات المجهورة", words: [
       { k: "みず", m: "ماء", e: "💧" }, { k: "たまご", m: "بيضة", e: "🥚" },
-      { k: "かばん", m: "حقيبة", e: "👜" }, { k: "ごはん", m: "أرز", e: "🍚" }
-    ]},
+      { k: "ごはん", m: "أرز", e: "🍚" }, { k: "ぼうし", m: "قبعة", e: "🧢" },
+      { k: "めがね", m: "نظارات", e: "👓" }, { k: "かぞく", m: "عائلة", e: "👨‍👩‍👧‍👦" },
+      { k: "くるま", m: "سيارة", e: "🚗" }, { k: "くだもの", m: "فاكهة", e: "🍎" },
+      { k: "えいご", m: "إنجليزي", e: "🔤" }, { k: "だいがく", m: "جامعة", e: "🎓" },
+      { k: "まど", m: "نافذة", e: "🪟" }, { k: "かぜ", m: "رياح", e: "🌬️" }
+    ]}, // 12 كلمة
     { key: "st5", num: "⑤", name: "الصوت المزدوج っ", words: [
       { k: "がっこう", m: "مدرسة", e: "🏫" }, { k: "きっぷ", m: "تذكرة", e: "🎫" },
-      { k: "はっぱ", m: "ورقة شجر", e: "🍃" }
-    ]},
-    { key: "st6", num: "⑥", name: "الأصوات المركبة المتطورة", words: [
+      { k: "はっぱ", m: "ورقة شجر", e: "🍃" }, { k: "ざっし", m: "مجلة", e: "📰" },
+      { k: "きって", m: "طابع", e: "✉️" }, { k: "あさって", m: "بعد غد", e: "⏭️" },
+      { k: "みっか", m: "اليوم 3", e: "3️⃣" }, { k: "むいか", m: "اليوم 6", e: "6️⃣" },
+      { k: "やっと", m: "أخيراً", e: "🙌" }, { k: "ずっと", m: "طوال الوقت", e: "♾️" },
+      { k: "ちょっと", m: "قليلاً", e: "🤏" }, { k: "もっと", m: "المزيد", e: "➕" }
+    ]}, // 12 كلمة
+    { key: "st6", num: "⑥", name: "الأصوات المركبة", words: [
       { k: "きょう", m: "اليوم", e: "📅" }, { k: "おちゃ", m: "شاي أخضر", e: "🍵" },
-      { k: "りょこう", m: "سفر", e: "✈️" }, { k: "りょうり", m: "طبخ", e: "🍳" }
-    ]}
+      { k: "りょこう", m: "سفر", e: "✈️" }, { k: "りょうり", m: "طبخ", e: "🍳" },
+      { k: "しゃしん", m: "صورة", e: "📸" }, { k: "じしょ", m: "قاموس", e: "📚" },
+      { k: "じてんしゃ", m: "دراجة", e: "🚲" }, { k: "ぎゅうにゅう", m: "حليب", e: "🥛" },
+      { k: "きょうしつ", m: "فصل", e: "🏫" }, { k: "しゅくだい", m: "واجب", e: "📝" },
+      { k: "ひゃく", m: "مائة", e: "💯" }, { k: "びょういん", m: "مستشفى", e: "🏥" }
+    ]} // 12 كلمة
   ]
 };
+// المجموع الكلي: 13+12+12+12+12+12 = 73 كلمة تماماً!
 
 let gState = {
   xp: 0, level: 1, hearts: 6,
@@ -356,14 +383,9 @@ let gState = {
   quiz: { active: false, questions: [], index: 0, correctCount: 0, currentPayload: null, isFinal: false }
 };
 
-/* ---- NODE COORDS REVERSED: START FROM TOP TO BOTTOM ---- */
 const NODE_COORDS = [
-  { x: 50, y: 180 },  // Stage 1 (Top)
-  { x: 25, y: 360 },  // Stage 2
-  { x: 75, y: 540 },  // Stage 3
-  { x: 30, y: 720 },  // Stage 4
-  { x: 70, y: 900 },  // Stage 5
-  { x: 50, y: 1080 }  // Stage 6 (Bottom)
+  { x: 50, y: 180 }, { x: 25, y: 360 }, { x: 75, y: 540 },
+  { x: 30, y: 720 }, { x: 70, y: 900 }, { x: 50, y: 1080 }
 ];
 
 function drawEnergyBeam() {
@@ -398,7 +420,6 @@ function renderMapNodes() {
   CONFIG.stages.forEach((st, idx) => {
     const coord = NODE_COORDS[idx];
     const isStageDone = !!gState.completedStages[st.key];
-    
     let isUnlocked = (idx === 0) ? true : !!gState.completedStages[CONFIG.stages[idx-1].key];
 
     let node = document.createElement('div');
@@ -424,7 +445,6 @@ function renderMapNodes() {
 
     bound.appendChild(node);
 
-    // Dynamic Sparkle Marker (Replaced Samurai Head)
     if (isUnlocked && !isStageDone && !nextUnlockFound) {
       nextUnlockFound = true;
       let marker = document.createElement('div');
@@ -438,7 +458,7 @@ function renderMapNodes() {
   const examBtn = document.getElementById('btnFinalExam');
   if (Object.keys(gState.completedStages).length >= CONFIG.stages.length) {
     examBtn.removeAttribute('disabled');
-    examBtn.innerHTML = '⚡ ابدأ التحدي الشامل الفاخر 👑';
+    examBtn.innerHTML = '⚡ ابدأ التحدي الشامل الفاخر (73 كلمة) 👑';
     examBtn.onclick = () => startComprehensiveExam();
   }
 }
@@ -470,7 +490,6 @@ function switchView(viewId) {
   window.scrollTo(0, 0);
 }
 
-/* ---- FLASHCARDS: REMOVED SPEAKER ICON, TALKS IMMEDIATELY ON TAP ---- */
 function loadStageView(stageKey) {
   gState.currentStageKey = stageKey;
   const stage = CONFIG.stages.find(s => s.key === stageKey);
@@ -495,12 +514,10 @@ function loadStageView(stageKey) {
       </div>
     `;
     
-    // Tapping triggers speech and flips instantly
     card.addEventListener('click', () => {
       card.classList.toggle('flipped');
       speakJp(w.k);
     });
-
     grid.appendChild(card);
   });
 
@@ -518,7 +535,6 @@ document.getElementById('btnLeaveLesson').onclick = () => {
   switchView('view-map'); drawEnergyBeam(); renderMapNodes();
 };
 
-/* ---- QUIZ LOGIC: HIRAGANA HINTS / ARABIC RESPONSES & AUDIO HINTS / HIRAGANA RESPONSES ---- */
 function buildStageQuiz(stage) {
   gState.quiz.active = true; gState.quiz.index = 0; gState.quiz.correctCount = 0; gState.quiz.isFinal = false; gState.quiz.questions = [];
 
@@ -528,25 +544,20 @@ function buildStageQuiz(stage) {
     let answer = "";
 
     if (type === "audio") {
-      // السؤال بصوت -> الأجوبة بالهيراغانا فقط
-      answer = w.k;
-      options.push(w.k);
+      answer = w.k; options.push(w.k);
       let pool = stage.words.filter(item => item.k !== w.k).map(item => item.k);
       pool.sort(() => 0.5 - Math.random());
       if (pool[0]) options.push(pool[0]);
       if (pool[1]) options.push(pool[1]);
       if (pool[2]) options.push(pool[2]);
     } else {
-      // السؤال بالهيراغانا -> الأجوبة بالعربي فقط
-      answer = w.m;
-      options.push(w.m);
+      answer = w.m; options.push(w.m);
       let pool = stage.words.filter(item => item.m !== w.m).map(item => item.m);
       pool.sort(() => 0.5 - Math.random());
       if (pool[0]) options.push(pool[0]);
       if (pool[1]) options.push(pool[1]);
       if (pool[2]) options.push(pool[2]);
     }
-
     options = options.sort(() => 0.5 - Math.random());
     gState.quiz.questions.push({ type, word: w, answer, options });
   });
@@ -556,12 +567,15 @@ function buildStageQuiz(stage) {
   executeQuestionItem();
 }
 
+// ---- الدالة المحدثة: تقوم بدمج جميع الكلمات الـ 73 بدون حذف أي منها ---- //
 function startComprehensiveExam() {
   gState.quiz.active = true; gState.quiz.index = 0; gState.quiz.correctCount = 0; gState.quiz.isFinal = true; gState.quiz.questions = [];
 
   let megaPool = [];
   CONFIG.stages.forEach(st => megaPool.push(...st.words));
-  megaPool = megaPool.sort(() => 0.5 - Math.random()).slice(0, 12);
+  
+  // خلط جميع الـ 73 كلمة بشكل عشوائي دون قطعها
+  megaPool = megaPool.sort(() => 0.5 - Math.random());
 
   megaPool.forEach((w, idx) => {
     let type = idx % 2 === 0 ? "audio" : "visual";
@@ -592,6 +606,9 @@ function startComprehensiveExam() {
 function executeQuestionItem() {
   const currentQ = gState.quiz.questions[gState.quiz.index];
   gState.quiz.currentPayload = currentQ;
+
+  // تحديث عداد الأسئلة ليظهر التقدم (مثلاً: السؤال 1 / 73)
+  document.getElementById('quizProgress').textContent = `السؤال ${gState.quiz.index + 1} / ${gState.quiz.questions.length}`;
 
   const prompt = document.getElementById('quizPrompt');
   const mainDisplay = document.getElementById('quizMainDisplay');
@@ -674,7 +691,7 @@ document.getElementById('btnFeedbackContinue').onclick = () => {
     } else {
       if (passRate >= 0.5) {
         gState.completedStages[gState.currentStageKey] = true;
-        alert(`🌸 رائع جداً! تم اجتياز المرحلة بنجاح وفك القفل للخطوة التالية على المسار النيوني!`);
+        alert(`🌸 رائع جداً! تم اجتياز المرحلة بنجاح وفك القفل للخطوة التالية!`);
       } else {
         alert(`النتيجة دون المتوقع، أعد التحدي لتثبيت الحروف في الذهن.`);
       }

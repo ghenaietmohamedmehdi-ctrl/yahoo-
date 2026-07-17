@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كوكب تعلم اليابانية | مَهدِي سِنسيه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sakura-purple: #bd5eff;
+    --neon-purple: #b026ff;
+    --pink-light: #ffb7c5;
+    --pearl-white: #eef1f8;
+    --luxury-gold: #ffd700;
+    --gold-dark: #b89200;
+    --sky-blue: #aae2ff;
+    --space-bg: #09061a;
+    --card-glass: rgba(24, 18, 48, 0.65);
+    --card-border: rgba(188, 94, 255, 0.25);
+    --green-success: #00e676;
+    --red-fail: #ff1744;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+  
+  body {
+    background: 
+      radial-gradient(circle at 50% 30%, rgba(176, 38, 255, 0.15), transparent 50%),
+      linear-gradient(180deg, #060410 0%, var(--space-bg) 100%);
+    background-attachment: fixed;
+    font-family: 'Cairo', 'Zen Maru Gothic', sans-serif;
+    color: var(--pearl-white);
+  }
+
+  button { font-family: inherit; }
+
+  /* ---- HEADER & PROGRESS ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(9, 6, 26, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--card-border);
+    padding: 10px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .topbar-main { display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-text b { font-size: 18px; color: #fff; text-shadow: 0 0 8px var(--sakura-purple); }
+  .logo-text span { display: block; font-size: 11px; color: var(--pink-light); font-weight: 700; }
+  
+  .stats-row { display: flex; gap: 8px; }
+  .stat-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card-glass); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 4px 12px; font-weight: 700; font-size: 13px;
+  }
+  .stat-pill.gold { color: var(--luxury-gold); border-color: var(--luxury-gold); }
+
+  .progress-container {
+    background: rgba(255,255,255,0.05); border-radius: 10px; padding: 6px 12px;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700;
+  }
+  .xp-bar-wrap { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+  .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--sky-blue), var(--sakura-purple)); width: 0%; transition: width 0.4s; }
+
+  main { max-width: 600px; margin: 0 auto; padding: 0 0 80px; }
+
+  /* ---- ADVENTURE MAP (SCI-FI SAKURA) ---- */
+  .map-container {
+    position: relative; width: 100%; min-height: 1150px; margin-top: 20px;
+    background: 
+      radial-gradient(circle at 50% 250px, #fff 0%, rgba(255,255,255,0.8) 20%, rgba(188, 94, 255, 0.08) 50%, transparent 70%), /* Giant Moon Effect */
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.4)"/><circle cx="70" cy="40" r="1.5" fill="rgba(255,255,255,0.6)"/><circle cx="40" cy="80" r="0.8" fill="rgba(255,255,255,0.5)"/></svg>');
+    border-radius: 24px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
+    overflow: hidden;
+  }
+
+  /* Spacecraft & Energy Beam */
+  .spacecraft-hub {
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+    z-index: 10; text-align: center; width: 100%;
+  }
+  .ufo {
+    font-size: 65px; filter: drop-shadow(0 0 20px var(--neon-purple));
+    animation: floatUFO 3s ease-in-out infinite; display: inline-block;
+  }
+  @keyframes floatUFO { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  .energy-beam-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Background Floating Elements */
+  .bg-sakura-tree { position: absolute; font-size: 80px; opacity: 0.25; filter: blur(1px); pointer-events: none; z-index: 2; }
+  .petal { position: absolute; font-size: 14px; pointer-events: none; z-index: 3; animation: rainPetal linear infinite; }
+  @keyframes rainPetal {
+    0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(400px) translateX(50px) rotate(360deg); opacity: 0; }
+  }
+
+  /* Stage Nodes */
+  .stage-node {
+    position: absolute; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; z-index: 5;
+  }
+  .sakura-flower-btn {
+    width: 85px; height: 85px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(25, 15, 45, 0.9) 30%, rgba(188, 94, 255, 0.4) 100%);
+    border: 3px solid var(--card-border);
+    box-shadow: 0 0 20px rgba(188, 94, 255, 0.2), inset 0 0 15px rgba(255,183,197,0.2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .sakura-flower-btn .flower-core { font-size: 42px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: transform 0.3s; }
+  .sakura-flower-btn .stage-num {
+    position: absolute; font-size: 24px; font-weight: 900; color: #fff;
+    text-shadow: 0 0 8px #000; font-family: 'Zen Maru Gothic', sans-serif;
+  }
+  .sakura-flower-btn .lock-badge {
+    position: absolute; top: -8px; left: -8px; font-size: 22px;
+    filter: drop-shadow(0 0 5px var(--luxury-gold)); animation: pulse 1.5s infinite;
+  }
+
+  /* Active/Unlocked Glowing State */
+  .stage-node.unlocked .sakura-flower-btn {
+    border-color: var(--pink-light);
+    box-shadow: 0 0 30px var(--neon-purple), inset 0 0 20px rgba(255,255,255,0.4);
+    background: radial-gradient(circle, rgba(60, 20, 90, 0.9) 30%, var(--sakura-purple) 100%);
+  }
+  .stage-node.unlocked .sakura-flower-btn:hover { transform: scale(1.1); }
+  .stage-node.unlocked .sakura-flower-btn:active { transform: scale(0.95); }
+  .stage-node.completed .sakura-flower-btn { border-color: var(--luxury-gold); box-shadow: 0 0 25px var(--luxury-gold); }
+
+  .stage-stars { font-size: 16px; margin-top: 6px; letter-spacing: 1px; color: var(--luxury-gold); text-shadow: 0 0 4px rgba(255,215,0,0.6); }
+  .stage-label {
+    margin-top: 4px; font-weight: 700; font-size: 13px; color: #fff;
+    background: rgba(9,6,26,0.75); padding: 2px 10px; border-radius: 12px;
+    border: 1px solid var(--card-border); backdrop-filter: blur(4px); white-space: nowrap;
+  }
+
+  .player-marker {
+    position: absolute; transform: translate(-50%, -130%); font-size: 42px; z-index: 10;
+    filter: drop-shadow(0 0 12px var(--sky-blue)); animation: bobbing 1.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes bobbing { 0%, 100% { transform: translate(-50%, -130%) translateY(0); } 50% { transform: translate(-50%, -130%) translateY(-10px); } }
+
+  /* ---- FLASHCARDS & STUDY VIEW ---- */
+  .view-header { display: flex; align-items: center; gap: 12px; margin: 16px; }
+  .btn-back {
+    background: var(--card-glass); border: 1px solid var(--card-border);
+    color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer;
+  }
+  .view-title { font-size: 20px; font-weight: 900; color: #fff; margin: 0; text-shadow: 0 0 8px var(--sakura-purple); }
+
+  .nav-tabs { display: flex; gap: 8px; margin: 0 16px 16px; }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 14px; border: 1px solid var(--card-border);
+    background: var(--card-glass); color: rgba(255,255,255,0.6); font-weight: 700; cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--sakura-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple); border-color: transparent; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; padding: 0 16px; }
+  .study-card { height: 240px; perspective: 1000px; cursor: pointer; }
+  .card-inner {
+    position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 20px;
+  }
+  .study-card.flipped .card-inner { transform: rotateY(180deg); }
+  
+  .card-face {
+    position: absolute; inset: 0; border-radius: 20px; backface-visibility: hidden;
+    background: var(--card-glass); border: 2px solid var(--card-border);
+    backdrop-filter: blur(8px); padding: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .card-face-back { transform: rotateY(180deg); border-color: var(--luxury-gold); background: rgba(20, 10, 35, 0.85); }
+
+  .card-emoji { font-size: 46px; margin-bottom: 10px; }
+  .card-kana { font-family: 'Zen Maru Gothic', sans-serif; font-size: 36px; font-weight: 900; color: #fff; text-align: center; }
+  .card-arabic { font-size: 22px; font-weight: 900; color: var(--sky-blue); text-align: center; }
+  
+  .btn-audio-trigger {
+    position: absolute; top: 10px; left: 10px; background: var(--neon-purple); border: none;
+    color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+
+  /* ---- QUIZ INTERFACE ---- */
+  .quiz-box { background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 24px; padding: 24px 16px; margin: 16px; text-align: center; backdrop-filter: blur(10px); }
+  .quiz-prompt { font-size: 14px; color: var(--pink-light); font-weight: 700; margin-bottom: 8px; }
+  .quiz-main-display { font-family: 'Zen Maru Gothic', sans-serif; font-size: 44px; font-weight: 900; color: #fff; margin: 10px 0; }
+  .quiz-audio-btn { background: var(--neon-purple); border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 0 15px var(--neon-purple); }
+
+  .options-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+  .option-btn {
+    background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 16px;
+    padding: 16px; color: #fff; font-size: 20px; font-weight: 700; text-align: center; cursor: pointer;
+    transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  .option-btn:hover { background: rgba(188, 94, 255, 0.15); border-color: var(--sakura-purple); }
+  .option-btn.correct { background: rgba(0, 230, 118, 0.2) !important; border-color: var(--green-success) !important; color: var(--green-success); font-weight: 900; }
+  .option-btn.wrong { background: rgba(255, 23, 68, 0.2) !important; border-color: var(--red-fail) !important; color: var(--red-fail); }
+
+  /* Keyboard entry for Visual text type */
+  .kana-keyboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; max-height: 200px; overflow-y: auto; padding: 4px; }
+  .kana-key { background: rgba(255,255,255,0.08); border: 1px solid var(--card-border); color: #fff; border-radius: 8px; padding: 8px 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; cursor: pointer; }
+  .typed-preview { min-height: 48px; border: 2px dashed var(--sakura-purple); background: rgba(0,0,0,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-family: 'Zen Maru Gothic', sans-serif; margin-bottom: 12px; }
+
+  /* ---- FEEDBACK HUD ---- */
+  .feedback-bar {
+    position: fixed; bottom: -100px; left: 0; right: 0; background: #120a21; border-top: 3px solid var(--card-border);
+    padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 200;
+    transition: bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .feedback-bar.show { bottom: 0; }
+  .feedback-bar.ok { border-color: var(--green-success); background: #071a10; }
+  .feedback-bar.bad { border-color: var(--red-fail); background: #22050c; }
+  .feedback-content { display: flex; align-items: center; gap: 12px; }
+  .feedback-title { font-weight: 900; font-size: 18px; }
+  .ok .feedback-title { color: var(--green-success); }
+  .bad .feedback-title { color: var(--red-fail); }
+  .feedback-sub { font-size: 13px; color: var(--pearl-white); opacity: 0.8; }
+  
+  .btn-action {
+    border: none; padding: 12px 24px; font-weight: 900; font-size: 15px; border-radius: 14px; cursor: pointer; color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .btn-action.green { background: var(--green-success); }
+  .btn-action.purple { background: var(--neon-purple); }
+
+  /* ---- FINAL CELEBRATION / CERTIFICATE ---- */
+  .cert-box {
+    background: linear-gradient(135deg, #1b1235 0%, #0e081f 100%);
+    border: 3px solid var(--luxury-gold); border-radius: 24px; padding: 32px 16px; text-align: center;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); margin: 20px 16px;
+  }
+  .cert-icon { font-size: 65px; filter: drop-shadow(0 0 15px var(--luxury-gold)); margin-bottom: 12px; }
+  .cert-title { font-size: 24px; font-weight: 900; color: var(--luxury-gold); margin: 0 0 8px; }
+
+  /* ---- VIEW TOGGLE ---- */
+  .app-view { display: none; }
+  .app-view.active { display: block; }
+  
+  .final-stage-card {
+    background: linear-gradient(135deg, rgba(188, 94, 255, 0.1) 0%, rgba(9, 6, 26, 0.9) 100%);
+    border: 2px solid var(--luxury-gold); border-radius: 20px; padding: 20px; margin: 20px 16px; text-align: center;
+    box-shadow: 0 0 20px rgba(188,94,255,0.2);
+  }
+
+  /* ---- ANIMATIONS PETALS & FIREWORKS ---- */
+  .fwork-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-main">
+    <div class="logo">
+      <div id="teacherAvatar"></div>
+      <div class="logo-text">
+        <b>مهدي سنسيه | メヒサン</b>
+        <span>معلمك الذكي للغة اليابانية</span>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill gold">⭐ <span id="hudXP">0</span> XP</div>
+      <div class="stat-pill">❤️ <span id="hudHearts">6</span></div>
+    </div>
+  </div>
+  <div class="progress-container">
+    <div>المستوى الحالي: <span id="hudLevel">1</span></div>
+    <div>الكلمات المنجزة: <span id="hudDoneWords">0</span></div>
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="hudXpBar"></div></div>
+  </div>
+</div>
+
+<main>
+  <!-- 1. MAP VIEW -->
+  <div class="app-view active" id="view-map">
+    <div style="text-align: center; margin: 16px 16px 0;">
+      <h2 style="margin: 0; font-size: 22px; color: #fff;">مسار الطاقة والمراحل المستقبلية</h2>
+      <p style="margin: 4px 0 0; font-size: 13px; color: var(--pink-light);">اصعد عبر المسار البنفسجي، أكمل كل زهرة بنسبة 100% لفتح القفل التالي!</p>
+    </div>
+
+    <div class="map-container" id="mapBound">
+      <div class="spacecraft-hub">
+        <div class="ufo">🛸</div>
+      </div>
+      <svg class="energy-beam-svg" id="energyBeamSvg"></svg>
+    </div>
+
+    <div class="final-stage-card">
+      <div style="font-size: 40px;">👑🐉</div>
+      <h3 style="color: var(--luxury-gold); margin: 8px 0 0.2em;">الاختبار النهائي الشامل (تحدي الإتقان)</h3>
+      <p style="font-size: 13px; color: var(--pearl-white); opacity: 0.8; margin: 0 0 14px;">امتحان حقيقي لا يمكن تجاوزه إلا بعد فك أقفال جميع المراحل الستة السابقة.</p>
+      <button class="btn-action purple" id="btnFinalExam" style="width: 100%;" disabled>🔒 افتح كافة المراحل لبدء التحدي الشامل</button>
+    </div>
+  </div>
+
+  <!-- 2. LESSON VIEW -->
+  <div class="app-view" id="view-lesson">
+    <div class="view-header">
+      <button class="btn-back" id="btnLeaveLesson">→</button>
+      <h2 class="view-title" id="lessonTitle">المرحلة</h2>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tabGrid">📋 شبكة الكلمات</button>
+      <button class="tab-btn" id="tabQuiz">⚔️ بدء اختبار المرحلة</button>
+    </div>
+    <div id="lessonContent">
+      <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+  </div>
+
+  <!-- 3. QUIZ RUNNER VIEW -->
+  <div class="app-view" id="view-quiz">
+    <div class="quiz-box">
+      <div class="quiz-prompt" id="quizPrompt">استمع جيداً وحدد الإجابة</div>
+      <div class="quiz-main-display" id="quizMainDisplay">🌸</div>
+      <div id="quizAudioBtnWrapper">
+        <button class="quiz-audio-btn" id="btnQuizVoice">🔊</button>
+      </div>
+    </div>
+    <div class="options-list" id="quizOptionsContainer"></div>
+  </div>
+
+  <!-- 4. CELEBRATION CERTIFICATE VIEW -->
+  <div class="app-view" id="view-cert">
+    <div class="cert-box">
+      <div class="cert-icon">🏆</div>
+      <h2 class="cert-title">شهادة إتمام المسار التعليمي</h2>
+      <p style="font-size: 18px; font-weight: bold; margin: 12px 0 4px;">تهانينا الحارة للسيد محمد مهدي غناية</p>
+      <p style="font-size: 14px; opacity: 0.8; margin: 0 0 20px;">لقد اجتزت التحدي النهائي الشامل للغة اليابانية بنجاح باهر ومعدل ممتاز بالاعتماد على نظام التلعيب المتطور.</p>
+      <div style="font-size: 28px; color: var(--luxury-gold); margin-bottom: 20px;">⭐⭐⭐⭐⭐</div>
+      <button class="btn-action purple" id="btnCertHome" style="width: 80%;">العودة للقائمة الرئيسية</button>
+    </div>
+  </div>
+</main>
+
+<div class="feedback-bar" id="feedbackBar">
+  <div class="feedback-content">
+    <div id="feedbackAvatar"></div>
+    <div>
+      <div class="feedback-title" id="feedbackTitle">إجابة صحيحة</div>
+      <div class="feedback-sub" id="feedbackSub">الترجمة الصحيحة ومكتملة</div>
+    </div>
+  </div>
+  <button class="btn-action green" id="btnFeedbackContinue">متابعة</button>
+</div>
+
+<canvas class="fwork-canvas" id="fwCanvas"></canvas>
+
+<script>
+/* ================= DATA REPOSITORY (Arabic Only / No Romaji) ================= */
+const CONFIG = {
+  stages: [
+    { key: "st1", num: "①", name: "الأصوات الأساسية", icon: "🌸", color: "#bd5eff", words: [
+      { k: "あさ", m: "صباح", e: "🌅" }, { k: "あき", m: "خريف", e: "🍂" },
+      { k: "くつ", m: "حذاء", e: "👟" }, { k: "かわ", m: "نهر", e: "🏞️" },
+      { k: "さいふ", m: "محفظة", e: "👛" }, { k: "さかな", m: "سمك", e: "🐟" },
+      { k: "とり", m: "طائر", e: "🐦" }, { k: "は", m: "سِنّ", e: "🦷" },
+      { k: "はる", m: "ربيع", e: "🌸" }, { k: "みみ", m: "أذن", e: "👂" }
+    ]},
+    { key: "st2", num: "②", name: "صوت النون ん", icon: "🌸", color: "#bd5eff", words: [
+      { k: "ほん", m: "كتاب", e: "📖" }, { k: "にほん", m: "اليابان", e: "🇯🇵" },
+      { k: "ぱんだ", m: "باندا", e: "🐼" }, { k: "かんぱい", m: "نخبكم (تحية)", e: "🥂" }
+    ]},
+    { key: "st3", num: "③", name: "المد الصوتي المستقبلي", icon: "🌸", color: "#bd5eff", words: [
+      { k: "いい", m: "جيد", e: "👍" }, { k: "とけい", m: "ساعة", e: "⏰" },
+      { k: "おかあさん", m: "الأم", e: "👩" }, { k: "おとうさん", m: "الأب", e: "👨" },
+      { k: "せんせい", m: "معلم / أستاذ", e: "🧑‍🏫" }
+    ]},
+    { key: "st4", num: "④", name: "الأصوات المجهورة", icon: "🌸", color: "#bd5eff", words: [
+      { k: "ميزو", k_jp: "みず", m: "ماء", e: "💧" }, { k: "たまご", m: "بيضة", e: "🥚" },
+      { k: "かばん", m: "حقيبة", e: "👜" }, { k: "ごはん", m: "أرز / وجبة", e: "🍚" }
+    ]},
+    { key: "st5", num: "⑤", name: "الصوت المزدوج っ", icon: "🌸", color: "#bd5eff", words: [
+      { k: "がっこう", m: "مدرسة", e: "🏫" }, { k: "きっぷ", m: "تذكرة", e: "🎫" },
+      { k: "はっぱ", m: "ورقة شجر", e: "🍃" }
+    ]},
+    { key: "st6", num: "⑥", name: "الأصوات المركبة المتطورة", icon: "🌸", color: "#bd5eff", words: [
+      { k: "きょう", m: "اليوم", e: "📅" }, { k: "おちゃ", m: "شاي أخضر", e: "🍵" },
+      { k: "りょこう", m: "سفر / رحلة", e: "✈️" }, { k: "りょうり", m: "طبخ", e: "🍳" }
+    ]}
+  ]
+};
+
+// Fix for stage 4 item missing proper jp kanji property
+CONFIG.stages[3].words[0].k = "みず";
+
+/* ================= STATE MANAGEMENT ================= */
+let gState = {
+  xp: 0,
+  level: 1,
+  hearts: 6,
+  completedStages: {}, // st1: true etc
+  currentStageKey: null,
+  quiz: { active: false, questions: [], index: 0, correctCount: 0, currentPayload: null, isFinal: false }
+};
+
+/* ================= VECTOR THEME ENGINES ================= */
+function getSenseiAvatarSVG(mood) {
+  const accessory = mood === 'happy' ? '✨' : (mood === 'sad' ? '💡' : '✒️');
+  return `
+  <div style="position:relative; width:45px; height:45px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.1); border-radius:50%; border:2px solid var(--sakura-purple);">
+    <span style="font-size:24px; line-height:1;">🧑‍🏫</span>
+    <span style="position:absolute; bottom:-2px; right:-2px; font-size:12px;">${accessory}</span>
+  </div>`;
+}
+
+function spawnPetals() {
+  const bound = document.getElementById('mapBound');
+  if (!bound) return;
+  setInterval(() => {
+    if (document.hidden || gState.quiz.active) return;
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.textContent = '🌸';
+    petal.style.left = Math.random() * 100 + '%';
+    petal.style.top = '0px';
+    petal.style.animationDuration = (4 + Math.random() * 5) + 's';
+    bound.appendChild(petal);
+    setTimeout(() => petal.remove(), 8000);
+  }, 1200);
+}
+
+/* ================= MAP PATH BUILDER ================= */
+const NODE_COORDS = [
+  { x: 50, y: 1050 }, // Stage 1 (Bottom)
+  { x: 25, y: 880 },  // Stage 2
+  { x: 75, y: 700 },  // Stage 3
+  { x: 30, y: 520 },  // Stage 4
+  { x: 70, y: 340 },  // Stage 5
+  { x: 50, y: 160 }   // Stage 6 (Top near UFO)
+];
+
+function drawEnergyBeam() {
+  const svg = document.getElementById('energyBeamSvg');
+  svg.innerHTML = '';
+  let dStr = `M ${NODE_COORDS[0].x}% ${NODE_COORDS[0].y}`;
+  for (let i = 1; i < NODE_COORDS.length; i++) {
+    let prev = NODE_COORDS[i-1];
+    let curr = NODE_COORDS[i];
+    let midY = (prev.y + curr.y) / 2;
+    dStr += ` C ${prev.x}% ${midY}, ${curr.x}% ${midY}, ${curr.x}% ${curr.y}`;
+  }
+  
+  // Base Glow Layer
+  const beamGlow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  beamGlow.setAttribute("d", dStr);
+  beamGlow.setAttribute("fill", "none");
+  beamGlow.setAttribute("stroke", "var(--neon-purple)");
+  beamGlow.setAttribute("stroke-width", "10");
+  beamGlow.setAttribute("opacity", "0.4");
+  beamGlow.setAttribute("style", "filter: drop-shadow(0 0 12px var(--neon-purple));");
+  
+  // Core Laser Layer
+  const beamCore = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  beamCore.setAttribute("d", dStr);
+  beamCore.setAttribute("fill", "none");
+  beamCore.setAttribute("stroke", "var(--sky-blue)");
+  beamCore.setAttribute("stroke-width", "3");
+  beamCore.setAttribute("stroke-dasharray", "8 6");
+  
+  svg.appendChild(beamGlow);
+  svg.appendChild(beamCore);
+}
+
+function renderMapNodes() {
+  const bound = document.getElementById('mapBound');
+  bound.querySelectorAll('.stage-node, .player-marker, .bg-sakura-tree').forEach(n => n.remove());
+
+  // Background Trees decoration
+  [{x:80,y:900},{x:5,y:600},{x:78,y:400}].forEach(t => {
+    let tree = document.createElement('div');
+    tree.className = 'bg-sakura-tree'; tree.textContent = '🌸';
+    tree.style.left = t.x+'%'; tree.style.top = t.y+'px';
+    bound.appendChild(tree);
+  });
+
+  let nextUnlockFound = false;
+
+  CONFIG.stages.forEach((st, idx) => {
+    const coord = NODE_COORDS[idx];
+    const isStageDone = !!gState.completedStages[st.key];
+    
+    let isUnlocked = false;
+    if (idx === 0) isUnlocked = true;
+    else {
+      let prevKey = CONFIG.stages[idx-1].key;
+      if (gState.completedStages[prevKey]) isUnlocked = true;
+    }
+
+    let node = document.createElement('div');
+    node.className = `stage-node ${isUnlocked ? 'unlocked' : ''} ${isStageDone ? 'completed' : ''}`;
+    node.style.left = coord.x + '%';
+    node.style.top = coord.y + 'px';
+
+    let btn = document.createElement('button');
+    btn.className = 'sakura-flower-btn';
+    btn.innerHTML = `<span class="flower-core">🌸</span><span class="stage-num">${st.num}</span>`;
+    
+    if (!isUnlocked) {
+      btn.innerHTML += `<span class="lock-badge">🔒</span>`;
+    }
+
+    btn.onclick = () => {
+      if (isUnlocked) loadStageView(st.key);
+    };
+
+    node.appendChild(btn);
+
+    let rating = document.createElement('div');
+    rating.className = 'stage-stars';
+    rating.textContent = isStageDone ? '⭐⭐⭐⭐⭐' : '☆☆☆☆☆';
+    node.appendChild(rating);
+
+    let lbl = document.createElement('div');
+    lbl.className = 'stage-label';
+    lbl.textContent = st.name;
+    node.appendChild(lbl);
+
+    bound.appendChild(node);
+
+    // Place player marker at the furthest unlocked but not complete stage
+    if (isUnlocked && !isStageDone && !nextUnlockFound) {
+      nextUnlockFound = true;
+      let marker = document.createElement('div');
+      marker.className = 'player-marker';
+      marker.textContent = '🥷';
+      marker.style.left = coord.x + '%';
+      marker.style.top = coord.y + 'px';
+      bound.appendChild(marker);
+    }
+  });
+
+  // Verify all complete to enable final boss exam
+  const totalStagesCount = CONFIG.stages.length;
+  const completedCount = Object.keys(gState.completedStages).length;
+  const examBtn = document.getElementById('btnFinalExam');
+  if (completedCount >= totalStagesCount) {
+    examBtn.removeAttribute('disabled');
+    examBtn.innerHTML = '⚡ ابدأ التحدي النهائي الشامل 🐉';
+    examBtn.onclick = () => startComprehensiveExam();
+  }
+}
+
+/* ================= SOUND ENGINE (WEB AUDIO API) ================= */
+let webAudioCtx = null;
+function initAudio() {
+  if (!webAudioCtx) {
+    webAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+function playChime(success) {
+  initAudio();
+  if (!webAudioCtx) return;
+  let now = webAudioCtx.currentTime;
+  if (success) {
+    // Success futuristic chord
+    let freqs = [523.25, 659.25, 784.99, 1046.50];
+    freqs.forEach((f, i) => {
+      let osc = webAudioCtx.createOscillator();
+      let gain = webAudioCtx.createGain();
+      osc.frequency.value = f;
+      gain.gain.setValueAtTime(0.1, now + (i * 0.08));
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4 + (i * 0.08));
+      osc.connect(gain); gain.connect(webAudioCtx.destination);
+      osc.start(now + (i * 0.08)); osc.stop(now + 0.5 + (i * 0.08));
+    });
+  } else {
+    // Failure bass drop buzz
+    let osc = webAudioCtx.createOscillator();
+    let gain = webAudioCtx.createGain();
+    osc.type = 'sawtooth'; osc.frequency.value = 130;
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+    osc.connect(gain); gain.connect(webAudioCtx.destination);
+    osc.start(now); osc.stop(now + 0.35);
+  }
+}
+
+function speakJp(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = 'ja-JP'; speech.rate = 0.85;
+    window.speechSynthesis.speak(speech);
+  }
+}
+
+/* ================= SYSTEM CONTROL FLOW ================= */
+function updateHUD() {
+  document.getElementById('hudXP').textContent = gState.xp;
+  document.getElementById('hudHearts').textContent = gState.hearts;
+  document.getElementById('hudLevel').textContent = gState.level;
+  
+  let doneWords = 0;
+  CONFIG.stages.forEach(st => {
+    if (gState.completedStages[st.key]) doneWords += st.words.length;
+  });
+  document.getElementById('hudDoneWords').textContent = doneWords;
+  
+  let xpProgressPercent = (gState.xp % 100);
+  document.getElementById('hudXpBar').style.width = xpProgressPercent + '%';
+  let targetLvl = Math.floor(gState.xp / 100) + 1;
+  if (targetLvl !== gState.level) {
+    gState.level = targetLvl;
+    document.getElementById('hudLevel').textContent = gState.level;
+  }
+}
+
+function switchView(viewId) {
+  document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ================= LESSON INTERFACE ================= */
+function loadStageView(stageKey) {
+  gState.currentStageKey = stageKey;
+  const stage = CONFIG.stages.find(s => s.key === stageKey);
+  document.getElementById('lessonTitle').textContent = `زهرة الساكورا المفتوحة: ${stage.name}`;
+  
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  
+  stage.words.forEach(w => {
+    let card = document.createElement('div');
+    card.className = 'study-card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face">
+          <button class="btn-audio-trigger">🔊</button>
+          <div class="card-emoji">${w.e}</div>
+          <div class="card-kana">${w.k}</div>
+        </div>
+        <div class="card-face card-face-back">
+          <div class="card-kana" style="font-size:24px; color:var(--luxury-gold);">${w.k}</div>
+          <div class="card-arabic" style="margin-top:15px;">${w.m}</div>
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-audio-trigger')) return;
+      card.classList.toggle('flipped');
+    });
+
+    card.querySelector('.btn-audio-trigger').onclick = (e) => {
+      e.stopPropagation();
+      speakJp(w.k);
+    };
+
+    grid.appendChild(card);
+  });
+
+  document.getElementById('tabGrid').onclick = () => {
+    document.getElementById('tabGrid').classList.add('active');
+    document.getElementById('tabQuiz').classList.remove('active');
+    document.getElementById('lessonContent').style.display = 'block';
+  };
+
+  document.getElementById('tabQuiz').onclick = () => {
+    buildStageQuiz(stage);
+  };
+
+  switchView('view-lesson');
+}
+
+document.getElementById('btnLeaveLesson').onclick = () => {
+  switchView('view-map');
+  drawEnergyBeam();
+  renderMapNodes();
+};
+
+/* ================= ENGINE FOR QUIZZES ================= */
+function buildStageQuiz(stage) {
+  gState.quiz.active = true;
+  gState.quiz.index = 0;
+  gState.quiz.correctCount = 0;
+  gState.quiz.isFinal = false;
+  gState.quiz.questions = [];
+
+  // Generate distinct quiz variants from current deck
+  stage.words.forEach((w, idx) => {
+    let type = idx % 2 === 0 ? "audio" : "visual";
+    let options = [w.m];
+    // Gather dynamic distinct fake values
+    let pool = stage.words.filter(item => item.k !== w.k).map(item => item.m);
+    pool = pool.sort(() => 0.5 - Math.random());
+    if (pool[0]) options.push(pool[0]);
+    if (pool[1]) options.push(pool[1]);
+    if (pool[2]) options.push(pool[2]);
+    options = options.sort(() => 0.5 - Math.random());
+
+    gState.quiz.questions.push({
+      type: type,
+      word: w,
+      answer: w.m,
+      options: options
+    });
+  });
+
+  gState.quiz.questions = gState.quiz.questions.sort(() => 0.5 - Math.random());
+  switchView('view-quiz');
+  executeQuestionItem();
+}
+
+function startComprehensiveExam() {
+  gState.quiz.active = true;
+  gState.quiz.index = 0;
+  gState.quiz.correctCount = 0;
+  gState.quiz.isFinal = true;
+  gState.quiz.questions = [];
+
+  let megaPool = [];
+  CONFIG.stages.forEach(st => megaPool.push(...st.words));
+  megaPool = megaPool.sort(() => 0.5 - Math.random()).slice(0, 15); // 15 unique high tier questions
+
+  megaPool.forEach((w, idx) => {
+    let type = idx % 2 === 0 ? "audio" : "visual";
+    let options = [w.m];
+    let pool = megaPool.filter(item => item.k !== w.k).map(item => item.m);
+    pool = pool.sort(() => 0.5 - Math.random());
+    if (pool[0]) options.push(pool[0]);
+    if (pool[1]) options.push(pool[1]);
+    if (pool[2]) options.push(pool[2]);
+    options = options.sort(() => 0.5 - Math.random());
+
+    gState.quiz.questions.push({
+      type: type,
+      word: w,
+      answer: w.m,
+      options: options
+    });
+  });
+
+  switchView('view-quiz');
+  executeQuestionItem();
+}
+
+function executeQuestionItem() {
+  const currentQ = gState.quiz.questions[gState.quiz.index];
+  gState.quiz.currentPayload = currentQ;
+
+  const prompt = document.getElementById('quizPrompt');
+  const mainDisplay = document.getElementById('quizMainDisplay');
+  const optionsBox = document.getElementById('quizOptionsContainer');
+  const audioBtnWrapper = document.getElementById('quizAudioBtnWrapper');
+
+  optionsBox.innerHTML = '';
+
+  if (currentQ.type === 'audio') {
+    prompt.textContent = '🔊 استمع إلى اللفظ الياباني واختر الترجمة العربية الصحيحة:';
+    mainDisplay.textContent = '🔊';
+    audioBtnWrapper.style.display = 'block';
+    document.getElementById('btnQuizVoice').onclick = () => speakJp(currentQ.word.k);
+    speakJp(currentQ.word.k);
+  } else {
+    prompt.textContent = '👁️ طابق الرمز التعبيري بالكلمة والمعنى الياباني المناسب له:';
+    mainDisplay.textContent = `${currentQ.word.e} 【 ${currentQ.word.k} 】`;
+    audioBtnWrapper.style.display = 'none';
+  }
+
+  currentQ.options.forEach(opt => {
+    let btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => evaluateUserSelection(opt, btn);
+    optionsBox.appendChild(btn);
+  });
+}
+
+function evaluateUserSelection(selectedOpt, btnEl) {
+  const currentQ = gState.quiz.currentPayload;
+  const isCorrect = selectedOpt === currentQ.answer;
+  
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  
+  if (isCorrect) {
+    btnEl.classList.add('correct');
+    gState.quiz.correctCount++;
+    gState.xp += 15;
+    playChime(true);
+    triggerFeedbackHUD(true, 'أحسنت! إجابة صحيحة واحترافية', `الكلمة: ${currentQ.word.k} تعني تماماً ${currentQ.answer}`);
+  } else {
+    btnEl.classList.add('wrong');
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.textContent === currentQ.answer) b.classList.add('correct');
+    });
+    gState.hearts = Math.max(0, gState.hearts - 1);
+    playChime(false);
+    triggerFeedbackHUD(false, 'خطأ في المطابقة', `الإجابة الصحيحة كانت: ${currentQ.answer}`);
+  }
+  updateHUD();
+}
+
+function triggerFeedbackHUD(isCorrect, heading, sub) {
+  const bar = document.getElementById('feedbackBar');
+  document.getElementById('feedbackAvatar').innerHTML = getSenseiAvatarSVG(isCorrect ? 'happy' : 'sad');
+  document.getElementById('feedbackTitle').textContent = heading;
+  document.getElementById('feedbackSub').textContent = sub;
+  
+  bar.className = `feedback-bar show ${isCorrect ? 'ok' : 'bad'}`;
+}
+
+document.getElementById('btnFeedbackContinue').onclick = () => {
+  document.getElementById('feedbackBar').classList.remove('show');
+  
+  if (gState.hearts <= 0) {
+    // Depleted Game Over state
+    alert('🚨 نفدت القلوب المتاحة لديك! راجع قائمة الكلمات مجدداً للتمكن من تخطي الاختبار.');
+    gState.hearts = 6;
+    gState.quiz.active = false;
+    updateHUD();
+    switchView('view-map');
+    drawEnergyBeam();
+    renderMapNodes();
+    return;
+  }
+
+  gState.quiz.index++;
+  if (gState.quiz.index >= gState.quiz.questions.length) {
+    terminateQuizSession();
+  } else {
+    executeQuestionItem();
+  }
+};
+
+function terminateQuizSession() {
+  gState.quiz.active = false;
+  const passRate = gState.quiz.correctCount / gState.quiz.questions.length;
+
+  if (gState.quiz.isFinal) {
+    if (passRate >= 0.75) {
+      triggerConfettiBurst();
+      switchView('view-cert');
+    } else {
+      alert(`حاول مرة أخرى، حققت ${gState.quiz.correctCount} إجابات صحيحة من أصل ${gState.quiz.questions.length}. تحتاج لـ 75% على الأقل للتخرج!`);
+      switchView('view-map');
+      drawEnergyBeam(); renderMapNodes();
+    }
+  } else {
+    if (passRate >= 0.5) {
+      gState.completedStages[gState.currentStageKey] = true;
+      alert(`🎉 مرحى! لقد أنهيت هذه المرحلة بنجاح باهر بنسبة إنجاز 100% وتم فك زهرة الساكورا التالية على مسار الطاقة!`);
+    } else {
+      alert(`لم يتم اجتياز اختبار الزهرة بنجاح، يرجى إعادة دراسة بطاقات الهيراغانا لتخطي القفل.`);
+    }
+    switchView('view-map');
+    drawEnergyBeam();
+    renderMapNodes();
+  }
+}
+
+document.getElementById('btnCertHome').onclick = () => {
+  gState.completedStages = {}; // Reset for replayability
+  switchView('view-map');
+  drawEnergyBeam();
+  renderMapNodes();
+};
+
+/* ================= VISUAL EFFECTS SYSTEM (CELEBRATION EFFECTS) ================= */
+function triggerConfettiBurst() {
+  const canvas = document.getElementById('fwCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  let particles = [];
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: canvas.width / 2, y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12 - 4,
+      size: Math.random() * 6 + 4, color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+      alpha: 1
+    });
+  }
+
+  function renderFrame() {
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.alpha -= 0.015;
+      if (p.alpha > 0) {
+        alive = true;
+        ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+      }
+    });
+    if (alive) requestAnimationFrame(renderFrame);
+    else ctx.clearRect(0,0, canvas.width, canvas.height);
+  }
+  renderFrame();
+}
+
+/* ================= INITIALIZATION CORE ================= */
+window.onload = () => {
+  document.getElementById('teacherAvatar').innerHTML = getSenseiAvatarSVG('normal');
+  updateHUD();
+  drawEnergyBeam();
+  renderMapNodes();
+  spawnPetals();
+  
+  window.onresize = () => { drawEnergyBeam(); };
+};
+</script>
+</body>
+</html>

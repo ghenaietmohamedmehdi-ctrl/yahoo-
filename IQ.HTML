@@ -1,740 +1,460 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mehdi Sensei | لتعلم اليابانية</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --sakura-purple: #bd5eff;
-    --neon-purple: #b026ff;
-    --pink-light: #ffb7c5;
-    --pearl-white: #eef1f8;
-    --luxury-gold: #ffd700;
-    --space-bg: #000000;
-    --card-glass: rgba(20, 20, 25, 0.85);
-    --card-border: rgba(188, 94, 255, 0.3);
-    --green-success: #00e676;
-    --red-fail: #ff1744;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mehdi App - JLPT N5</title>
+    <style>
+        :root {
+            --field-green: #2e7d32;
+            --line-white: rgba(255, 255, 255, 0.7);
+            --gold: #ffd700;
+        }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
-  
-  body {
-    background: 
-      radial-gradient(circle at 50% 20%, rgba(176, 38, 255, 0.2), transparent 60%),
-      var(--space-bg);
-    font-family: 'Cairo', 'Zen Maru Gothic', sans-serif;
-    color: var(--pearl-white);
-  }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-  button { font-family: inherit; }
+        /* شاشة الانطلاق التلقائية */
+        .splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        .splash-card {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid var(--gold);
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .splash-card h2 { color: var(--gold); margin-top: 0; }
+        .splash-btn {
+            background: var(--field-green);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
 
-  /* ---- HEADER & PROGRESS ---- */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(12px);
-    border-bottom: 2px solid var(--card-border);
-    padding: 12px 16px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .topbar-main { display: flex; align-items: center; justify-content: space-between; }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-flag { font-size: 28px; line-height: 1; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-  .logo-text b { font-size: 18px; color: #fff; text-shadow: 0 0 8px var(--sakura-purple); font-family: sans-serif; }
-  .logo-text span { display: block; font-size: 11px; color: var(--pink-light); font-weight: 700; }
-  
-  .stats-row { display: flex; gap: 8px; }
-  .stat-pill {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--card-glass); border: 1px solid var(--card-border);
-    border-radius: 20px; padding: 4px 12px; font-weight: 700; font-size: 13px;
-  }
-  .stat-pill.gold { color: var(--luxury-gold); border-color: var(--luxury-gold); }
+        /* الهوية البصرية العلوية */
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .app-title {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            overflow: hidden;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px var(--gold);
+        }
+        /* علم الجزائر داخل الأيقونة */
+        .algeria-flag {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            position: relative;
+        }
+        .flag-left { width: 50%; background: #006633; }
+        .flag-right { width: 50%; background: #ffffff; }
+        .flag-star-crescent {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #cc0000;
+            font-size: 24px;
+            line-height: 1;
+        }
 
-  .progress-container {
-    background: rgba(255,255,255,0.03); border-radius: 10px; padding: 6px 12px;
-    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700;
-  }
-  .xp-bar-wrap { width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; margin-top: 4px; overflow: hidden; }
-  .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #aae2ff, var(--sakura-purple)); width: 0%; transition: width 0.4s; }
+        /* شريط التقدم (الملعب المصغر) */
+        .progress-container {
+            width: 95%;
+            max-width: 800px;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .progress-track {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            background: #333;
+            height: 6px;
+            border-radius: 3px;
+            margin: 15px 0;
+        }
+        .progress-ball {
+            position: absolute;
+            top: -12px;
+            left: 0%;
+            font-size: 24px;
+            transition: left 0.5s ease;
+            transform: translateX(-50%);
+        }
+        .stage-label { font-size: 12px; color: #aaa; }
 
-  main { max-width: 600px; margin: 0 auto; padding: 0 0 80px; }
+        /* أرضية الملعب الرئيسية */
+        .soccer-field {
+            position: relative;
+            width: 95%;
+            max-width: 800px;
+            height: 520px;
+            background-color: var(--field-green);
+            background-image: linear-gradient(rgba(255,255,255,0.05) 50%, transparent 50%);
+            background-size: 100% 40px;
+            border: 3px solid white;
+            border-radius: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        /* تخطيط الملعب */
+        .center-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px; height: 120px;
+            border: 3px solid var(--line-white);
+            border-radius: 50%;
+        }
+        .center-line {
+            position: absolute;
+            top: 50%; left: 0; width: 100%; height: 3px;
+            background: var(--line-white);
+        }
 
-  /* ---- ADVENTURE MAP ---- */
-  .map-container {
-    position: relative; width: 100%; min-height: 1250px; margin-top: 20px;
-    background: 
-      radial-gradient(circle at 50% 200px, rgba(255,255,255,0.05) 0%, transparent 60%),
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="15" cy="20" r="1" fill="rgba(255,255,255,0.2)"/><circle cx="80" cy="50" r="1.2" fill="rgba(255,255,255,0.3)"/><circle cx="35" cy="85" r="0.8" fill="rgba(255,255,255,0.2)"/></svg>');
-    border-radius: 24px;
-    box-shadow: inset 0 0 40px rgba(0,0,0,1);
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
+        /* زوايا العائلات */
+        .corner-box {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid white;
+            font-size: 12px;
+            max-width: 160px;
+            text-align: center;
+        }
+        .top-left { top: 10px; left: 10px; border-color: #ff5252; }
+        .top-right { top: 10px; right: 10px; border-color: #40c4ff; }
+        .bottom-left { bottom: 10px; left: 10px; border-color: #e040fb; }
+        .bottom-right { bottom: 10px; right: 10px; border-color: #00e676; }
 
-  .owl-hub {
-    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 10; text-align: center; width: 100%;
-  }
-  .purple-owl {
-    font-size: 60px; filter: drop-shadow(0 0 20px var(--neon-purple));
-    animation: floatOwl 3.5s ease-in-out infinite; display: inline-block;
-  }
-  @keyframes floatOwl { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* منطقة التفاعل والأسئلة (وسط الملعب) */
+        .quiz-zone {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 340px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+        .word-jp {
+            font-size: 42px;
+            margin: 10px 0;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .word-romaji {
+            font-size: 18px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover { background: #3a3a3a; }
+        
+        /* التغذية الراجعة للإجابات */
+        .correct { background: #2e7d32 !important; border-color: #4caf50 !important; }
+        .wrong { background: #c62828 !important; border-color: #ef5350 !important; }
 
-  .energy-beam-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-
-  .stage-node {
-    position: absolute; transform: translate(-50%, -50%);
-    display: flex; flex-direction: column; align-items: center; z-index: 5;
-  }
-  .sakura-flower-btn {
-    width: 85px; height: 85px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(10, 5, 20, 0.95) 30%, rgba(188, 94, 255, 0.3) 100%);
-    border: 3px solid var(--card-border);
-    box-shadow: 0 0 15px rgba(188, 94, 255, 0.1);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; position: relative; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .sakura-flower-btn .flower-core { font-size: 42px; opacity: 0.8; }
-  .sakura-flower-btn .stage-num {
-    position: absolute; font-size: 24px; font-weight: 900; color: #fff;
-    text-shadow: 0 0 8px #000; font-family: 'Zen Maru Gothic', sans-serif;
-  }
-  .sakura-flower-btn .lock-badge {
-    position: absolute; top: -6px; left: -6px; font-size: 20px;
-    filter: drop-shadow(0 0 5px var(--luxury-gold));
-  }
-
-  .stage-node.unlocked .sakura-flower-btn {
-    border-color: var(--pink-light);
-    box-shadow: 0 0 25px var(--neon-purple);
-    background: radial-gradient(circle, rgba(40, 15, 70, 0.95) 30%, var(--sakura-purple) 100%);
-  }
-  .stage-node.unlocked .sakura-flower-btn:hover { transform: scale(1.08); }
-  .stage-node.completed .sakura-flower-btn { border-color: var(--luxury-gold); box-shadow: 0 0 20px var(--luxury-gold); }
-
-  .stage-stars { font-size: 15px; margin-top: 5px; color: var(--luxury-gold); }
-  .stage-label {
-    margin-top: 4px; font-weight: 700; font-size: 13px; color: #fff;
-    background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 12px;
-    border: 1px solid var(--card-border); white-space: nowrap;
-  }
-
-  .player-marker {
-    position: absolute; transform: translate(-50%, -120%); font-size: 32px; z-index: 10;
-    filter: drop-shadow(0 0 15px var(--luxury-gold)); animation: pulseGlow 1.5s infinite ease-in-out;
-    pointer-events: none;
-  }
-  @keyframes pulseGlow { 0%, 100% { transform: translate(-50%, -120%) scale(1); opacity: 0.9; } 50% { transform: translate(-50%, -120%) scale(1.2); opacity: 1; } }
-
-  /* ---- FLASHCARDS ---- */
-  .view-header { display: flex; align-items: center; gap: 12px; margin: 16px; }
-  .btn-back {
-    background: var(--card-glass); border: 1px solid var(--card-border);
-    color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer;
-  }
-  .view-title { font-size: 19px; font-weight: 900; color: #fff; margin: 0; text-shadow: 0 0 8px var(--sakura-purple); }
-
-  .nav-tabs { display: flex; gap: 8px; margin: 0 16px 16px; }
-  .tab-btn {
-    flex: 1; padding: 10px; border-radius: 14px; border: 1px solid var(--card-border);
-    background: var(--card-glass); color: rgba(255,255,255,0.6); font-weight: 700; cursor: pointer; transition: all 0.2s;
-  }
-  .tab-btn.active { background: var(--sakura-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple); border-color: transparent; }
-
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; padding: 0 16px; }
-  .study-card { height: 220px; perspective: 1000px; cursor: pointer; }
-  .card-inner {
-    position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
-    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 20px;
-  }
-  .study-card.flipped .card-inner { transform: rotateY(180deg); }
-  
-  .card-face {
-    position: absolute; inset: 0; border-radius: 20px; backface-visibility: hidden;
-    background: var(--card-glass); border: 2px solid var(--card-border);
-    backdrop-filter: blur(8px); padding: 16px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .card-face-back { transform: rotateY(180deg); border-color: var(--luxury-gold); background: rgba(15, 5, 25, 0.95); }
-
-  .card-emoji { font-size: 44px; margin-bottom: 8px; }
-  .card-kana { font-family: 'Zen Maru Gothic', sans-serif; font-size: 34px; font-weight: 900; color: #fff; text-align: center; }
-  .card-arabic { font-size: 22px; font-weight: 900; color: #aae2ff; text-align: center; }
-
-  /* ---- QUIZ INTERFACE ---- */
-  .quiz-box { background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 24px; padding: 24px 16px; margin: 16px; text-align: center; position: relative;}
-  
-  /* Quiz Progress Counter */
-  .quiz-progress { position: absolute; top: 12px; right: 16px; font-size: 13px; color: var(--luxury-gold); font-weight: bold; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px;}
-
-  .quiz-prompt { font-size: 14px; color: var(--pink-light); font-weight: 700; margin-top: 15px; margin-bottom: 8px; }
-  .quiz-main-display { font-family: 'Zen Maru Gothic', sans-serif; font-size: 42px; font-weight: 900; color: #fff; margin: 10px 0; }
-  
-  .quiz-audio-autobtn { background: var(--neon-purple); border: none; color: #fff; width: 55px; height: 55px; border-radius: 50%; font-size: 22px; cursor: pointer; box-shadow: 0 0 15px var(--neon-purple); margin: 10px auto 0; }
-
-  .options-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
-  .option-btn {
-    background: var(--card-glass); border: 2px solid var(--card-border); border-radius: 16px;
-    padding: 16px; color: #fff; font-size: 22px; font-weight: 700; text-align: center; cursor: pointer;
-    transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  }
-  .option-btn.correct { background: rgba(0, 230, 118, 0.25) !important; border-color: var(--green-success) !important; color: var(--green-success); font-weight: 900; }
-  .option-btn.wrong { background: rgba(255, 23, 68, 0.25) !important; border-color: var(--red-fail) !important; color: var(--red-fail); }
-
-  /* ---- FEEDBACK HUD ---- */
-  .feedback-bar {
-    position: fixed; bottom: -100px; left: 0; right: 0; background: #0a0515; border-top: 3px solid var(--card-border);
-    padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 200;
-    transition: bottom 0.3s ease;
-  }
-  .feedback-bar.show { bottom: 0; }
-  .feedback-bar.ok { border-color: var(--green-success); background: #03140b; }
-  .feedback-bar.bad { border-color: var(--red-fail); background: #1a0307; }
-  
-  .feedback-title { font-weight: 900; font-size: 18px; }
-  .ok .feedback-title { color: var(--green-success); }
-  .bad .feedback-title { color: var(--red-fail); }
-  .feedback-sub { font-size: 13px; opacity: 0.8; }
-  
-  .btn-action {
-    border: none; padding: 12px 24px; font-weight: 900; font-size: 15px; border-radius: 14px; cursor: pointer; color: #fff;
-  }
-  .btn-action.green { background: var(--green-success); }
-  .btn-action.purple { background: var(--neon-purple); }
-
-  .cert-box {
-    background: #080410; border: 3px solid var(--luxury-gold); border-radius: 24px; padding: 32px 16px; text-align: center; margin: 20px 16px;
-  }
-
-  .app-view { display: none; }
-  .app-view.active { display: block; }
-  
-  .final-stage-card {
-    background: rgba(15,10,25,0.9); border: 2px solid var(--luxury-gold); border-radius: 20px; padding: 20px; margin: 20px 16px; text-align: center;
-  }
-
-  .fwork-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
-</style>
+        .score-board {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+    </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-main">
-    <div class="logo">
-      <div class="logo-flag">🇩🇿</div>
-      <div class="logo-text">
-        <b>Mehdi Sensei</b>
-        <span>طريقك الملكي لإتقان الهيراغانا</span>
-      </div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-pill gold">⭐ <span id="hudXP">0</span> XP</div>
-      <div class="stat-pill">❤️ <span id="hudHearts">6</span></div>
-    </div>
-  </div>
-  <div class="progress-container">
-    <div>المستوى: <span id="hudLevel">1</span></div>
-    <div>الكلمات المنجزة: <span id="hudDoneWords">0</span> / 73</div>
-    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="hudXpBar"></div></div>
-  </div>
-</div>
-
-<main>
-  <!-- 1. MAP VIEW -->
-  <div class="app-view active" id="view-map">
-    <div style="text-align: center; margin: 16px 16px 0;">
-      <h2 style="margin: 0; font-size: 20px; color: #fff;">مسار التعلم من الأعلى إلى الأسفل</h2>
-      <p style="margin: 4px 0 0; font-size: 13px; color: var(--pink-light);">انقر على زهرة الساكورا المفتوحة لبدء التحدي الفوري</p>
-    </div>
-
-    <div class="map-container" id="mapBound">
-      <div class="owl-hub">
-        <div class="purple-owl">🦉</div>
-      </div>
-      <svg class="energy-beam-svg" id="energyBeamSvg"></svg>
-    </div>
-
-    <div class="final-stage-card">
-      <div style="font-size: 36px;">👑</div>
-      <h3 style="color: var(--luxury-gold); margin: 6px 0 4px;">الاختبار النهائي الشامل (73 كلمة)</h3>
-      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 12px;">امتحان مجمع لكافة المفردات التي تعلمتها في جميع المراحل.</p>
-      <button class="btn-action purple" id="btnFinalExam" style="width: 100%;" disabled>🔒 أكمل الزهور لفتح الامتحان</button>
-    </div>
-  </div>
-
-  <!-- 2. LESSON VIEW -->
-  <div class="app-view" id="view-lesson">
-    <div class="view-header">
-      <button class="btn-back" id="btnLeaveLesson">→</button>
-      <h2 class="view-title" id="lessonTitle">المرحلة</h2>
-    </div>
-    <div class="nav-tabs">
-      <button class="tab-btn active" id="tabGrid">📋 شبكة الكلمات</button>
-      <button class="tab-btn" id="tabQuiz">⚔️ اختبار زهرة الساكورا</button>
-    </div>
-    <div id="lessonContent">
-      <div class="cards-grid" id="cardsGrid"></div>
-    </div>
-  </div>
-
-  <!-- 3. QUIZ RUNNER VIEW -->
-  <div class="app-view" id="view-quiz">
-    <div class="quiz-box">
-      <div class="quiz-progress" id="quizProgress">السؤال 1 / 10</div>
-      <div class="quiz-prompt" id="quizPrompt">استمع جيداً واعرف الخيار</div>
-      <div class="quiz-main-display" id="quizMainDisplay">🌸</div>
-      <button class="quiz-audio-autobtn" id="btnQuizVoice">🔊 تكرار الصوت</button>
-    </div>
-    <div class="options-list" id="quizOptionsContainer"></div>
-  </div>
-
-  <!-- 4. CERTIFICATE VIEW -->
-  <div class="app-view" id="view-cert">
-    <div class="cert-box">
-      <div class="cert-icon" style="font-size: 55px;">🏆</div>
-      <h2 style="color: var(--luxury-gold); margin: 8px 0;">شهادة تميز وإتقان</h2>
-      <p style="font-size: 17px; font-weight: bold; margin: 12px 0 4px;">تهانينا الحارة للأخت سعاد ولمهدي سنسيه</p>
-      <p style="font-size: 13px; opacity: 0.8; margin: 0 0 20px;">تم اجتياز التحدي الشامل لجميع الكلمات (73 كلمة) بنجاح منقطع النظير وبمعدل ممتع وممتاز.</p>
-      <div style="font-size: 24px; color: var(--luxury-gold); margin-bottom: 20px;">⭐⭐⭐⭐⭐</div>
-      <button class="btn-action purple" id="btnCertHome" style="width: 80%;">العودة للقائمة الرئيسية</button>
-    </div>
-  </div>
-</main>
-
-<div class="feedback-bar" id="feedbackBar">
-  <div class="feedback-content">
-    <div>
-      <div class="feedback-title" id="feedbackTitle">إجابة صحيحة</div>
-      <div class="feedback-sub" id="feedbackSub">أحسنت صنعاً</div>
-    </div>
-  </div>
-  <button class="btn-action green" id="btnFeedbackContinue">متابعة</button>
-</div>
-
-<canvas class="fwork-canvas" id="fwCanvas"></canvas>
-
-<script>
-// تمت زيادة الكلمات ليصبح الإجمالي 73 كلمة كما طلبت!
-const CONFIG = {
-  stages: [
-    { key: "st1", num: "①", name: "الأصوات الأساسية", words: [
-      { k: "あさ", m: "صباح", e: "🌅" }, { k: "あき", m: "خريف", e: "🍂" },
-      { k: "くつ", m: "حذاء", e: "👟" }, { k: "かわ", m: "نهر", e: "🏞️" },
-      { k: "さいふ", m: "محفظة", e: "👛" }, { k: "さかな", m: "سمك", e: "🐟" },
-      { k: "いぬ", m: "كلب", e: "🐕" }, { k: "ねこ", m: "قطة", e: "🐈" },
-      { k: "はな", m: "زهرة", e: "🌸" }, { k: "とり", m: "طائر", e: "🐦" },
-      { k: "ひと", m: "شخص", e: "🧍" }, { k: "いえ", m: "منزل", e: "🏠" },
-      { k: "くち", m: "فم", e: "👄" }
-    ]}, // 13 كلمة
-    { key: "st2", num: "②", name: "صوت النون ん", words: [
-      { k: "ほん", m: "كتاب", e: "📖" }, { k: "にほん", m: "اليابان", e: "🇯🇵" },
-      { k: "ぱんだ", m: "باندا", e: "🐼" }, { k: "かんぱい", m: "نخبكم", e: "🥂" },
-      { k: "みかん", m: "يوسفي", e: "🍊" }, { k: "てんき", m: "طقس", e: "🌤️" },
-      { k: "しんぶん", m: "جريدة", e: "📰" }, { k: "かばん", m: "حقيبة", e: "👜" },
-      { k: "じかん", m: "وقت", e: "⏳" }, { k: "せんせい", m: "معلم", e: "👨‍🏫" },
-      { k: "でんわ", m: "هاتف", e: "☎️" }, { k: "おんがく", m: "موسيقى", e: "🎵" }
-    ]}, // 12 كلمة
-    { key: "st3", num: "③", name: "المد الصوتي", words: [
-      { k: "いい", m: "جيد", e: "👍" }, { k: "とけい", m: "ساعة", e: "⏰" },
-      { k: "おかあさん", m: "الأم", e: "👩" }, { k: "おとうさん", m: "الأب", e: "👨" },
-      { k: "おにいさん", m: "الأخ الأكبر", e: "👦" }, { k: "おねえさん", m: "الأخت الكبرى", e: "👧" },
-      { k: "ゆうがた", m: "مساء", e: "🌆" }, { k: "くうき", m: "هواء", e: "💨" },
-      { k: "おおきい", m: "كبير", e: "🐘" }, { k: "ちいさい", m: "صغير", e: "🐜" },
-      { k: "とおい", m: "بعيد", e: "🔭" }, { k: "ほうき", m: "مكنسة", e: "🧹" }
-    ]}, // 12 كلمة
-    { key: "st4", num: "④", name: "الأصوات المجهورة", words: [
-      { k: "みず", m: "ماء", e: "💧" }, { k: "たまご", m: "بيضة", e: "🥚" },
-      { k: "ごはん", m: "أرز", e: "🍚" }, { k: "ぼうし", m: "قبعة", e: "🧢" },
-      { k: "めがね", m: "نظارات", e: "👓" }, { k: "かぞく", m: "عائلة", e: "👨‍👩‍👧‍👦" },
-      { k: "くるま", m: "سيارة", e: "🚗" }, { k: "くだもの", m: "فاكهة", e: "🍎" },
-      { k: "えいご", m: "إنجليزي", e: "🔤" }, { k: "だいがく", m: "جامعة", e: "🎓" },
-      { k: "まど", m: "نافذة", e: "🪟" }, { k: "かぜ", m: "رياح", e: "🌬️" }
-    ]}, // 12 كلمة
-    { key: "st5", num: "⑤", name: "الصوت المزدوج っ", words: [
-      { k: "がっこう", m: "مدرسة", e: "🏫" }, { k: "きっぷ", m: "تذكرة", e: "🎫" },
-      { k: "はっぱ", m: "ورقة شجر", e: "🍃" }, { k: "ざっし", m: "مجلة", e: "📰" },
-      { k: "きって", m: "طابع", e: "✉️" }, { k: "あさって", m: "بعد غد", e: "⏭️" },
-      { k: "みっか", m: "اليوم 3", e: "3️⃣" }, { k: "むいか", m: "اليوم 6", e: "6️⃣" },
-      { k: "やっと", m: "أخيراً", e: "🙌" }, { k: "ずっと", m: "طوال الوقت", e: "♾️" },
-      { k: "ちょっと", m: "قليلاً", e: "🤏" }, { k: "もっと", m: "المزيد", e: "➕" }
-    ]}, // 12 كلمة
-    { key: "st6", num: "⑥", name: "الأصوات المركبة", words: [
-      { k: "きょう", m: "اليوم", e: "📅" }, { k: "おちゃ", m: "شاي أخضر", e: "🍵" },
-      { k: "りょこう", m: "سفر", e: "✈️" }, { k: "りょうり", m: "طبخ", e: "🍳" },
-      { k: "しゃしん", m: "صورة", e: "📸" }, { k: "じしょ", m: "قاموس", e: "📚" },
-      { k: "じてんしゃ", m: "دراجة", e: "🚲" }, { k: "ぎゅうにゅう", m: "حليب", e: "🥛" },
-      { k: "きょうしつ", m: "فصل", e: "🏫" }, { k: "しゅくだい", m: "واجب", e: "📝" },
-      { k: "ひゃく", m: "مائة", e: "💯" }, { k: "びょういん", m: "مستشفى", e: "🏥" }
-    ]} // 12 كلمة
-  ]
-};
-// المجموع الكلي: 13+12+12+12+12+12 = 73 كلمة تماماً!
-
-let gState = {
-  xp: 0, level: 1, hearts: 6,
-  completedStages: {}, currentStageKey: null,
-  quiz: { active: false, questions: [], index: 0, correctCount: 0, currentPayload: null, isFinal: false }
-};
-
-const NODE_COORDS = [
-  { x: 50, y: 180 }, { x: 25, y: 360 }, { x: 75, y: 540 },
-  { x: 30, y: 720 }, { x: 70, y: 900 }, { x: 50, y: 1080 }
-];
-
-function drawEnergyBeam() {
-  const svg = document.getElementById('energyBeamSvg');
-  svg.innerHTML = '';
-  let dStr = `M ${NODE_COORDS[0].x}% ${NODE_COORDS[0].y}`;
-  for (let i = 1; i < NODE_COORDS.length; i++) {
-    let prev = NODE_COORDS[i-1]; let curr = NODE_COORDS[i];
-    let midY = (prev.y + curr.y) / 2;
-    dStr += ` C ${prev.x}% ${midY}, ${curr.x}% ${midY}, ${curr.x}% ${curr.y}`;
-  }
-  
-  const beamGlow = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  beamGlow.setAttribute("d", dStr); beamGlow.setAttribute("fill", "none");
-  beamGlow.setAttribute("stroke", "var(--neon-purple)"); beamGlow.setAttribute("stroke-width", "8");
-  beamGlow.setAttribute("opacity", "0.4");
-  
-  const beamCore = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  beamCore.setAttribute("d", dStr); beamCore.setAttribute("fill", "none");
-  beamCore.setAttribute("stroke", "#aae2ff"); beamCore.setAttribute("stroke-width", "2.5");
-  beamCore.setAttribute("stroke-dasharray", "6 6");
-  
-  svg.appendChild(beamGlow); svg.appendChild(beamCore);
-}
-
-function renderMapNodes() {
-  const bound = document.getElementById('mapBound');
-  bound.querySelectorAll('.stage-node, .player-marker').forEach(n => n.remove());
-
-  let nextUnlockFound = false;
-
-  CONFIG.stages.forEach((st, idx) => {
-    const coord = NODE_COORDS[idx];
-    const isStageDone = !!gState.completedStages[st.key];
-    let isUnlocked = (idx === 0) ? true : !!gState.completedStages[CONFIG.stages[idx-1].key];
-
-    let node = document.createElement('div');
-    node.className = `stage-node ${isUnlocked ? 'unlocked' : ''} ${isStageDone ? 'completed' : ''}`;
-    node.style.left = coord.x + '%'; node.style.top = coord.y + 'px';
-
-    let btn = document.createElement('button');
-    btn.className = 'sakura-flower-btn';
-    btn.innerHTML = `<span class="flower-core">🌸</span><span class="stage-num">${st.num}</span>`;
-    
-    if (!isUnlocked) btn.innerHTML += `<span class="lock-badge">🔒</span>`;
-    btn.onclick = () => { if (isUnlocked) loadStageView(st.key); };
-    node.appendChild(btn);
-
-    let rating = document.createElement('div');
-    rating.className = 'stage-stars';
-    rating.textContent = isStageDone ? '⭐⭐⭐⭐⭐' : '☆☆☆☆☆';
-    node.appendChild(rating);
-
-    let lbl = document.createElement('div');
-    lbl.className = 'stage-label'; lbl.textContent = st.name;
-    node.appendChild(lbl);
-
-    bound.appendChild(node);
-
-    if (isUnlocked && !isStageDone && !nextUnlockFound) {
-      nextUnlockFound = true;
-      let marker = document.createElement('div');
-      marker.className = 'player-marker';
-      marker.textContent = '✨';
-      marker.style.left = coord.x + '%'; marker.style.top = coord.y + 'px';
-      bound.appendChild(marker);
-    }
-  });
-
-  const examBtn = document.getElementById('btnFinalExam');
-  if (Object.keys(gState.completedStages).length >= CONFIG.stages.length) {
-    examBtn.removeAttribute('disabled');
-    examBtn.innerHTML = '⚡ ابدأ التحدي الشامل الفاخر (73 كلمة) 👑';
-    examBtn.onclick = () => startComprehensiveExam();
-  }
-}
-
-function speakJp(text) {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    let speech = new SpeechSynthesisUtterance(text);
-    speech.lang = 'ja-JP'; speech.rate = 0.85;
-    window.speechSynthesis.speak(speech);
-  }
-}
-
-function updateHUD() {
-  document.getElementById('hudXP').textContent = gState.xp;
-  document.getElementById('hudHearts').textContent = gState.hearts;
-  document.getElementById('hudLevel').textContent = gState.level;
-  
-  let doneWords = 0;
-  CONFIG.stages.forEach(st => { if (gState.completedStages[st.key]) doneWords += st.words.length; });
-  document.getElementById('hudDoneWords').textContent = doneWords;
-  document.getElementById('hudXpBar').style.width = (gState.xp % 100) + '%';
-  gState.level = Math.floor(gState.xp / 100) + 1;
-}
-
-function switchView(viewId) {
-  document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function loadStageView(stageKey) {
-  gState.currentStageKey = stageKey;
-  const stage = CONFIG.stages.find(s => s.key === stageKey);
-  document.getElementById('lessonTitle').textContent = `زهرة الساكورا: ${stage.name}`;
-  
-  const grid = document.getElementById('cardsGrid');
-  grid.innerHTML = '';
-  
-  stage.words.forEach(w => {
-    let card = document.createElement('div');
-    card.className = 'study-card';
-    card.innerHTML = `
-      <div class="card-inner">
-        <div class="card-face">
-          <div class="card-emoji">${w.e}</div>
-          <div class="card-kana">${w.k}</div>
+    <!-- شاشة الانطلاق التلقائية -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-card">
+            <h2>🏆 مستعد للتحدي؟</h2>
+            <p>مرحباً بك في معسكر المونديال التدريبي لـ JLPT N5. استعن بالله وركّز جيداً لضمان إتقان الكلمات والتفوق التام!</p>
+            <button class="splash-btn" onclick="closeSplash()">ركلة البداية ⚽</button>
         </div>
-        <div class="card-face card-face-back">
-          <div class="card-kana" style="font-size:22px; color:var(--luxury-gold);">${w.k}</div>
-          <div class="card-arabic" style="margin-top:12px;">${w.m}</div>
+    </div>
+
+    <!-- الهوية العلوية -->
+    <header>
+        <div class="app-title">Mehdi</div>
+        <div class="app-icon">
+            <div class="algeria-flag">
+                <div class="flag-left"></div>
+                <div class="flag-right"></div>
+                <div class="flag-star-crescent">☪★</div>
+            </div>
         </div>
-      </div>
-    `;
-    
-    card.addEventListener('click', () => {
-      card.classList.toggle('flipped');
-      speakJp(w.k);
-    });
-    grid.appendChild(card);
-  });
+    </header>
 
-  document.getElementById('tabGrid').onclick = () => {
-    document.getElementById('tabGrid').className = 'tab-btn active';
-    document.getElementById('tabQuiz').className = 'tab-btn';
-    document.getElementById('lessonContent').style.display = 'block';
-  };
-  document.getElementById('tabQuiz').onclick = () => { buildStageQuiz(stage); };
+    <!-- شريط تقدم الكرة المونديالية -->
+    <div class="progress-container">
+        <div class="progress-track">
+            <div class="progress-ball" id="soccerBall">⚽</div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span class="stage-label">🛡️ الدفاع</span>
+            <span class="stage-label">⚙️ الوسط</span>
+            <span class="stage-label">⚔️ الهجوم</span>
+            <span class="stage-label">🥅 الهدف</span>
+        </div>
+    </div>
 
-  switchView('view-lesson');
-}
+    <!-- أرضية الملعب التفاعلية -->
+    <div class="soccer-field">
+        <div class="center-line"></div>
+        <div class="center-circle"></div>
 
-document.getElementById('btnLeaveLesson').onclick = () => {
-  switchView('view-map'); drawEnergyBeam(); renderMapNodes();
-};
+        <!-- زوايا عائلات الكلمات الأربعة -->
+        <div class="corner-box top-left">
+            <strong>الطبيعة والوقت</strong><br><span id="count-c1">12 كلمة</span>
+        </div>
+        <div class="corner-box top-right">
+            <strong>الكائنات والناس</strong><br><span id="count-c2">17 كلمة</span>
+        </div>
+        <div class="corner-box bottom-left">
+            <strong>الأطعمة والمشروبات</strong><br><span id="count-c3">11 كلمة</span>
+        </div>
+        <div class="corner-box bottom-right">
+            <strong>الأماكن والأنشطة</strong><br><span id="count-c4">32 كلمة</span>
+        </div>
 
-function buildStageQuiz(stage) {
-  gState.quiz.active = true; gState.quiz.index = 0; gState.quiz.correctCount = 0; gState.quiz.isFinal = false; gState.quiz.questions = [];
+        <!-- منطقة الاختبار المركزي -->
+        <div class="quiz-zone">
+            <div class="score-board">الكلمة: <span id="current-index">1</span> / 72</div>
+            <div class="word-jp" id="target-word">あさ</div>
+            <div class="word-romaji" id="target-romaji">Asa</div>
+            
+            <div class="options-grid" id="options-container">
+                <!-- أزرار الخيارات تولد برمجياً هنا -->
+            </div>
+        </div>
+    </div>
 
-  stage.words.forEach((w, idx) => {
-    let type = idx % 2 === 0 ? "audio" : "visual";
-    let options = [];
-    let answer = "";
+    <script>
+        // قاعدة البيانات الكاملة للـ 72 كلمة مدمجة ومصححة بالكامل
+        const wordsDataset = [
+            // الطبيعة والفصول والوقت (12)
+            { j: "あさ", r: "Asa", a: "الصباح", c: "c1" },
+            { j: "あき", r: "Aki", a: "الخريف", c: "c1" },
+            { j: "かわ", r: "Kawa", a: "نهر", c: "c1" },
+            { j: "はる", r: "Haru", a: "الربيع", c: "c1" },
+            { j: "なつ", r: "Natsu", a: "الصيف", c: "c1" },
+            { j: "ふゆ", r: "Fuyu", a: "الشتاء", c: "c1" },
+            { j: "やま", r: "Yama", a: "جبل", c: "c1" },
+            { j: "ゆき", r: "Yuki", a: "ثلج", c: "c1" },
+            { j: "よる", r: "Yoru", a: "الليل", c: "c1" },
+            { j: "はっぱ", r: "Happa", a: "ورقة شجر", c: "c1" },
+            { j: "きょう", r: "Kyou", a: "اليوم", c: "c1" },
+            { j: "ごぜん", r: "Gozen", a: "صباحاً (AM)", c: "c1" },
 
-    if (type === "audio") {
-      answer = w.k; options.push(w.k);
-      let pool = stage.words.filter(item => item.k !== w.k).map(item => item.k);
-      pool.sort(() => 0.5 - Math.random());
-      if (pool[0]) options.push(pool[0]);
-      if (pool[1]) options.push(pool[1]);
-      if (pool[2]) options.push(pool[2]);
-    } else {
-      answer = w.m; options.push(w.m);
-      let pool = stage.words.filter(item => item.m !== w.m).map(item => item.m);
-      pool.sort(() => 0.5 - Math.random());
-      if (pool[0]) options.push(pool[0]);
-      if (pool[1]) options.push(pool[1]);
-      if (pool[2]) options.push(pool[2]);
-    }
-    options = options.sort(() => 0.5 - Math.random());
-    gState.quiz.questions.push({ type, word: w, answer, options });
-  });
+            // الكائنات الحية والناس (17)
+            { j: "さかな", r: "Sakana", a: "سمكة", c: "c2" },
+            { j: "とり", r: "Tori", a: "طائر", c: "c2" },
+            { j: "ねこ", r: "Neko", a: "قطة", c: "c2" },
+            { j: "いぬ", r: "Inu", a: "كلب", c: "c2" },
+            { j: "ぱんだ", r: "Panda", a: "باندا", c: "c2" },
+            { j: "さんま", r: "Sanma", a: "سمك الساورة", c: "c2" },
+            { j: "おかあさん", r: "Okaasan", a: "الأم", c: "c2" },
+            { j: "おとうさん", r: "Otousan", a: "الأب", c: "c2" },
+            { j: "おとうと", r: "Otouto", a: "الأخ الأصغر", c: "c2" },
+            { j: "おにいさん", r: "Oniisan", a: "الأخ الأكبر", c: "c2" },
+            { j: "おねえさん", r: "Oneesan", a: "الأخت الكبرى", c: "c2" },
+            { j: "いもうと", r: "Imouto", a: "الأخت الصغرى", c: "c2" },
+            { j: "せんせい", r: "Sensei", a: "معلم", c: "c2" },
+            { j: "がくせい", r: "Gakusei", a: "طالب", c: "c2" },
+            { j: "かいしゃいん", "r": "Kaishayin", a: "موظف شركة", c: "c2" },
+            { j: "きゃく", r: "Kyaku", a: "ضيف/زبون", c: "c2" },
+            { j: "なまえ", r: "Namae", a: "اسم", c: "c2" },
 
-  gState.quiz.questions.sort(() => 0.5 - Math.random());
-  switchView('view-quiz');
-  executeQuestionItem();
-}
+            // الأطعمة والمشروبات (11)
+            { j: "とんかつ", r: "Tonkatsu", a: "شرائح لحم مقلية", c: "c3" },
+            { j: "てんぷら", r: "Tenpura", a: "تمبورا", c: "c3" },
+            { j: "たまご", r: "Tamago", a: "بيض", c: "c3" },
+            { j: "みず", r: "Mizu", a: "ماء", c: "c3" },
+            { j: "ごはん", r: "Gohan", a: "أرز مطبوخ/وجبة", c: "c3" },
+            { j: "ぎゅうにく", r: "Gyuuniku", a: "لحم بقر", c: "c3" },
+            { j: "おちゃ", r: "Ocha", a: "شاي أخضر", c: "c3" },
+            { j: "こうちゃ", r: "Koocha", a: "شاي أسود", c: "c3" },
+            { j: "ぎゅうにゅう", r: "Gyuunyuu", a: "حليب", c: "c3" },
+            { j: "こんにゃく", r: "Konnyaku", a: "هلام الكونياكو", c: "c3" },
+            { j: "かんぱい", r: "Kanpai", a: "في صحتك / نخبك", c: "c3" },
 
-// ---- الدالة المحدثة: تقوم بدمج جميع الكلمات الـ 73 بدون حذف أي منها ---- //
-function startComprehensiveExam() {
-  gState.quiz.active = true; gState.quiz.index = 0; gState.quiz.correctCount = 0; gState.quiz.isFinal = true; gState.quiz.questions = [];
+            // الأماكن والأشياء والأنشطة (32)
+            { j: "くつ", r: "Kutsu", a: "حذاء", c: "c4" },
+            { j: "さいふ", r: "Saifu", a: "محفظة", c: "c4" },
+            { j: "ふね", r: "Fune", a: "سفينة/قارب", c: "c4" },
+            { j: "てんと", r: "Tento", a: "خيمة", c: "c4" },
+            { j: "ほん", r: "Hon", a: "كتاب", c: "c4" },
+            { j: "にほん", r: "Nihon", a: "اليابان", c: "c4" },
+            { j: "かんこく", r: "Kankoku", a: "كوريا الجنوبية", c: "c4" },
+            { j: "ちゅうごく", r: "Chuugoku", a: "الصين", c: "c4" },
+            { j: "とけい", r: "Tokei", a: "ساعة", c: "c4" },
+            { j: "でんわ", r: "Denwa", a: "هاتف", c: "c4" },
+            { j: "えいご", r: "Eigo", a: "اللغة الإنجليزية", c: "c4" },
+            { j: "かばん", r: "Kaban", a: "حقيبة", c: "c4" },
+            { j: "きっぷ", r: "Kippu", a: "تذكرة", c: "c4" },
+            { j: "ざっし", r: "Zasshi", a: "مجلة", c: "c4" },
+            { j: "いっかい", r: "Ikkai", a: "مرة واحدة / الطابق الأول", c: "c4" },
+            { j: "ひゃくえん", r: "Hyakuen", a: "100 ين", c: "c4" },
+            { j: "えき", r: "Eki", a: "محطة", c: "c4" },
+            { j: "ぎんこう", r: "Ginkou", a: "بنك", c: "c4" },
+            { j: "ゆうびんきょく", r: "Yuubinkyoku", a: "مكتب البريد", c: "c4" },
+            { j: "きょうしつ", r: "Kyoushitsu", a: "قاعة الدرس", c: "c4" },
+            { j: "としょかん", r: "Toshokan", a: "مكتبة", c: "c4" },
+            { j: "びじゅつかん", r: "Bijutsukan", a: "متحف الفنون", c: "c4" },
+            { j: "がっこう", r: "Gakkou", a: "مدرسة", c: "c4" },
+            { j: "びょういん", r: "Byouin", a: "مستشفى", c: "c4" },
+            { j: "えいが", "r": "Eiga", a: "فيلم/سينما", c: "c4" },
+            { j: "おんがく", r: "Ongaku", a: "موسيقى", c: "c4" },
+            { j: "りょこう", r: "Ryokou", a: "سفر/رحلة", c: "c4" },
+            { j: "どくしょ", r: "Dokusho", a: "قراءة الكتب", c: "c4" },
+            { j: "しゅみ", r: "Shumi", a: "هواية", c: "c4" },
+            { j: "りょうり", r: "Ryouri", a: "الطبخ", c: "c4" },
+            { j: "は", r: "Ha", a: "سن / ورقة شجر", c: "c4" },
+            { j: "みみ", r: "Mimi", a: "أذن", c: "c4" }
+        ];
 
-  let megaPool = [];
-  CONFIG.stages.forEach(st => megaPool.push(...st.words));
-  
-  // خلط جميع الـ 73 كلمة بشكل عشوائي دون قطعها
-  megaPool = megaPool.sort(() => 0.5 - Math.random());
+        let currentIndex = 0;
+        let isChecking = false;
 
-  megaPool.forEach((w, idx) => {
-    let type = idx % 2 === 0 ? "audio" : "visual";
-    let options = [];
-    let answer = "";
+        function closeSplash() {
+            document.getElementById('splashScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.display = 'none';
+            }, 500);
+            loadQuestion();
+        }
 
-    if (type === "audio") {
-      answer = w.k; options.push(w.k);
-      let pool = megaPool.filter(item => item.k !== w.k).map(item => item.k);
-      pool.sort(() => 0.5 - Math.random());
-      if (pool[0]) options.push(pool[0]);
-      if (pool[1]) options.push(pool[1]);
-    } else {
-      answer = w.m; options.push(w.m);
-      let pool = megaPool.filter(item => item.m !== w.m).map(item => item.m);
-      pool.sort(() => 0.5 - Math.random());
-      if (pool[0]) options.push(pool[0]);
-      if (pool[1]) options.push(pool[1]);
-    }
-    options = options.sort(() => 0.5 - Math.random());
-    gState.quiz.questions.push({ type, word: w, answer, options });
-  });
+        function loadQuestion() {
+            isChecking = false;
+            if (currentIndex >= wordsDataset.length) {
+                alert("🎉 مبروك! لقد سجلت هدف الفوز وأنهيت كافة الكلمات بنجاح!");
+                currentIndex = 0;
+            }
 
-  switchView('view-quiz');
-  executeQuestionItem();
-}
+            // تحديث العداد وكرة التقدم
+            document.getElementById('current-index').innerText = currentIndex + 1;
+            updateBallPosition();
 
-function executeQuestionItem() {
-  const currentQ = gState.quiz.questions[gState.quiz.index];
-  gState.quiz.currentPayload = currentQ;
+            const currentData = wordsDataset[currentIndex];
+            document.getElementById('target-word').innerText = currentData.j;
+            document.getElementById('target-romaji').innerText = currentData.r;
 
-  // تحديث عداد الأسئلة ليظهر التقدم (مثلاً: السؤال 1 / 73)
-  document.getElementById('quizProgress').textContent = `السؤال ${gState.quiz.index + 1} / ${gState.quiz.questions.length}`;
+            // توليد الخيارات (الخيارات الخاطئة + الصحيحة)
+            let options = [currentData.a];
+            while (options.length < 4) {
+                let randomWord = wordsDataset[Math.floor(Math.random() * wordsDataset.length)].a;
+                if (!options.includes(randomWord)) {
+                    options.push(randomWord);
+                }
+            }
+            // خلط الخيارات عشوائياً
+            options.sort(() => Math.random() - 0.5);
 
-  const prompt = document.getElementById('quizPrompt');
-  const mainDisplay = document.getElementById('quizMainDisplay');
-  const optionsBox = document.getElementById('quizOptionsContainer');
-  const audioBtn = document.getElementById('btnQuizVoice');
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, currentData.a);
+                container.appendChild(btn);
+            });
+        }
 
-  optionsBox.innerHTML = '';
+        function checkAnswer(selectedBtn, selectedOpt, correctOpt) {
+            if (isChecking) return;
+            isChecking = true;
 
-  if (currentQ.type === 'audio') {
-    prompt.textContent = '🔊 استمع للصوت الصادر واختر الكلمة المطابقة بالهيراغانا:';
-    mainDisplay.textContent = '🔊';
-    audioBtn.style.display = 'block';
-    audioBtn.onclick = () => speakJp(currentQ.word.k);
-    speakJp(currentQ.word.k);
-  } else {
-    prompt.textContent = '👁️ اقرأ الهيراغانا في الأسفل وحدد المعنى العربي الصحيح لها:';
-    mainDisplay.textContent = `${currentQ.word.e} 【 ${currentQ.word.k} 】`;
-    audioBtn.style.display = 'none';
-  }
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => {
+                if (btn.innerText === correctOpt) {
+                    btn.classList.add('correct');
+                }
+            });
 
-  currentQ.options.forEach(opt => {
-    let btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt;
-    btn.onclick = () => evaluateUserSelection(opt, btn);
-    optionsBox.appendChild(btn);
-  });
-}
+            if (selectedOpt !== correctOpt) {
+                selectedBtn.classList.add('wrong');
+            }
 
-function evaluateUserSelection(selectedOpt, btnEl) {
-  const currentQ = gState.quiz.currentPayload;
-  const isCorrect = selectedOpt === currentQ.answer;
-  
-  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-  
-  if (isCorrect) {
-    btnEl.classList.add('correct');
-    gState.quiz.correctCount++; gState.xp += 15;
-    triggerFeedbackHUD(true, 'إجابة صحيحة ممتازة!', `الحل الصحيح هو بالفعل: ${currentQ.answer}`);
-  } else {
-    btnEl.classList.add('wrong');
-    document.querySelectorAll('.option-btn').forEach(b => {
-      if (b.textContent === currentQ.answer) b.classList.add('correct');
-    });
-    gState.hearts = Math.max(0, gState.hearts - 1);
-    triggerFeedbackHUD(false, 'محاولة خاطئة', `الحل الصحيح كان: ${currentQ.answer}`);
-  }
-  updateHUD();
-}
+            // الانتقال للكلمة التالية بعد ثانية ونصف
+            setTimeout(() => {
+                currentIndex++;
+                loadQuestion();
+            }, 1500);
+        }
 
-function triggerFeedbackHUD(isCorrect, heading, sub) {
-  const bar = document.getElementById('feedbackBar');
-  document.getElementById('feedbackTitle').textContent = heading;
-  document.getElementById('feedbackSub').textContent = sub;
-  bar.className = `feedback-bar show ${isCorrect ? 'ok' : 'bad'}`;
-}
-
-document.getElementById('btnFeedbackContinue').onclick = () => {
-  document.getElementById('feedbackBar').classList.remove('show');
-  
-  if (gState.hearts <= 0) {
-    alert('🚨 نفدت الفرص والقلوب! أعد قراءة الكلمات مجدداً لتخطي الزهرة بنجاح.');
-    gState.hearts = 6; gState.quiz.active = false; updateHUD();
-    switchView('view-map'); drawEnergyBeam(); renderMapNodes();
-    return;
-  }
-
-  gState.quiz.index++;
-  if (gState.quiz.index >= gState.quiz.questions.length) {
-    gState.quiz.active = false;
-    const passRate = gState.quiz.correctCount / gState.quiz.questions.length;
-
-    if (gState.quiz.isFinal) {
-      if (passRate >= 0.75) {
-        triggerConfettiBurst(); switchView('view-cert');
-      } else {
-        alert(`لم تتخطَ المعدل المطلوب، راجع واختبر المراحل السابقة مرة أخرى.`);
-        switchView('view-map'); drawEnergyBeam(); renderMapNodes();
-      }
-    } else {
-      if (passRate >= 0.5) {
-        gState.completedStages[gState.currentStageKey] = true;
-        alert(`🌸 رائع جداً! تم اجتياز المرحلة بنجاح وفك القفل للخطوة التالية!`);
-      } else {
-        alert(`النتيجة دون المتوقع، أعد التحدي لتثبيت الحروف في الذهن.`);
-      }
-      switchView('view-map'); drawEnergyBeam(); renderMapNodes();
-    }
-  } else {
-    executeQuestionItem();
-  }
-};
-
-document.getElementById('btnCertHome').onclick = () => {
-  gState.completedStages = {}; switchView('view-map'); drawEnergyBeam(); renderMapNodes();
-};
-
-function triggerConfettiBurst() {
-  const canvas = document.getElementById('fwCanvas'); const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  let particles = [];
-  for (let i = 0; i < 90; i++) {
-    particles.push({
-      x: canvas.width / 2, y: canvas.height / 2,
-      vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10 - 3,
-      size: Math.random() * 5 + 3, color: `hsl(${Math.random() * 360}, 100%, 60%)`, alpha: 1
-    });
-  }
-  function renderFrame() {
-    ctx.clearRect(0,0, canvas.width, canvas.height); let alive = false;
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.015;
-      if (p.alpha > 0) {
-        alive = true; ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-      }
-    });
-    if (alive) requestAnimationFrame(renderFrame);
-  }
-  renderFrame();
-}
-
-window.onload = () => {
-  updateHUD(); drawEnergyBeam(); renderMapNodes();
-  window.onresize = () => { drawEnergyBeam(); };
-};
-</script>
+        function updateBallPosition() {
+            const percentage = (currentIndex / wordsDataset.length) * 100;
+            document.getElementById('soccerBall').style.left = percentage + '%';
+        }
+    </script>
 </body>
 </html>

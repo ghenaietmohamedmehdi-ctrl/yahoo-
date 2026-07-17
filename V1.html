@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mehdi Sensei - Sakura Galaxy</title>
+    <style>
+        :root {
+            --sakura-purple: #bd5eff;
+            --neon-purple: #b026ff;
+            --pink-light: #ffb7c5;
+            --gold: #ffd700;
+        }
+        body {
+            margin: 0; padding: 0; min-height: 100vh;
+            background: radial-gradient(circle at 50% 30%, rgba(176,38,255,0.25), #0a061a 70%);
+            color: #fff; font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+        .splash-screen {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .splash-card { background: rgba(20,10,40,0.95); border: 3px solid var(--gold);
+            padding: 30px; border-radius: 20px; max-width: 460px; text-align: center;
+        }
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,6,26,0.95); backdrop-filter: blur(12px);
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .map-container {
+            position: relative; height: 120vh; background: linear-gradient(#0a061a, #1a0f2e);
+            overflow: hidden;
+        }
+        .energy-beam {
+            position: absolute; top: 120px; left: 50%; width: 12px;
+            height: calc(100% - 240px); background: linear-gradient(transparent, var(--neon-purple), transparent);
+            box-shadow: 0 0 40px var(--neon-purple); transform: translateX(-50%);
+            animation: beamPulse 3s infinite;
+        }
+        @keyframes beamPulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .stage {
+            position: absolute; width: 110px; text-align: center; cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .stage:hover { transform: scale(1.12); }
+        .sakura { font-size: 78px; transition: all 0.4s; }
+        .stage.locked .sakura { filter: grayscale(1) brightness(0.5); }
+        .stage.unlocked .sakura { animation: sakuraGlow 2s infinite alternate; }
+        @keyframes sakuraGlow { from { text-shadow: 0 0 15px var(--pink-light); } to { text-shadow: 0 0 35px var(--neon-purple); } }
+
+        /* بطاقات الدراسة */
+        .study-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center; z-index: 200;
+        }
+        .study-content {
+            background: rgba(20,10,40,0.95); padding: 25px; border-radius: 20px;
+            width: 90%; max-width: 420px; border: 2px solid var(--gold);
+        }
+        .flashcard {
+            height: 260px; perspective: 1000px; cursor: pointer;
+        }
+        .card-inner {
+            position: relative; width: 100%; height: 100%;
+            transform-style: preserve-3d; transition: transform 0.6s;
+            border-radius: 16px;
+        }
+        .flashcard.flipped .card-inner { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute; inset: 0; border-radius: 16px;
+            backface-visibility: hidden; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px;
+            background: rgba(30,15,50,0.95); border: 2px solid var(--neon-purple);
+        }
+        .card-back { transform: rotateY(180deg); background: rgba(40,20,70,0.95); border-color: var(--gold); }
+        .kana { font-size: 42px; font-weight: bold; }
+        .arabic { font-size: 24px; color: var(--pink-light); margin-top: 12px; }
+        .speak-btn { background: var(--neon-purple); color: white; border: none; padding: 8px 20px; border-radius: 50px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- رسالة سعاد -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-card">
+            <h2>🌸 رسالة خاصة للأخت سعاد 🌸</h2>
+            <p style="line-height:1.7; text-align:right; font-size:15px;">
+                الأخت الفاضلة سعاد،<br><br>
+                إن رحلة تعلم لغة جديدة كاللغة اليابانية هي خطوة استثنائية تدل على شغف كبير وهمة عالية...<br><br>
+                كل خطوة تخطينها اليوم في حفظ حرف أو فهم كلمة هي لبنة بناء لنجاح كبير غداً. ثقي بقدراتكِ واستمري بكل شغف! ✨🇯🇵
+            </p>
+            <button class="speak-btn" onclick="startJourney()" style="background:#ffd700;color:black;">ابدئي الرحلة الآن</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="app-title">Mehdi Sensei</div>
+        <div style="font-size:42px;">🇩🇿</div>
+    </header>
+
+    <div class="map-container" id="mapContainer">
+        <div class="energy-beam"></div>
+    </div>
+
+    <!-- Modal بطاقات الدراسة -->
+    <div class="study-modal" id="studyModal">
+        <div class="study-content">
+            <button onclick="closeModal()" style="float:right;background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+            <h2 id="modalTitle" style="text-align:center;margin:10px 0 20px;">المرحلة</h2>
+            <div id="cardsContainer" style="display:flex;flex-direction:column;gap:16px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const stagesData = [
+            { id: 1, num: "①", name: "الأصوات الأساسية", y: "18%", unlocked: true, words: [
+                {k:"あさ", a:"الصباح"}, {k:"かわ", a:"نهر"}, {k:"はる", a:"الربيع"}
+            ]},
+            { id: 2, num: "②", name: "صوت النون", y: "32%", unlocked: false, words: [
+                {k:"ほん", a:"كتاب"}, {k:"にほん", a:"اليابان"}
+            ]},
+            { id: 3, num: "③", name: "المد الصوتي", y: "48%", unlocked: false, words: [
+                {k:"おかあさん", a:"الأم"}, {k:"とけい", a:"ساعة"}
+            ]},
+            { id: 4, num: "④", name: "الأصوات المجهورة", y: "63%", unlocked: false, words: [
+                {k:"みず", a:"ماء"}, {k:"ごはん", a:"أرز"}
+            ]},
+            { id: 5, num: "⑤", name: "الصوت المزدوج", y: "78%", unlocked: false, words: [
+                {k:"がっこう", a:"مدرسة"}, {k:"きっぷ", a:"تذكرة"}
+            ]},
+            { id: 6, num: "⑥", name: "الأصوات المركبة", y: "92%", unlocked: false, words: [
+                {k:"きょう", a:"اليوم"}, {k:"りょこう", a:"سفر"}
+            ]}
+        ];
+
+        function createStages() {
+            const container = document.getElementById('mapContainer');
+            stagesData.forEach(stage => {
+                const div = document.createElement('div');
+                div.className = `stage ${stage.unlocked ? 'unlocked' : 'locked'}`;
+                div.style.left = '50%';
+                div.style.top = stage.y;
+                div.style.transform = 'translateX(-50%)';
+                div.innerHTML = `
+                    <div class="sakura">🌸</div>
+                    <div class="stage-num">${stage.num}</div>
+                    <div style="margin-top:8px;font-size:14px;">${stage.name}</div>
+                `;
+                div.onclick = () => openStage(stage);
+                container.appendChild(div);
+            });
+        }
+
+        function openStage(stage) {
+            if (!stage.unlocked) {
+                alert("🔒 هذه المرحلة مقفلة. أكملي المرحلة السابقة أولاً!");
+                return;
+            }
+            document.getElementById('modalTitle').textContent = `${stage.num} - ${stage.name}`;
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            stage.words.forEach(word => {
+                const card = document.createElement('div');
+                card.className = 'flashcard';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face">
+                            <div class="kana">${word.k}</div>
+                            <button class="speak-btn" onclick="event.stopImmediatePropagation(); speak('${word.k}')">🔊 استمع</button>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="kana" style="font-size:28px;">${word.k}</div>
+                            <div class="arabic">${word.a}</div>
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => card.classList.toggle('flipped');
+                container.appendChild(card);
+            });
+
+            document.getElementById('studyModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('studyModal').style.display = 'none';
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'ja-JP'; u.rate = 0.85;
+                speechSynthesis.speak(u);
+            }
+        }
+
+        function startJourney() {
+            document.getElementById('splashScreen').style.display = 'none';
+            createStages();
+        }
+    </script>
+</body>
+</html>

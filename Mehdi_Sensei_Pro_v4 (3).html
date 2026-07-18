@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mehdi Sensei Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1120; --bg2:#101936; --panel:rgba(16,24,48,.78); --panel-2:rgba(12,18,34,.92);
+  --line:rgba(220,232,255,.12); --text:#eef4ff; --muted:#aab8d6; --gold:#ffc94f; --gold2:#ffe7a5;
+  --pink:#ff92c9; --pink2:#ffd8ec; --purple:#8d63ff; --purple2:#c59fff; --cyan:#6adcff; --green:#6be38d; --red:#ff7693;
+  --shadow:0 18px 60px rgba(0,0,0,.34); --glass:blur(18px) saturate(150%);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%}
+body{
+  font-family:'Cairo','Zen Maru Gothic',sans-serif;
+  color:var(--text); overflow-x:hidden;
+  background:
+    radial-gradient(circle at 15% 14%, rgba(106,220,255,.12), transparent 28%),
+    radial-gradient(circle at 84% 10%, rgba(141,99,255,.16), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(255,146,201,.10), transparent 28%),
+    linear-gradient(180deg,#08111f 0%, #0b1530 42%, #111b3d 100%);
+}
+button,input{font:inherit}
+.hidden{display:none!important}
+.app{min-height:100vh;position:relative}
+.bg-scene,.weather-layer,.kana-layer,.fx-layer{position:fixed;inset:0;pointer-events:none}
+.bg-scene{z-index:-5;overflow:hidden}.weather-layer{z-index:-4;overflow:hidden}.kana-layer{z-index:-3;overflow:hidden}.fx-layer{z-index:2;overflow:hidden}
+.moon{position:absolute;top:44px;right:7vw;width:min(30vw,270px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 35%, #fff 0%, #edf1ff 24%, #d7dcff 52%, rgba(215,220,255,.30) 65%, transparent 74%);box-shadow:0 0 85px rgba(240,242,255,.22),0 0 150px rgba(189,178,255,.16);opacity:.96}
+.stars,.mist,.mountains,.trees,.clouds{position:absolute;inset:0}
+.stars::before,.stars::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.3px),radial-gradient(circle, rgba(205,219,255,.85) 0 1px, transparent 1.35px),radial-gradient(circle, rgba(255,226,164,.8) 0 1.15px, transparent 1.45px);background-size:125px 125px, 170px 170px, 230px 230px;background-position:0 0, 42px 56px, 90px 20px;opacity:.76}.stars::after{transform:scale(1.14);opacity:.34;filter:blur(.45px)}
+.mist{background:radial-gradient(ellipse at 22% 40%, rgba(184,128,255,.18), transparent 44%),radial-gradient(ellipse at 76% 66%, rgba(172,124,255,.12), transparent 40%),radial-gradient(ellipse at 50% 100%, rgba(255,165,229,.10), transparent 38%);filter:blur(14px)}
+.mountains::before,.mountains::after{content:"";position:absolute;left:-8%;right:-8%;bottom:0;background:linear-gradient(180deg, transparent 0%, rgba(9,15,30,.3) 14%, rgba(7,12,24,.96) 100%)}
+.mountains::before{height:42%;clip-path:polygon(0 100%,0 78%,10% 56%,22% 72%,36% 36%,49% 72%,58% 49%,71% 74%,84% 46%,100% 74%,100% 100%)}
+.mountains::after{height:29%;opacity:.6;filter:blur(3px);clip-path:polygon(0 100%,0 70%,14% 57%,27% 74%,42% 46%,58% 77%,71% 60%,86% 76%,100% 63%,100% 100%)}
+.trees::before,.trees::after{content:"🌸";position:absolute;bottom:46px;font-size:min(28vw,215px);opacity:.22;filter:drop-shadow(0 16px 20px rgba(0,0,0,.4))}
+.trees::before{left:-28px}.trees::after{right:-16px}
+.clouds::before,.clouds::after{content:"";position:absolute;width:310px;height:96px;border-radius:999px;background:radial-gradient(ellipse at center, rgba(255,255,255,.13), rgba(255,255,255,.03) 68%, transparent 72%);filter:blur(10px);animation:cloudFloat 28s linear infinite}.clouds::before{top:110px;left:-18%}.clouds::after{top:230px;right:-18%;animation-duration:36s}
+@keyframes cloudFloat{from{transform:translateX(0)}to{transform:translateX(150vw)}}
+body[data-atmosphere="night"]{background:linear-gradient(180deg,#08111f 0%, #0b1530 42%, #111b3d 100%)}
+body[data-atmosphere="dawn"]{background:linear-gradient(180deg,#140f25 0%, #252150 30%, #734c7b 64%, #e6a280 100%)}
+body[data-atmosphere="day"]{background:linear-gradient(180deg,#5fb7ff 0%, #9be0ff 40%, #d7f5ff 100%)}
+body[data-atmosphere="day"] .moon{opacity:.14}
+body[data-atmosphere="sunset"]{background:linear-gradient(180deg,#2a1534 0%, #65345f 35%, #ef8968 78%, #ffc67b 100%)}
+body[data-atmosphere="final-night"]{background:linear-gradient(180deg,#09111f 0%, #101635 36%, #181454 70%, #0b1834 100%)}
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg, rgba(8,12,26,.86), rgba(12,19,36,.6));border-bottom:1px solid var(--line);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.topbar-inner{max-width:1160px;margin:auto;padding:12px 16px 14px;display:grid;gap:12px}
+.brand-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:12px}.brand-badge{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:29px;background:linear-gradient(135deg, rgba(255,255,255,.2), rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 8px 30px rgba(0,0,0,.24)}
+.brand h1{margin:0;font-size:1.16rem;font-weight:900}.brand p{margin:2px 0 0;color:var(--muted);font-size:.87rem}
+.metrics{display:flex;gap:8px;flex-wrap:wrap}.pill{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-weight:800}
+.progress-strip{display:grid;grid-template-columns:1.4fr repeat(5,.82fr);gap:8px}.mini-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:10px 12px;min-height:72px}.mini-card b{display:block;font-size:1rem;margin-top:4px}.mini-card span{font-size:.78rem;color:var(--muted);font-weight:700}.mega-progress{display:flex;align-items:center;gap:10px}.mega-bar{height:12px;flex:1;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;border:1px solid rgba(255,255,255,.1)}.mega-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--pink),var(--purple));box-shadow:0 0 18px rgba(255,201,77,.35)}
+.main{max-width:1160px;margin:auto;padding:20px 16px 120px;position:relative;z-index:5}
+.section-card{background:linear-gradient(180deg, rgba(17,26,51,.78), rgba(10,17,32,.92));border:1px solid rgba(255,255,255,.09);border-radius:30px;padding:22px;box-shadow:var(--shadow);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass)}
+.btn{border:0;border-radius:18px;padding:14px 18px;cursor:pointer;font-weight:900;transition:transform .18s ease,opacity .18s ease,box-shadow .18s ease}.btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 16px 30px rgba(140,97,255,.3)}.btn-secondary{background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.16)}.btn-gold{background:linear-gradient(135deg,#ffd875,#ffb242);color:#392700;box-shadow:0 14px 26px rgba(255,190,88,.28)}.btn-soft{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.welcome-screen{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;background:linear-gradient(180deg, rgba(6,10,18,.55), rgba(4,8,14,.76));backdrop-filter:blur(10px)}
+.welcome-card{width:min(770px,100%);padding:34px 30px;border-radius:36px;position:relative;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.18);box-shadow:0 22px 80px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.23);backdrop-filter:blur(22px) saturate(150%)}
+.welcome-glow{position:absolute;inset:auto -18% -28% auto;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle, rgba(255,144,200,.18), transparent 64%)}
+.welcome-card h2{margin:0 0 8px;font-size:2rem;font-weight:900}.welcome-card .lead{font-size:1.08rem;color:var(--gold2);font-weight:800;margin-bottom:18px}.welcome-card p{line-height:1.95;margin:0 0 10px}.welcome-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.hero-note{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}.hero-note h2{margin:0;font-size:1.55rem}.hero-note p{margin:8px 0 0;color:var(--muted);line-height:1.8}.settings-bar{display:flex;gap:10px;flex-wrap:wrap}
+.map-shell{display:grid;grid-template-columns:1.24fr .86fr;gap:18px;align-items:start}.journey-map{position:relative;min-height:1460px;padding:24px 18px 36px;border-radius:34px;overflow:hidden;background:linear-gradient(180deg, rgba(9,15,29,.54), rgba(8,14,27,.76));border:1px solid rgba(255,255,255,.08)}
+.spaceship{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:180px;height:120px;z-index:4;filter:drop-shadow(0 14px 28px rgba(140,97,255,.32))}
+.beam-track,.beam-fill{position:absolute;left:50%;transform:translateX(-50%);width:18px;border-radius:999px;top:118px}.beam-track{bottom:58px;background:linear-gradient(180deg, rgba(180,173,255,.16), rgba(255,255,255,.02));box-shadow:0 0 28px rgba(140,97,255,.14), inset 0 0 12px rgba(255,255,255,.04)}.beam-fill{height:0;background:linear-gradient(180deg, rgba(233,179,255,.96), rgba(184,120,255,.82), rgba(132,84,255,.46));box-shadow:0 0 26px rgba(184,120,255,.45), 0 0 70px rgba(184,120,255,.2)}
+.stage-node{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:6}.stage-label{font-weight:900;padding:10px 16px;border-radius:999px;background:rgba(7,12,24,.58);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 18px rgba(0,0,0,.18)}.stage-stars{font-size:1.08rem;letter-spacing:2px;color:var(--gold);text-shadow:0 0 18px rgba(255,201,77,.32)}
+.sakura-button{position:relative;border:0;background:transparent;padding:0;cursor:pointer;display:grid;place-items:center;width:182px;height:182px;filter:drop-shadow(0 18px 24px rgba(0,0,0,.28));transition:transform .18s ease,filter .18s ease}.sakura-button:hover{transform:translateY(-3px) scale(1.02)}.sakura-button:disabled{cursor:not-allowed;opacity:.92;filter:grayscale(.18) saturate(.7) brightness(.88)}.sakura-svg{width:182px;height:182px}.stage-no{position:absolute;inset:0;display:grid;place-items:center;font-size:2.7rem;font-weight:900;color:#fff;text-shadow:0 4px 12px rgba(0,0,0,.4);pointer-events:none}.stage-lock{position:absolute;top:-4px;left:50%;transform:translate(-50%,-46%);font-size:2rem;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
+.sidebar{display:grid;gap:18px;position:sticky;top:110px}.navigator-list{display:grid;gap:10px}.navigator-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09)}.navigator-item.done{box-shadow:inset 0 0 0 1px rgba(255,201,77,.12)}.navigator-item button{border:0;background:rgba(255,255,255,.08);color:#fff;padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:800}.navigator-item button:disabled{opacity:.4;cursor:not-allowed}
+.lesson-view,.quiz-view,.result-view{display:none}.lesson-view.active,.quiz-view.active,.result-view.active{display:block}
+.lesson-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.lesson-head h3{margin:0;font-size:1.52rem}.lesson-head p{margin:6px 0 0;color:var(--muted)}.lesson-actions{display:flex;gap:10px;flex-wrap:wrap}
+.words-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:18px}.word-card{height:242px;perspective:1100px;cursor:pointer}.word-card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}.word-card.flipped .word-card-inner{transform:rotateY(180deg)}.word-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:28px;background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.12);padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}.word-face.back{transform:rotateY(180deg);background:linear-gradient(180deg, rgba(255,209,235,.14), rgba(173,119,255,.08))}
+.emoji{font-size:3rem;margin-bottom:10px}.kana{font-family:'Zen Maru Gothic',sans-serif;font-size:2.15rem;font-weight:900}.arabic{font-size:1.32rem;font-weight:900;margin-top:10px}.tiny{font-size:.92rem;color:var(--muted)}.single-study{display:grid;place-items:center;margin-top:22px}.study-shell{width:min(360px,100%)}.review-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.quiz-shell{max-width:840px;margin:auto}.quiz-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.quiz-bar{flex:1;height:14px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;border:1px solid rgba(255,255,255,.08)}.quiz-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan),var(--gold))}.quiz-card{padding:24px;border-radius:30px;background:linear-gradient(180deg, rgba(18,28,52,.78), rgba(12,18,34,.92));border:1px solid rgba(255,255,255,.1);box-shadow:var(--shadow);text-align:center}.quiz-card h3{margin:0 0 12px;font-size:1.12rem;color:var(--gold2)}.quiz-main{font-size:2.8rem;font-weight:900;font-family:'Zen Maru Gothic',sans-serif}.quiz-sub{margin-top:10px;color:var(--muted);font-size:1rem;line-height:1.8}.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.option-btn{padding:16px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font-weight:900}.option-btn.correct{background:rgba(107,227,141,.18);border-color:rgba(107,227,141,.65)}.option-btn.wrong{background:rgba(255,118,147,.18);border-color:rgba(255,118,147,.65)}.feedback{margin-top:16px;padding:14px 16px;border-radius:18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.result-center{text-align:center;max-width:760px;margin:auto}.result-badge{font-size:5rem;line-height:1}.certificate{margin-top:18px;padding:22px;border-radius:28px;background:linear-gradient(180deg, rgba(255,232,173,.12), rgba(255,184,74,.08));border:1px solid rgba(255,201,77,.28)}.certificate h4{margin:0 0 12px;font-size:1.45rem;color:var(--gold)}
+.helper-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:70;min-width:min(540px,calc(100vw - 24px));padding:14px 18px;border-radius:20px;background:linear-gradient(135deg, rgba(255,214,232,.18), rgba(173,119,255,.18));border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.26);backdrop-filter:blur(18px);display:none}.helper-toast.show{display:block;animation:toastPop .22s ease}.helper-title{font-weight:900;margin-bottom:4px;color:var(--gold2)}.helper-text{line-height:1.8}@keyframes toastPop{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.cloud-buddy{position:fixed;right:22px;bottom:18px;z-index:55;width:110px;height:92px;transition:transform .2s ease}.cloud-buddy.spin{animation:buddySpin 1.3s ease}.cloud-buddy.shake{animation:buddyShake .55s ease}.cloud-buddy.final{animation:buddyOrbit 3s linear infinite}.cloud-spark{position:absolute;font-size:18px;opacity:.9}.cloud-spark.one{top:-6px;left:6px;animation:twinkle 1.6s ease-in-out infinite}.cloud-spark.two{top:6px;right:2px;animation:twinkle 1.8s ease-in-out .4s infinite}.cloud-spark.three{bottom:-4px;left:14px;animation:twinkle 2s ease-in-out .8s infinite}@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}@keyframes buddySpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes buddyShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}@keyframes buddyOrbit{from{transform:rotate(0) translateX(0)}50%{transform:rotate(180deg) translateX(-10px)}to{transform:rotate(360deg) translateX(0)}}
+.particle{position:absolute;pointer-events:none;user-select:none;will-change:transform,opacity;animation:fall linear forwards}.particle.petals{font-size:20px}.particle.leaf{font-size:18px}.particle.konpeito{font-size:16px}.particle.star{font-size:15px}.particle.purple{font-size:14px}.particle.kana{font-size:18px;color:rgba(255,255,255,.11);font-family:'Zen Maru Gothic',sans-serif}.particle.cloud{width:120px;height:54px;border-radius:999px;background:radial-gradient(ellipse at center, rgba(255,255,255,.18), rgba(255,255,255,.04) 65%, transparent 72%);filter:blur(6px)}@keyframes fall{0%{opacity:0;transform:translate3d(0,-8vh,0) rotate(0)}10%{opacity:.95}100%{opacity:0;transform:translate3d(var(--dx),108vh,0) rotate(var(--rot))}}
+.burst{position:fixed;inset:0;pointer-events:none;z-index:65}.burst-item{position:absolute;font-size:22px;animation:burstFly 1.3s ease-out forwards}@keyframes burstFly{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(1.35)}}
+@media (max-width:980px){.map-shell{grid-template-columns:1fr}.sidebar{position:relative;top:auto}.progress-strip{grid-template-columns:1fr 1fr 1fr}.journey-map{min-height:1390px}}
+@media (max-width:720px){.progress-strip{grid-template-columns:1fr 1fr}.quiz-options{grid-template-columns:1fr}.sakura-button,.sakura-svg{width:154px;height:154px}.stage-no{font-size:2.3rem}.brand-row,.hero-note,.review-row,.lesson-head{align-items:stretch}.welcome-card{padding:24px 20px}.cloud-buddy{transform:scale(.88);right:8px}}
+</style>
+</head>
+<body data-atmosphere="night">
+<div class="app">
+  <div class="bg-scene"><div class="stars"></div><div class="moon"></div><div class="mist"></div><div class="clouds"></div><div class="mountains"></div><div class="trees"></div></div>
+  <div class="weather-layer" id="weatherLayer"></div>
+  <div class="kana-layer" id="kanaLayer"></div>
+  <div class="fx-layer" id="fxLayer"></div>
+
+  <section class="welcome-screen hidden" id="welcomeScreen">
+    <div class="welcome-card">
+      <div class="welcome-glow"></div>
+      <h2>🌸 مرحبًا سعاد! 🌸</h2>
+      <div class="lead">أهلًا بكِ في رحلة ساكورا لتعلّم اللغة اليابانية.</div>
+      <p>يسعدنا انضمامكِ إلى هذه الرحلة التعليمية الممتعة، حيث ستتقدمين خطوة بخطوة حتى إتقان أساسيات اللغة اليابانية.</p>
+      <p><b>Mehdi Sensei</b> جاهز ليكون دليلكِ في هذه المغامرة التعليمية، وسيصاحبكِ خلال جميع المراحل حتى تصلي إلى هدفكِ بإذن الله.</p>
+      <p>إن اختياركِ لتعلّم لغة جديدة هو بداية إنجاز عظيم، وكل حرف تتعلمينه اليوم يقربكِ خطوة من تحقيق أهدافكِ.</p>
+      <p>نتمنى لكِ رحلة مليئة بالإنجازات والمتعة والثقة بالنفس.</p>
+      <p><b>ابدئي رحلتكِ الآن... ولتتفتح أول زهرة ساكورا في طريق نجاحكِ.</b> ✨</p>
+      <div class="welcome-actions">
+        <button class="btn btn-primary" id="startJourneyBtn">🚀 ابدأ الرحلة</button>
+        <button class="btn btn-secondary" id="toggleMusicWelcomeBtn">🎵 تشغيل / إيقاف الموسيقى</button>
+      </div>
+    </div>
+  </section>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-row">
+        <div class="brand"><div class="brand-badge">🌸</div><div><h1>Mehdi Sensei — رحلة ساكورا التعليمية</h1><p>تصميم احترافي بأسلوب ألعاب تعليمية، بخريطة مستقيمة، زهور ساكورا ثلاثية الأبعاد، سحابة مرافقة ومساعد ذكي</p></div></div>
+        <div class="metrics"><div class="pill">🏆 <span id="xpValue">0</span> XP</div><div class="pill">⭐ <span id="starsValue">0</span> نجوم</div><div class="pill">🎮 <span id="levelValue">1</span> مستوى</div></div>
+      </div>
+      <div class="progress-strip">
+        <div class="mini-card mega-progress"><div style="min-width:74px"><span>نسبة الإنجاز</span><b id="percentValue">0%</b></div><div class="mega-bar"><div class="mega-fill" id="megaFill"></div></div></div>
+        <div class="mini-card"><span>الكلمات المكتسبة</span><b id="wordsLearnedValue">0</b></div>
+        <div class="mini-card"><span>المرحلة الحالية</span><b id="currentStageValue">1</b></div>
+        <div class="mini-card"><span>المراحل المفتوحة</span><b id="unlockedCountValue">1</b></div>
+        <div class="mini-card"><span>الموسيقى</span><b id="musicStateValue">مفعلة</b></div>
+        <div class="mini-card"><span>المؤثرات</span><b id="sfxStateValue">مفعلة</b></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="section-card" id="mapView">
+      <div class="hero-note">
+        <div><h2>🌙 خريطة الرحلة اليابانية</h2><p>المسار مستقيم من أعلى الشاشة إلى أسفلها. كل مرحلة عبارة عن زهرة ساكورا واحدة فقط. لا تُفتح المرحلة التالية إلا بعد إتمام السابقة بنسبة 100٪.</p></div>
+        <div class="settings-bar"><button class="btn btn-soft" id="musicToggleBtn">🎵 تبديل الموسيقى</button><button class="btn btn-soft" id="sfxToggleBtn">🔔 تبديل المؤثرات</button><button class="btn btn-soft" id="resetBtn">♻️ إعادة ضبط الرحلة</button><button class="btn btn-gold" id="finalExamBtn">🚀 ابدأ الاختبار النهائي</button></div>
+      </div>
+      <div class="map-shell">
+        <div class="journey-map" id="journeyMap"><div class="spaceship" id="spaceshipWrap"></div><div class="beam-track"></div><div class="beam-fill" id="beamFill"></div><div id="mapNodes"></div></div>
+        <aside class="sidebar">
+          <div class="section-card" style="padding:18px"><h3 style="margin:0 0 10px">🗺️ خريطة المراحل</h3><p style="margin:0 0 14px;color:var(--muted);line-height:1.8">يمكنكِ العودة لأي مرحلة مكتملة بسهولة. المراحل المكتملة مضاءة، والمغلقة بقفل ذهبي فاخر.</p><div class="navigator-list" id="navigatorList"></div></div>
+          <div class="section-card" style="padding:18px"><h3 style="margin:0 0 10px">🌸 المساعد الذكي</h3><p style="margin:0;color:var(--muted);line-height:1.8">رسائل قصيرة تشجيعية أثناء التعلم، وسحابة يابانية صغيرة ترافق المتعلم أثناء التنقل والاختبارات والاحتفال النهائي.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section-card lesson-view" id="lessonView">
+      <div class="lesson-head">
+        <div><button class="btn btn-soft" id="backToMapBtn" style="margin-bottom:10px">← العودة إلى الخريطة</button><h3 id="lessonTitle">—</h3><p id="lessonSubtitle">تعلم الهيراغانا مع الترجمة العربية فقط</p></div>
+        <div class="lesson-actions"><button class="btn btn-soft" id="cardsModeBtn">🌸 بطاقات</button><button class="btn btn-soft" id="studyModeBtn">📘 مراجعة</button><button class="btn btn-primary" id="startStageQuizBtn">📝 ابدأ اختبار المرحلة</button></div>
+      </div>
+      <div id="cardsArea"></div>
+    </section>
+
+    <section class="section-card quiz-view" id="quizView">
+      <div class="quiz-shell">
+        <div class="quiz-top"><button class="btn btn-soft" id="exitQuizBtn">✕ خروج</button><div class="quiz-bar"><div class="quiz-fill" id="quizFill"></div></div><div class="pill">❤️ <span id="heartsValue">3</span></div></div>
+        <div class="quiz-card"><h3 id="quizPrompt">اختبار</h3><div class="quiz-main" id="quizMain">—</div><div class="quiz-sub" id="quizSub">—</div><div class="quiz-options" id="quizOptions"></div><div class="feedback hidden" id="quizFeedback"><div id="feedbackText">—</div><button class="btn btn-gold" id="nextQuestionBtn">التالي</button></div></div>
+      </div>
+    </section>
+
+    <section class="section-card result-view" id="resultView">
+      <div class="result-center"><div class="result-badge" id="resultBadge">🎉</div><h2 id="resultTitle">تم الإنجاز</h2><p id="resultText" style="color:var(--muted);line-height:1.9">—</p><div class="metrics" style="justify-content:center;margin-top:16px"><div class="pill">✅ <span id="resultCorrect">0</span></div><div class="pill">⭐ <span id="resultStars">0</span></div><div class="pill">🏆 <span id="resultXP">0</span> XP</div></div><div class="certificate hidden" id="certificateBox"><h4>🏅 شهادة إنجاز</h4><p style="margin:0;line-height:1.9">تهانينا! لقد أتممتِ جميع مراحل رحلة الساكورا بنجاح، وأصبحتِ مستعدة للانتقال إلى مستوى أعلى في تعلم اللغة اليابانية.</p></div><div class="welcome-actions" style="justify-content:center;margin-top:20px"><button class="btn btn-primary" id="resultContinueBtn">🌸 متابعة</button><button class="btn btn-soft" id="resultHomeBtn">🏠 الرئيسية</button></div></div>
+    </section>
+  </main>
+
+  <div class="cloud-buddy" id="cloudBuddy"></div>
+  <div class="helper-toast" id="helperToast"><div class="helper-title">🌸 المساعد الذكي</div><div class="helper-text" id="helperText">أهلاً بكِ في رحلتكِ الجديدة.</div></div>
+
+<script>
+const STORAGE_KEY='mehdi-sensei-pro-v4';
+const STAGES=[
+  {group:'مجموعة البدايات', words:[
+    {kana:'あさ', ar:'صباح', emoji:'🌅'}, {kana:'はる', ar:'ربيع', emoji:'🌸'}, {kana:'やま', ar:'جبل', emoji:'⛰️'}, {kana:'ねこ', ar:'قطة', emoji:'🐱'}
+  ]},
+  {group:'مجموعة الحياة اليومية', words:[
+    {kana:'みず', ar:'ماء', emoji:'💧'}, {kana:'ふね', ar:'سفينة', emoji:'🚢'}, {kana:'えき', ar:'محطة', emoji:'🚉'}, {kana:'いぬ', ar:'كلب', emoji:'🐶'}
+  ]},
+  {group:'مجموعة الصوت الطويل', words:[
+    {kana:'せんせい', ar:'أستاذ', emoji:'🧑‍🏫'}, {kana:'おかあさん', ar:'الأم', emoji:'👩'}, {kana:'おとうさん', ar:'الأب', emoji:'👨'}, {kana:'とけい', ar:'ساعة', emoji:'⏰'}
+  ]},
+  {group:'مجموعة الأصوات المجهورة', words:[
+    {kana:'でんわ', ar:'هاتف', emoji:'☎️'}, {kana:'ごはん', ar:'وجبة', emoji:'🍚'}, {kana:'ぎんこう', ar:'بنك', emoji:'🏦'}, {kana:'がくせい', ar:'طالب', emoji:'🎓'}
+  ]},
+  {group:'مجموعة الصوت المضاعف', words:[
+    {kana:'きっぷ', ar:'تذكرة', emoji:'🎫'}, {kana:'がっこう', ar:'مدرسة', emoji:'🏫'}, {kana:'はっぱ', ar:'ورقة شجر', emoji:'🍃'}, {kana:'ざっし', ar:'مجلة', emoji:'📰'}
+  ]},
+  {group:'مجموعة الأصوات المركبة', words:[
+    {kana:'きょう', ar:'اليوم', emoji:'📅'}, {kana:'としょかん', ar:'مكتبة', emoji:'📚'}, {kana:'りょこう', ar:'سفر', emoji:'✈️'}, {kana:'びょういん', ar:'مستشفى', emoji:'🏥'}
+  ]}
+];
+const STAGE_Y=[220,430,640,850,1060,1270];
+const HELPERS=['🌸 أحسنت!','🌸 بقيت خطوة واحدة.','🌸 أنتِ تقتربين من إنهاء المرحلة.','🌸 رائع! لقد فتحتِ مرحلة جديدة.','🌸 استمري، أنتِ تتقدمين بسرعة.'];
+const KANA_GHOSTS=['あ','い','う','え','お','か','き','く','け','こ','さ','し','す','せ','そ','た','ち','つ','て','と','な','に','ぬ','ね','の','は','ひ','ふ','へ','ほ','ま','み','む','め','も','や','ゆ','よ','ら','り','る','れ','ろ','わ','を','ん'];
+let state={welcomeSeen:false,musicOn:true,sfxOn:true,xp:0,stars:0,progress:STAGES.map(()=>({done:false,stars:0,score:0})),currentStage:0,learned:{},view:'map',mode:'cards',quiz:null};
+let audioCtx=null, musicNodes=[], musicTimer=null;
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY); if(raw){state={...state,...JSON.parse(raw)};}}catch(e){}}
+function saveState(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+function qs(id){return document.getElementById(id)}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function shuffle(arr){const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+function levelFromXP(xp){return Math.max(1,Math.floor(xp/120)+1)}
+function totalLearned(){return Object.values(state.learned).filter(Boolean).length}
+function completedCount(){return state.progress.filter(p=>p.done).length}
+function unlockedIndexMax(){const firstLocked=state.progress.findIndex((p,i)=> i>0 && !state.progress[i-1].done); return firstLocked===-1? STAGES.length-1 : Math.max(0, firstLocked);}
+function isStageUnlocked(i){return i===0 || !!state.progress[i-1].done}
+function atmosphereForProgress(count, finalMode=false){if(finalMode) return 'final-night'; if(count===0) return 'night'; if(count===1) return 'dawn'; if(count<=3) return 'day'; if(count<=5) return 'sunset'; return 'final-night';}
+function applyAtmosphere(finalMode=false){document.body.setAttribute('data-atmosphere', atmosphereForProgress(completedCount(), finalMode));}
+function toast(msg){qs('helperText').textContent=msg; qs('helperToast').classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>qs('helperToast').classList.remove('show'),2600)}
+function rand(min,max){return Math.random()*(max-min)+min}
+function getCtx(){ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){audioCtx=null;} } if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume().catch(()=>{});} return audioCtx; }
+document.addEventListener('pointerdown', ()=>{ const ctx=getCtx(); if(ctx&&ctx.state==='suspended') ctx.resume().catch(()=>{}); }, {passive:true});
+function tone(freq,dur=.25,type='sine',vol=.03,delay=0){ if(!state.sfxOn && vol<=.06) return; const ctx=getCtx(); if(!ctx) return; const t=ctx.currentTime+delay; const o=ctx.createOscillator(); const g=ctx.createGain(); o.type=type; o.frequency.setValueAtTime(freq,t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+dur+.04); }
+function playSfx(kind){ if(!state.sfxOn) return; if(kind==='click'){ tone(620,.08,'triangle',.03); } else if(kind==='success'){ [523,659,784,1046].forEach((f,i)=>tone(f,.18,'triangle',.04,i*.08)); } else if(kind==='error'){ tone(190,.18,'sawtooth',.05); tone(146,.24,'sawtooth',.04,.12);} else if(kind==='unlock'){ [392,523,784,1175].forEach((f,i)=>tone(f,.22,'triangle',.05,i*.1)); } else if(kind==='star'){ tone(1320,.14,'sine',.03); tone(1760,.18,'sine',.02,.08);} }
+function stopMusic(){ musicNodes.forEach(n=>{ try{n.stop();}catch(e){} }); musicNodes=[]; clearInterval(musicTimer); musicTimer=null; }
+function startMusic(){ stopMusic(); if(!state.musicOn) return; const ctx=getCtx(); if(!ctx) return; const playLoop=()=>{ const base=ctx.currentTime+0.02; const pads=[220,247,294,330]; pads.forEach((f,i)=>{ const o=ctx.createOscillator(); const g=ctx.createGain(); o.type=i%2?'sine':'triangle'; o.frequency.value=f; g.gain.value=.0001; g.gain.linearRampToValueAtTime(.014, base+i*1.8); g.gain.linearRampToValueAtTime(.0001, base+i*1.8+3.8); o.connect(g); g.connect(ctx.destination); o.start(base+i*1.8); o.stop(base+i*1.8+4.2); musicNodes.push(o); }); [523,659,587,494].forEach((f,i)=> tone(f,.22,'sine',.012,i*1.2)); };
+  playLoop(); musicTimer=setInterval(playLoop,7200);
+}
+function renderSpaceship(){
+  qs('spaceshipWrap').innerHTML=`<svg viewBox="0 0 220 130" class="spaceship" aria-hidden="true">
+    <defs><linearGradient id="shipG" x1="0" x2="1"><stop offset="0" stop-color="#f9dcff"/><stop offset="1" stop-color="#9ae6ff"/></linearGradient><linearGradient id="beamG" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgba(244,213,255,.9)"/><stop offset="1" stop-color="rgba(155,109,255,.1)"/></linearGradient></defs>
+    <ellipse cx="110" cy="54" rx="72" ry="30" fill="url(#shipG)" opacity=".94"/>
+    <ellipse cx="110" cy="46" rx="36" ry="16" fill="#dff5ff" opacity=".95"/>
+    <ellipse cx="110" cy="58" rx="88" ry="12" fill="#b788ff" opacity=".26"/>
+    <path d="M54 58 L28 72 L58 72 Z" fill="#d8c7ff" opacity=".9"/>
+    <path d="M166 58 L192 72 L162 72 Z" fill="#d8c7ff" opacity=".9"/>
+    <ellipse cx="110" cy="88" rx="16" ry="7" fill="#ffd3ff" opacity=".45"/>
+  </svg>`;
+}
+function cloudBuddyMarkup(){return `<svg viewBox="0 0 120 96" width="110" height="92"><ellipse cx="60" cy="62" rx="40" ry="22" fill="#fff"/><circle cx="36" cy="54" r="18" fill="#fff"/><circle cx="63" cy="42" r="22" fill="#fff"/><circle cx="85" cy="55" r="16" fill="#fff"/><circle cx="47" cy="60" r="4.5" fill="#ffc2d9"/><circle cx="73" cy="60" r="4.5" fill="#ffc2d9"/><circle cx="48" cy="52" r="3.4" fill="#3d3d52"/><circle cx="72" cy="52" r="3.4" fill="#3d3d52"/><path d="M50 70 Q60 78 70 70" fill="none" stroke="#3d3d52" stroke-width="3" stroke-linecap="round"/></svg><span class="cloud-spark one">✨</span><span class="cloud-spark two">🌸</span><span class="cloud-spark three">⭐</span>`}
+function buddy(action){ const el=qs('cloudBuddy'); el.className='cloud-buddy'; if(action) el.classList.add(action); clearTimeout(buddy._t); buddy._t=setTimeout(()=>{el.className='cloud-buddy'; if(state.quiz&&state.quiz.finalMode) el.classList.add('final');},1400); }
+function spawnParticles(){ const layer=qs('weatherLayer'); const kanaLayer=qs('kanaLayer'); setInterval(()=>spawnParticle(layer,'petals','🌸',9,18),900); setInterval(()=>spawnParticle(layer,'leaf',Math.random()>.5?'🍁':'🍂',8,16),1900); setInterval(()=>spawnParticle(layer,'konpeito','🍬',8,14),2700); setInterval(()=>spawnParticle(layer,'star','✨',8,14),1300); setInterval(()=>spawnParticle(layer,'purple','💜',8,14),2200); setInterval(()=>spawnParticle(layer,'cloud','',10,10),4200); setInterval(()=>spawnParticle(kanaLayer,'kana',KANA_GHOSTS[Math.floor(Math.random()*KANA_GHOSTS.length)],12,22),1500); }
+function spawnParticle(layer,cls,content,minDur,maxDur){ const el=document.createElement('div'); el.className='particle '+cls; if(content) el.textContent=content; el.style.left=rand(0,100)+'vw'; el.style.top='-10vh'; el.style.setProperty('--dx', rand(-60,60)+'px'); el.style.setProperty('--rot', rand(80,280)+'deg'); el.style.animationDuration=rand(minDur,maxDur)+'s'; layer.appendChild(el); setTimeout(()=>el.remove(), maxDur*1000+5000); }
+function fireworks(count=28){ const wrap=document.createElement('div'); wrap.className='burst'; const icons=['✨','⭐','🌸','💮','🎇']; for(let i=0;i<count;i++){ const el=document.createElement('div'); el.className='burst-item'; el.textContent=icons[Math.floor(Math.random()*icons.length)]; el.style.left=rand(15,85)+'vw'; el.style.top=rand(10,75)+'vh'; el.style.setProperty('--tx', rand(-180,180)+'px'); el.style.setProperty('--ty', rand(-200,160)+'px'); wrap.appendChild(el);} document.body.appendChild(wrap); setTimeout(()=>wrap.remove(),1500); }
+function sakuraSVG(done){ return `<svg viewBox="0 0 220 220" class="sakura-svg" aria-hidden="true"><defs><radialGradient id="petalCore" cx="50%" cy="45%" r="60%"><stop offset="0%" stop-color="#fff6fb"/><stop offset="42%" stop-color="#ffd7ea"/><stop offset="100%" stop-color="#ff91c9"/></radialGradient><radialGradient id="petalGlow" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="${done?'#fff5c8':'#ffdff0'}"/><stop offset="100%" stop-color="${done?'#ffcb57':'#ff93c8'}"/></radialGradient></defs><g transform="translate(110 110)"><g fill="url(#petalGlow)" stroke="rgba(255,255,255,.55)" stroke-width="2">${[0,72,144,216,288].map(a=>`<path transform="rotate(${a}) translate(0 -54)" d="M0 -34 C 22 -38, 40 -10, 20 16 C 9 31, -9 31, -20 16 C -40 -10, -22 -38, 0 -34 Z"/>`).join('')}</g><circle r="19" fill="#fff6d8" opacity=".98"/><circle r="8" fill="#ffb6d6" opacity=".85"/></g></svg>`; }
+function updateStats(){ const percent=Math.round(completedCount()/STAGES.length*100); qs('xpValue').textContent=state.xp; qs('starsValue').textContent=state.stars; qs('levelValue').textContent=levelFromXP(state.xp); qs('percentValue').textContent=percent+'%'; qs('megaFill').style.width=percent+'%'; qs('wordsLearnedValue').textContent=totalLearned(); qs('currentStageValue').textContent=state.currentStage+1; qs('unlockedCountValue').textContent=STAGES.filter((_,i)=>isStageUnlocked(i)).length; qs('musicStateValue').textContent=state.musicOn?'مفعلة':'موقفة'; qs('sfxStateValue').textContent=state.sfxOn?'مفعلة':'موقفة'; }
+function renderNavigator(){ const box=qs('navigatorList'); box.innerHTML=''; STAGES.forEach((stage,i)=>{ const done=state.progress[i].done; const item=document.createElement('div'); item.className='navigator-item'+(done?' done':''); item.innerHTML=`<div><div style="font-weight:900">${stage.group}</div><div style="font-size:.82rem;color:var(--muted)">${done?'مكتملة':'غير مكتملة'}</div></div><button ${!done?'disabled':''}>فتح</button>`; item.querySelector('button').onclick=()=>openLesson(i); box.appendChild(item); }); }
+function renderMap(){ qs('mapView').style.display='block'; qs('lessonView').classList.remove('active'); qs('quizView').classList.remove('active'); qs('resultView').classList.remove('active'); state.view='map'; const nodes=qs('mapNodes'); nodes.innerHTML=''; STAGES.forEach((stage,i)=>{ const done=state.progress[i].done; const unlocked=isStageUnlocked(i); const node=document.createElement('div'); node.className='stage-node'; node.style.top=STAGE_Y[i]+'px'; node.innerHTML=`<div class="stage-label">${stage.group}</div><button class="sakura-button" ${!unlocked?'disabled':''}>${sakuraSVG(done)}<div class="stage-no">${i+1}</div>${!unlocked?'<div class="stage-lock">🔒</div>':''}</button><div class="stage-stars">${done? '★★★★★':'☆ ☆ ☆ ☆ ☆'}</div>`; node.querySelector('button').onclick=()=>openLesson(i); nodes.appendChild(node); }); const activeStage=Math.min(completedCount(), STAGES.length-1); qs('beamFill').style.height=(STAGE_Y[activeStage]-118)+'px'; renderNavigator(); updateStats(); applyAtmosphere(false); }
+function cardHTML(word, back=false){ return `<div class="word-face ${back?'back':''}"><div class="emoji">${word.emoji}</div><div class="kana">${word.kana}</div><div class="arabic">${word.ar}</div><div class="tiny">${back?'تكرار ذكي + استماع + تذكر بصري':'اضغط للقلب بين الوجهين'}</div></div>`; }
+function renderCards(stageIndex){ const stage=STAGES[stageIndex]; const wrap=document.createElement('div'); wrap.className='words-grid'; stage.words.forEach((w,idx)=>{ const card=document.createElement('div'); card.className='word-card'; card.innerHTML=`<div class="word-card-inner">${cardHTML(w,false)}${cardHTML(w,true)}</div>`; card.onclick=()=>{ card.classList.toggle('flipped'); state.learned[stageIndex+'-'+idx]=true; saveState(); updateStats(); speakKana(w.kana); playSfx('click'); }; wrap.appendChild(card); }); return wrap; }
+function renderStudy(stageIndex){ const stage=STAGES[stageIndex]; let index=0; const shell=document.createElement('div'); shell.className='single-study'; const container=document.createElement('div'); container.className='study-shell'; const render=()=>{ const w=stage.words[index]; container.innerHTML=`<div class="word-card"><div class="word-card-inner"><div class="word-face"><div class="emoji">${w.emoji}</div><div class="kana">${w.kana}</div><div class="arabic">${w.ar}</div><div class="tiny">اضغط للاستماع</div></div></div></div><div class="review-row"><button class="btn btn-soft" id="prevStudyBtn">السابق</button><div style="font-weight:900">${index+1} / ${stage.words.length}</div><button class="btn btn-soft" id="nextStudyBtn">التالي</button></div>`; container.querySelector('.word-card').onclick=()=>{ speakKana(w.kana); state.learned[stageIndex+'-'+index]=true; saveState(); updateStats(); playSfx('click'); }; qs('prevStudyBtn').onclick=()=>{ index=(index-1+stage.words.length)%stage.words.length; render(); }; qs('nextStudyBtn').onclick=()=>{ index=(index+1)%stage.words.length; render(); }; };
+  render(); shell.appendChild(container); return shell;
+}
+function openLesson(index){ if(!isStageUnlocked(index)) return; playSfx('click'); state.currentStage=index; state.view='lesson'; qs('mapView').style.display='none'; qs('lessonView').classList.add('active'); qs('quizView').classList.remove('active'); qs('resultView').classList.remove('active'); const stage=STAGES[index]; qs('lessonTitle').textContent=`${stage.group} — المرحلة ${index+1}`; qs('lessonSubtitle').textContent='يعرض الهيراغانا مع الترجمة العربية فقط، بدون رومجي داخل الواجهة'; const area=qs('cardsArea'); area.innerHTML=''; area.appendChild(state.mode==='cards'?renderCards(index):renderStudy(index)); applyAtmosphere(false); updateStats(); toast(HELPERS[index%HELPERS.length]); }
+function speakKana(text){ try{ const u=new SpeechSynthesisUtterance(text); u.lang='ja-JP'; u.rate=.82; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+function buildQuestion(stageIndex, finalMode=false){ const pool=finalMode?STAGES.flatMap((s,si)=>s.words.map(w=>({...w,stage:si}))):STAGES[stageIndex].words.map(w=>({...w,stage:stageIndex})); const source=shuffle(pool).slice(0, finalMode?12:Math.min(6,pool.length)); return source.map((w,idx)=>{ const type=idx%2===0?'listen':'visual'; const others=shuffle(pool.filter(x=>x.kana!==w.kana)).slice(0,3); const options=shuffle([w.ar, ...others.map(o=>o.ar)]); return {type, word:w, correct:w.ar, options}; }); }
+function startQuiz(stageIndex, finalMode=false){ if(!finalMode && !isStageUnlocked(stageIndex)) return; if(finalMode && !state.progress.every(p=>p.done)){ toast('🌸 يجب إنهاء جميع المراحل أولًا قبل الاختبار النهائي'); return; } state.quiz={stageIndex, finalMode, questions:buildQuestion(stageIndex, finalMode), idx:0, correct:0, hearts:3}; qs('mapView').style.display='none'; qs('lessonView').classList.remove('active'); qs('quizView').classList.add('active'); qs('resultView').classList.remove('active'); qs('cloudBuddy').classList.toggle('final', finalMode); applyAtmosphere(finalMode); renderQuizQuestion(); }
+function renderQuizQuestion(){ const q=state.quiz.questions[state.quiz.idx]; qs('quizFill').style.width=(state.quiz.idx/state.quiz.questions.length*100)+'%'; qs('heartsValue').textContent=state.quiz.hearts; qs('quizFeedback').classList.add('hidden'); qs('feedbackText').textContent=''; qs('quizPrompt').textContent=q.type==='listen'?'اختبار الاستماع':'الاختبار البصري'; qs('quizMain').textContent=q.type==='listen'?'🔊':q.word.emoji; qs('quizSub').textContent=q.type==='listen'?'استمعي ثم اختاري الترجمة العربية الصحيحة':'اختاري الكلمة الصحيحة للصورة'; const opts=qs('quizOptions'); opts.innerHTML=''; if(q.type==='listen') speakKana(q.word.kana); q.options.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt; b.onclick=()=>answerQuiz(opt,b); opts.appendChild(b); }); }
+function answerQuiz(answer,btn){ const q=state.quiz.questions[state.quiz.idx]; const correct=answer===q.correct; [...qs('quizOptions').children].forEach(el=>{ el.disabled=true; if(el.textContent===q.correct) el.classList.add('correct'); if(el===btn && !correct) el.classList.add('wrong'); }); if(correct){ state.quiz.correct++; state.xp+=20; state.stars+=3; playSfx('success'); buddy('spin'); toast('🌸 أحسنت!') } else { state.quiz.hearts--; playSfx('error'); buddy('shake'); toast('🌸 لا بأس، أعيدي المحاولة'); } saveState(); updateStats(); qs('feedbackText').textContent=correct?'✔ إجابة صحيحة! +20 XP':'✖ إجابة خاطئة، حاولي من جديد'; qs('quizFeedback').classList.remove('hidden'); if(state.quiz.hearts<=0) qs('feedbackText').textContent='✖ انتهت القلوب، سيتم احتساب النتيجة الحالية'; }
+function finishQuiz(){ const total=state.quiz.questions.length; const correct=state.quiz.correct; const stars=correct===total?5: correct>=Math.ceil(total*.75)?4: correct>=Math.ceil(total*.6)?3: correct>=Math.ceil(total*.4)?2:1; const passed=state.quiz.finalMode ? correct>=Math.ceil(total*.7) : correct===total; qs('quizView').classList.remove('active'); qs('resultView').classList.add('active'); qs('resultCorrect').textContent=correct+' / '+total; qs('resultStars').textContent=stars; qs('resultXP').textContent=correct*20; qs('resultBadge').textContent=passed?'🎉':'🌸'; if(state.quiz.finalMode){ qs('resultTitle').textContent=passed?'تم اجتياز الاختبار النهائي!':'اكتمل الاختبار النهائي'; qs('resultText').textContent=passed?'أضيئت جميع زهور الساكورا، وانطلقت المؤثرات الذهبية والألعاب النارية الناعمة والموسيقى الاحتفالية.':'يمكنك إعادة الاختبار النهائي بعد مراجعة المراحل.'; qs('certificateBox').classList.toggle('hidden', !passed); if(passed){ fireworks(42); playSfx('unlock'); buddy('final'); } } else { qs('resultTitle').textContent=passed?'تم فتح المرحلة التالية!':'انتهت المرحلة'; qs('resultText').textContent=passed?'اختفى القفل، توهجت الزهرة، وانتقل شعاع الطاقة إلى المرحلة التالية.':'أعيدي مراجعة الكلمات للوصول إلى 100٪ وفتح المرحلة التالية.'; qs('certificateBox').classList.add('hidden'); if(passed){ const i=state.quiz.stageIndex; state.progress[i]={done:true,stars,score:correct}; playSfx('unlock'); fireworks(24); buddy('spin'); if(i<STAGES.length-1) toast('🌸 رائع! لقد فتحتِ مرحلة جديدة.'); } }
+  saveState(); renderMap(); qs('mapView').style.display='none'; qs('resultView').classList.add('active'); applyAtmosphere(state.quiz.finalMode && passed);
+}
+qs('nextQuestionBtn').onclick=()=>{ if(state.quiz.hearts<=0 || state.quiz.idx>=state.quiz.questions.length-1){ finishQuiz(); return; } state.quiz.idx++; renderQuizQuestion(); };
+qs('backToMapBtn').onclick=()=>{ renderMap(); };
+qs('cardsModeBtn').onclick=()=>{ state.mode='cards'; openLesson(state.currentStage); };
+qs('studyModeBtn').onclick=()=>{ state.mode='study'; openLesson(state.currentStage); };
+qs('startStageQuizBtn').onclick=()=>startQuiz(state.currentStage,false);
+qs('exitQuizBtn').onclick=()=>{ renderMap(); };
+qs('resultHomeBtn').onclick=()=>{ renderMap(); qs('resultView').classList.remove('active'); };
+qs('resultContinueBtn').onclick=()=>{ if(state.quiz&&state.quiz.finalMode){ renderMap(); qs('resultView').classList.remove('active'); } else if(state.quiz && state.quiz.stageIndex<STAGES.length-1 && state.progress[state.quiz.stageIndex].done){ openLesson(clamp(state.quiz.stageIndex+1,0,STAGES.length-1)); qs('resultView').classList.remove('active'); } else { renderMap(); qs('resultView').classList.remove('active'); } };
+qs('finalExamBtn').onclick=()=>startQuiz(state.currentStage,true);
+qs('musicToggleBtn').onclick=()=>{ state.musicOn=!state.musicOn; saveState(); updateStats(); state.musicOn?startMusic():stopMusic(); playSfx('click'); };
+qs('toggleMusicWelcomeBtn').onclick=()=>{ state.musicOn=!state.musicOn; saveState(); updateStats(); state.musicOn?startMusic():stopMusic(); qs('toggleMusicWelcomeBtn').textContent=state.musicOn?'🎵 إيقاف الموسيقى':'🎵 تشغيل الموسيقى'; };
+qs('sfxToggleBtn').onclick=()=>{ state.sfxOn=!state.sfxOn; saveState(); updateStats(); playSfx('click'); };
+qs('resetBtn').onclick=()=>{ if(!confirm('هل تريد إعادة ضبط التطبيق بالكامل؟')) return; localStorage.removeItem(STORAGE_KEY); location.reload(); };
+qs('startJourneyBtn').onclick=()=>{ state.welcomeSeen=true; saveState(); qs('welcomeScreen').classList.add('hidden'); renderMap(); startMusic(); playSfx('success'); };
+function initWelcome(){ if(!state.welcomeSeen) qs('welcomeScreen').classList.remove('hidden'); else qs('welcomeScreen').classList.add('hidden'); }
+function initCloud(){ qs('cloudBuddy').innerHTML=cloudBuddyMarkup(); }
+function init(){ loadState(); renderSpaceship(); initCloud(); spawnParticles(); updateStats(); renderMap(); initWelcome(); if(state.musicOn) startMusic(); }
+init();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

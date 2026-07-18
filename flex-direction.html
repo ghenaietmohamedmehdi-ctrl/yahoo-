@@ -1,0 +1,25 @@
+/* الحاوية الرئيسية للوحة المفاتيح */
+.keyboard-container {
+    display: flex;
+    flex-direction: row; /* توزيع العناصر بالعرض */
+    justify-content: space-around;
+    align-items: center;
+    width: 100vw;
+    height: 40vh; /* ارتفاع اللوحة في وضع العرض */
+    background-color: #2c3e50; /* ثيم داكن */
+    padding: 10px;
+}
+
+/* بطاقات الحروف أو المراحل */
+.key-item {
+    width: 12%; /* عرض مناسب لتوزيع 6-8 عناصر بالعرض */
+    height: 80%;
+    margin: 5px;
+    background: linear-gradient(135deg, #8e44ad, #d35400); /* مزيج بنفسجي ووردي */
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+}

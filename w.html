@@ -93,7 +93,7 @@ class _RootScreenState extends State<RootScreen>
       (index) => Stage(
         id: index + 1,
         groupName: 'مجموعة ${index ~/ 3 + 1}',
-        hiragana: 'あ', // مثال – استبدلها لاحقًا
+        hiragana: 'あ',
         arabicMeaning: 'مثال',
         isUnlocked: index == 0,
       ),
@@ -156,12 +156,15 @@ class _RootScreenState extends State<RootScreen>
     });
   }
 
+  // ---------------------- إصلاح زر ابدأ الرحلة ----------------------
+
   void goToJourney() {
     setState(() {
       isFirstLaunch = false;
       currentScreen = AppScreen.journey;
-      showAssistant('🌸 أحسنت! بدأت رحلتك الآن.');
     });
+
+    showAssistant('🌸 أحسنت! بدأت رحلتك الآن.');
   }
 
   void goToFinalExam() {
@@ -256,9 +259,7 @@ class _RootScreenState extends State<RootScreen>
                 const Text(
                   'أهلًا بكِ في رحلة ساكورا لتعلّم اللغة اليابانية.\n\n'
                   'يسعدنا انضمامكِ إلى هذه الرحلة التعليمية الممتعة، حيث ستتقدمين خطوة بخطوة حتى إتقان أساسيات اللغة اليابانية.\n\n'
-                  'Mehdi Sensei جاهز ليكون دليلكِ في هذه المغامرة التعليمية، وسيصاحبكِ خلال جميع المراحل حتى تصلي إلى هدفكِ بإذن الله.\n\n'
-                  'إن اختياركِ لتعلّم لغة جديدة هو بداية إنجاز عظيم، وكل حرف تتعلمينه اليوم يقربكِ خطوة من تحقيق أهدافكِ.\n\n'
-                  'نتمنى لكِ رحلة مليئة بالإنجازات والمتعة والثقة بالنفس.\n\n'
+                  'Mehdi Sensei جاهز ليكون دليلكِ في هذه المغامرة التعليمية.\n\n'
                   'ابدئي رحلتكِ الآن... ولتتفتح أول زهرة ساكورا في طريق نجاحكِ.\n\n🌸✨',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -271,7 +272,9 @@ class _RootScreenState extends State<RootScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton.icon(
-                      onPressed: goToJourney,
+                      onPressed: () {
+                        goToJourney();   // ← يعمل مباشرة الآن
+                      },
                       icon: const Icon(Icons.rocket_launch),
                       label: const Text('ابدأ الرحلة'),
                     ),
@@ -352,7 +355,7 @@ class _RootScreenState extends State<RootScreen>
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                showAssistant('✖ حاول مرة أخرى، أنت قادر على النجاح.');
+                showAssistant('✖ حاول مرة أخرى.');
               },
               child: const Text('إعادة المحاولة'),
             ),
@@ -391,8 +394,7 @@ class _RootScreenState extends State<RootScreen>
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'في هذا الاختبار يتم تقييم كل ما تعلمته في رحلة الساكورا.\n'
-                    'بعد النجاح ستحصل على شهادة وشاشة تهنئة ومؤثرات احتفالية.',
+                    'بعد النجاح ستحصل على شهادة ومؤثرات احتفالية.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
@@ -422,8 +424,7 @@ class _RootScreenState extends State<RootScreen>
         ),
         SizedBox(height: 12),
         Text(
-          'لقد اجتزت الاختبار النهائي وحصلت على شهادتك في رحلة ساكورا.\n'
-          'كل زهور الساكورا الآن مضاءة، والرحلة اكتملت بنجاح.',
+          'لقد اجتزت الاختبار النهائي وحصلت على شهادتك.',
           textAlign: TextAlign.center,
         ),
       ],
@@ -445,17 +446,6 @@ class BackgroundLayer extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: gradient,
-      ),
-      child: Stack(
-        children: [
-          // هنا تضيف:
-          // - قمر عملاق مضيء (صورة PNG 8K)
-          // - جبال يابانية بعيدة
-          // - أشجار ساكورا على الجانبين
-          // - غيوم متحركة
-          // - بتلات ساكورا متساقطة
-          // - حروف هيراغانا شفافة تتحرك ببطء
-        ],
       ),
     );
   }
@@ -549,7 +539,6 @@ class SakuraStageWidget extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              // هنا تستبدل هذا الكونتينر بصورة زهرة ساكورا PNG ثلاثية الأبعاد كبيرة
               Container(
                 height: 140,
                 width: 140,
@@ -688,110 +677,4 @@ class MagicCloudWidget extends StatelessWidget {
           top: dy,
           child: Opacity(
             opacity: 0.9,
-            child: Container(
-              height: 50,
-              width: 90,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.purple.withOpacity(0.4),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Text(
-                  '☁️',
-                  style: TextStyle(fontSize: 24),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ---------------------- ASSISTANT ----------------------
-
-class AssistantWidget extends StatelessWidget {
-  final String message;
-
-  const AssistantWidget({super.key, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.6),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0xFFFF7BC4),
-              width: 1,
-            ),
-          ),
-          child: Text(
-            message,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------- PROGRESS BAR ----------------------
-
-class ProgressBarWidget extends StatelessWidget {
-  final double completionPercent;
-  final int xp;
-  final int stars;
-  final int wordsLearned;
-  final Stage currentStage;
-
-  const ProgressBarWidget({
-    super.key,
-    required this.completionPercent,
-    required this.xp,
-    required this.stars,
-    required this.wordsLearned,
-    required this.currentStage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final percentText = (completionPercent * 100).round();
-
-    return Row(
-      children: [
-        Expanded(
-          child: LinearProgressIndicator(
-            value: completionPercent,
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('إنجاز: $percentText%'),
-            Text('الكلمات: $wordsLearned'),
-            Text('XP: $xp'),
-            Text('النجوم: $stars'),
-            Text('المرحلة: ${currentStage.id}'),
-          ],
-        ),
-      ],
-    );
-  }
-}
+            child: Container

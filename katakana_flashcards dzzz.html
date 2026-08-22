@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カタカナ読み練習 — بطاقات الكاتاكانا</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --bg-deep:#161327;
+    --bg-deep-2:#1f1a38;
+    --sakura:#f4a6c6;
+    --sakura-soft:#f9d3e2;
+    --gold:#e8b84a;
+    --ink:#f3eef7;
+    --ink-dim:#b8aed0;
+    --card-front:#241f42;
+    --card-back:#2c1f3e;
+    --green:#7fd9a8;
+    --red:#e8836f;
+    --radius:26px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(244,166,198,0.10), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(232,184,74,0.08), transparent 45%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deep-2) 100%);
+    color:var(--ink);
+    font-family:'Tajawal', sans-serif;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* falling sakura petals */
+  .petals{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .petal{
+    position:absolute; top:-5%;
+    width:10px; height:10px;
+    background:var(--sakura);
+    border-radius:0 60% 0 60%;
+    opacity:0.55;
+    animation:fall linear infinite;
+  }
+  @keyframes fall{
+    0%{ transform:translateY(-5vh) translateX(0) rotate(0deg); }
+    100%{ transform:translateY(105vh) translateX(30px) rotate(300deg); }
+  }
+
+  header{
+    width:100%;
+    max-width:640px;
+    padding:32px 20px 8px;
+    text-align:center;
+    position:relative;
+    z-index:1;
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    letter-spacing:.18em;
+    font-size:12px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:30px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  h1 span{color:var(--sakura);}
+  .sub{
+    color:var(--ink-dim);
+    font-size:14px;
+    margin:0;
+  }
+
+  main{
+    width:100%;
+    max-width:640px;
+    padding:20px;
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+
+  /* progress */
+  .progress-wrap{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    color:var(--ink-dim);
+  }
+  .progress-bar{
+    flex:1;
+    height:8px;
+    background:rgba(255,255,255,0.08);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--sakura), var(--gold));
+    width:0%;
+    transition:width .4s ease;
+  }
+
+  /* card */
+  .stage{
+    width:100%;
+    max-width:420px;
+    aspect-ratio:3/4;
+    perspective:1400px;
+  }
+  .card{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.2,.8,.2,1);
+    cursor:pointer;
+  }
+  .card.flipped{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0;
+    border-radius:var(--radius);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    backface-visibility:hidden;
+    padding:28px;
+    box-shadow:0 20px 50px -18px rgba(0,0,0,.6);
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .front{
+    background:
+      radial-gradient(circle at 30% 20%, rgba(244,166,198,.14), transparent 55%),
+      var(--card-front);
+  }
+  .back{
+    background:
+      radial-gradient(circle at 70% 80%, rgba(232,184,74,.14), transparent 55%),
+      var(--card-back);
+    transform:rotateY(180deg);
+    text-align:center;
+  }
+  .kana{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:900;
+    font-size:clamp(40px, 11vw, 60px);
+    color:var(--ink);
+    letter-spacing:.02em;
+  }
+  .hint{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--ink-dim);
+    font-family:'Space Mono', monospace;
+  }
+  .romaji{
+    font-family:'Space Mono', monospace;
+    font-size:22px;
+    color:var(--gold);
+    margin-bottom:10px;
+    direction:ltr;
+  }
+  .meaning{
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    font-size:26px;
+    color:var(--sakura-soft);
+  }
+  .count-badge{
+    position:absolute;
+    top:18px;
+    inset-inline-end:18px;
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    color:var(--ink-dim);
+    background:rgba(255,255,255,.06);
+    padding:4px 10px;
+    border-radius:99px;
+  }
+
+  /* controls */
+  .nav-row{
+    display:flex;
+    gap:12px;
+    width:100%;
+    max-width:420px;
+  }
+  button{
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    border:none;
+    border-radius:16px;
+    cursor:pointer;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  button:active{ transform:scale(0.96); }
+  .nav-btn{
+    flex:1;
+    padding:14px 10px;
+    background:rgba(255,255,255,0.06);
+    color:var(--ink);
+    font-size:15px;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .nav-btn:hover{ background:rgba(255,255,255,0.1); }
+
+  .judge-row{
+    display:flex;
+    gap:12px;
+    width:100%;
+    max-width:420px;
+    opacity:0;
+    max-height:0;
+    overflow:hidden;
+    transition:opacity .3s ease, max-height .3s ease, margin .3s ease;
+  }
+  .judge-row.show{
+    opacity:1;
+    max-height:80px;
+    margin-top:2px;
+  }
+  .judge-btn{
+    flex:1;
+    padding:14px;
+    font-size:15px;
+    color:#1c1430;
+  }
+  .know{ background:var(--green); }
+  .dontknow{ background:var(--red); }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    width:100%;
+    max-width:420px;
+    justify-content:center;
+    margin-top:4px;
+  }
+  .chip{
+    padding:9px 16px;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.14);
+    color:var(--ink-dim);
+    border-radius:99px;
+    font-size:13px;
+  }
+  .chip.active{
+    background:rgba(244,166,198,0.16);
+    border-color:var(--sakura);
+    color:var(--sakura-soft);
+  }
+
+  .done-screen{
+    display:none;
+    text-align:center;
+    padding:40px 20px;
+    max-width:420px;
+  }
+  .done-screen.show{ display:block; }
+  .done-screen h2{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:26px;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  .stat-row{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin:20px 0;
+    font-family:'Space Mono', monospace;
+  }
+  .stat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .stat .num{ font-size:28px; font-weight:700; }
+  .stat.g .num{ color:var(--green); }
+  .stat.r .num{ color:var(--red); }
+  .stat .lbl{ font-size:11px; color:var(--ink-dim); margin-top:2px;}
+
+  footer{
+    padding:30px 20px 50px;
+    color:var(--ink-dim);
+    font-size:12px;
+    text-align:center;
+    z-index:1;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petal{ animation:none; display:none; }
+    .card{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+
+<header>
+  <div class="eyebrow">Katakana Vocabulary Drill</div>
+  <h1>بطاقات <span>カタカナ</span></h1>
+  <p class="sub">55 كلمة من ملفك — اضغط على البطاقة لقلبها</p>
+</header>
+
+<main id="mainArea">
+
+  <div class="progress-wrap">
+    <span id="progressLabel">1 / 55</span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="face front">
+        <span class="count-badge" id="deckBadge">الكل</span>
+        <div class="kana" id="kanaText">フランス</div>
+        <div class="hint">اضغط لرؤية المعنى</div>
+      </div>
+      <div class="face back">
+        <div class="romaji" id="romajiText">Furansu</div>
+        <div class="meaning" id="meaningText">فرنسا</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="judge-row" id="judgeRow">
+    <button class="judge-btn dontknow" id="btnDontKnow">✗ ما زلت ما أعرفها</button>
+    <button class="judge-btn know" id="btnKnow">✓ أعرفها</button>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="btnPrev">◀ السابقة</button>
+    <button class="nav-btn" id="btnShuffle">🔀 ترتيب عشوائي</button>
+    <button class="nav-btn" id="btnNext">التالية ▶</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="chip active" data-mode="all">كل الكلمات</button>
+    <button class="chip" data-mode="unknown">التي لا أعرفها فقط</button>
+  </div>
+
+  <div class="done-screen" id="doneScreen">
+    <h2>🌸 انتهت المراجعة!</h2>
+    <p class="sub">لقد راجعت جميع البطاقات في هذه الجولة.</p>
+    <div class="stat-row">
+      <div class="stat g"><div class="num" id="knownCount">0</div><div class="lbl">أعرفها</div></div>
+      <div class="stat r"><div class="num" id="unknownCount">0</div><div class="lbl">تحتاج مراجعة</div></div>
+    </div>
+    <button class="nav-btn" id="btnRestart" style="max-width:220px; margin:0 auto;">ابدأ من جديد</button>
+  </div>
+
+</main>
+
+<footer>مصدر الكلمات: カタカナ読み練習 (ملفك المرفوع) — يعاد ترتيبها في كل جولة عشوائية</footer>
+
+<script>
+const WORDS = [
+["フランス","Furansu","فرنسا"],["イタリア","Itaria","إيطاليا"],["アメリカ","Amerika","أمريكا"],
+["アイス","Aisu","آيس كريم / مثلجات"],["カメラ","Kamera","كاميرا"],["トイレ","Toire","حمام / مرحاض"],
+["アニメ","Anime","أنمي"],["テニス","Tenisu","تنس"],["レストラン","Resutoran","مطعم"],
+["スマホ","Sumaho","هاتف ذكي"],["エアコン","Eakon","مكيف هواء"],["ナイフ","Naihu","سكين"],
+["ホチキス","Hochikisu","دباسة"],["シリアル","Shiriaru","حبوب الإفطار"],["インド","Indo","الهند"],
+["バス","Basu","حافلة"],["レジ","Reji","صندوق الدفع (كاشير)"],["テレビ","Terebi","تلفاز"],
+["コンビニ","Konbini","متجر صغير (كونبيني)"],["ズボン","Zubon","بنطال"],["パソコン","Pasokon","حاسوب"],
+["ペン","Pen","قلم"],["パン","Pan","خبز"],["ビル","Biru","مبنى"],["ビール","Biiru","بيرة"],
+["スポーツ","Supootsu","رياضة"],["ネパール","Nepaaru","نيبال"],["ケーキ","Keeki","كيك"],
+["ハンバーグ","Hanbaagu","هامبورغ (لحم مفروم)"],["カレー","Karee","كاري"],["スーパー","Suupaa","سوبر ماركت"],
+["コーヒー","Koohii","قهوة"],["カーテン","Kaaten","ستارة"],["タクシー","Takushii","تاكسي"],
+["ノート","Nooto","دفتر"],["エレベーター","Erebeetaa","مصعد"],["エスカレーター","Esukareetaa","سلم متحرك"],
+["チケット","Chiketto","تذكرة"],["サッカー","Sakkaa","كرة قدم"],["トラック","Torakku","شاحنة"],
+["スイッチ","Suicchi","مفتاح كهربائي"],["ベッド","Beddo","سرير"],["コップ","Koppu","كوب"],
+["インターネット","Intaanetto","إنترنت"],["バーベキュー","Baabekyuu","شواء (باربكيو)"],
+["キャベツ","Kyabetsu","ملفوف / كرنب"],["シャツ","Shatsu","قميص"],["ジュース","Juusu","عصير"],
+["ジョギング","Jogingu","جري / هرولة"],["スケジュール","Sukejuuru","جدول مواعيد"],
+["ジェットコースター","Jetto koosutaa","أفعوانية"],["チョコレート","Chokoreeto","شوكولاتة"],
+["メニュー","Menyuu","قائمة طعام"],["ミュージカル","Myuuzikaru","مسرحية غنائية"],["ミャンマー","Myanmaa","ميانمار"]
+];
+
+let deck = WORDS.map((w,i)=>({kana:w[0], romaji:w[1], meaning:w[2], id:i}));
+let unknownIds = new Set();
+let knownIds = new Set();
+let order = deck.map(d=>d.id);
+let idx = 0;
+let mode = 'all';
+let flipped = false;
+
+const card = document.getElementById('card');
+const kanaText = document.getElementById('kanaText');
+const romajiText = document.getElementById('romajiText');
+const meaningText = document.getElementById('meaningText');
+const progressLabel = document.getElementById('progressLabel');
+const progressFill = document.getElementById('progressFill');
+const judgeRow = document.getElementById('judgeRow');
+const doneScreen = document.getElementById('doneScreen');
+const mainStage = document.querySelector('.stage');
+const progressWrap = document.querySelector('.progress-wrap');
+const navRow = document.querySelector('.nav-row');
+const deckBadge = document.getElementById('deckBadge');
+
+function currentList(){
+  if(mode==='unknown'){
+    return order.filter(id => unknownIds.has(id));
+  }
+  return order;
+}
+
+function render(){
+  const list = currentList();
+  if(list.length === 0){
+    showDone();
+    return;
+  }
+  doneScreen.classList.remove('show');
+  mainStage.style.display='';
+  progressWrap.style.display='';
+  navRow.style.display='';
+  judgeRow.classList.add('show');
+
+  if(idx >= list.length) idx = 0;
+  const id = list[idx];
+  const w = deck[id];
+  kanaText.textContent = w.kana;
+  romajiText.textContent = w.romaji;
+  meaningText.textContent = w.meaning;
+  flipped = false;
+  card.classList.remove('flipped');
+  progressLabel.textContent = (idx+1) + ' / ' + list.length;
+  progressFill.style.width = ((idx+1)/list.length*100) + '%';
+  deckBadge.textContent = mode==='unknown' ? 'مراجعة' : 'الكل';
+}
+
+function showDone(){
+  mainStage.style.display='none';
+  progressWrap.style.display='none';
+  navRow.style.display='none';
+  judgeRow.classList.remove('show');
+  doneScreen.classList.add('show');
+  document.getElementById('knownCount').textContent = knownIds.size;
+  document.getElementById('unknownCount').textContent = unknownIds.size;
+}
+
+card.addEventListener('click', ()=>{
+  flipped = !flipped;
+  card.classList.toggle('flipped', flipped);
+});
+
+function next(){
+  const list = currentList();
+  idx = (idx + 1);
+  if(idx >= list.length){
+    if(mode==='unknown'){ showDone(); return; }
+    idx = 0;
+  }
+  render();
+}
+function prev(){
+  const list = currentList();
+  idx = (idx - 1 + list.length) % list.length;
+  render();
+}
+
+document.getElementById('btnNext').addEventListener('click', next);
+document.getElementById('btnPrev').addEventListener('click', prev);
+
+document.getElementById('btnKnow').addEventListener('click', ()=>{
+  const list = currentList();
+  const id = list[idx];
+  knownIds.add(id);
+  unknownIds.delete(id);
+  next();
+});
+document.getElementById('btnDontKnow').addEventListener('click', ()=>{
+  const list = currentList();
+  const id = list[idx];
+  unknownIds.add(id);
+  knownIds.delete(id);
+  next();
+});
+
+document.getElementById('btnShuffle').addEventListener('click', ()=>{
+  for(let i=order.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [order[i],order[j]]=[order[j],order[i]];
+  }
+  idx = 0;
+  render();
+});
+
+document.getElementById('btnRestart').addEventListener('click', ()=>{
+  idx = 0;
+  render();
+});
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    mode = chip.dataset.mode;
+    idx = 0;
+    render();
+  });
+});
+
+// sakura petals
+const petalContainer = document.getElementById('petals');
+const petalCount = window.innerWidth < 600 ? 12 : 20;
+for(let i=0;i<petalCount;i++){
+  const p = document.createElement('div');
+  p.className='petal';
+  p.style.left = Math.random()*100 + 'vw';
+  p.style.width = p.style.height = (6+Math.random()*8)+'px';
+  p.style.animationDuration = (9+Math.random()*10)+'s';
+  p.style.animationDelay = (Math.random()*10)+'s';
+  p.style.opacity = 0.25 + Math.random()*0.4;
+  petalContainer.appendChild(p);
+}
+
+render();
+</script>
+
+</body>
+</html>

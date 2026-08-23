@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مجموعات الأرقام والأشهر والأيام - مهدي سينسي</title>
+<style>
+  :root{
+    --pink:#ff6fa5; --purple:#8a5cf6; --blue:#4dd0e1; --bg1:#1a1033; --bg2:#2b1854;
+    --card:#241645; --gold:#ffd166; --green:#5ce8a6; --red:#ff6b6b; --text:#f4f0ff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI', Tahoma, sans-serif; color:var(--text);
+    background: radial-gradient(circle at 20% 10%, #3a1f6b, transparent 40%),
+                radial-gradient(circle at 90% 80%, #1f2f6b, transparent 45%),
+                linear-gradient(160deg, var(--bg1), var(--bg2));
+    min-height:100vh; padding:16px;
+  }
+  .wrap{max-width:520px; margin:0 auto;}
+  h1{
+    text-align:center; font-size:1.4em; margin:6px 0 4px;
+    background:linear-gradient(90deg,var(--pink),var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{text-align:center; opacity:.75; font-size:.85em; margin-bottom:18px;}
+
+  .jumprow{display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:16px;}
+  .jumprow input{
+    width:70px; text-align:center; font-size:1.1em; padding:8px; border-radius:10px;
+    border:2px solid #ffffff30; background:#00000030; color:var(--text); direction:ltr;
+  }
+  .jumprow button{
+    padding:8px 14px; border-radius:10px; border:none; background:var(--blue); color:#0b1a2b;
+    font-weight:bold; cursor:pointer;
+  }
+
+  .triple-face{
+    position:relative; border-radius:22px; padding:22px 18px;
+    background:linear-gradient(160deg, var(--card), #17102c);
+    border:2px solid #ffffff20; box-shadow:0 10px 34px #00000060;
+  }
+  .triple-digit{
+    text-align:center; font-size:4em; font-weight:900; color:var(--gold);
+    direction:ltr; margin-bottom:12px; text-shadow:0 0 20px #ffd16680;
+    line-height:1;
+  }
+  .trow{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:#00000030; border-radius:14px; padding:12px 14px; margin-top:12px;
+  }
+  .trow .lbl{font-size:.78em; opacity:.65; min-width:56px;}
+  .trow .kj{font-size:1.5em; font-weight:bold;}
+  .trow .rd{font-size:.9em; color:var(--blue);}
+  .trow .ar{font-size:.95em; color:var(--pink); font-weight:bold;}
+  .trow.missing{opacity:.35; font-style:italic;}
+  .trow.num{border-right:5px solid var(--green);}
+  .trow.mon{border-right:5px solid var(--blue);}
+  .trow.day{border-right:5px solid var(--pink);}
+  .star{color:var(--gold); font-size:.9em; text-align:center; margin-top:8px;}
+
+  .navrow{display:flex; justify-content:center; gap:12px; margin-top:18px;}
+  .btn{
+    padding:11px 20px; border-radius:14px; border:none; font-weight:bold; cursor:pointer;
+    font-size:.95em; color:#1a1033;
+  }
+  .btn.next{background:var(--green);}
+  .btn.prev{background:#ffffff40; color:var(--text);}
+  .btn:active{transform:scale(.95);}
+
+  .dots{display:flex; justify-content:center; flex-wrap:wrap; gap:5px; margin-top:18px; max-width:480px; margin-inline:auto;}
+  .dot{
+    width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    font-size:.65em; background:#00000030; cursor:pointer; border:1px solid #ffffff20; direction:ltr;
+  }
+  .dot.active{background:var(--pink); font-weight:bold; color:white;}
+
+  footer{text-align:center; opacity:.5; font-size:.75em; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🈺 المجموعات: رقم・شهر・يوم</h1>
+  <div class="sub">اختر رقمًا من 1 إلى 31 لترى المجموعة الثلاثية كاملة</div>
+
+  <div class="jumprow">
+    <button id="jumpBtn">اذهب</button>
+    <input type="number" id="jumpInput" min="1" max="31" value="1">
+    <span>رقم</span>
+  </div>
+
+  <div id="stage"></div>
+  <div class="navrow" id="navrow"></div>
+  <div class="dots" id="dots"></div>
+</div>
+<footer>مهدي سينسي 🌸</footer>
+
+<script>
+/* ================= DATA ================= */
+const numbers = [
+ ["一","いち","ichi","١ (واحد)"],["二","に","ni","٢ (اثنان)"],["三","さん","san","٣ (ثلاثة)"],
+ ["四","よん / し","yon / shi","٤ (أربعة)"],["五","ご","go","٥ (خمسة)"],["六","ろく","roku","٦ (ستة)"],
+ ["七","なな / しち","nana / shichi","٧ (سبعة)"],["八","はち","hachi","٨ (ثمانية)"],["九","きゅう","kyū","٩ (تسعة)"],
+ ["十","じゅう","jū","١٠ (عشرة)"],["十一","じゅういち","jūichi","١١"],["十二","じゅうに","jūni","١٢"],
+ ["十三","じゅうさん","jūsan","١٣"],["十四","じゅうよん","jūyon","١٤"],["十五","じゅうご","jūgo","١٥"],
+ ["十六","じゅうろく","jūroku","١٦"],["十七","じゅうしち","jūshichi","١٧"],["十八","じゅうはち","jūhachi","١٨"],
+ ["十九","じゅうきゅう","jūkyū","١٩"],["二十","にじゅう","nijū","٢٠"],["二十一","にじゅういち","nijūichi","٢١"],
+ ["二十二","にじゅうに","nijūni","٢٢"],["二十三","にじゅうさん","nijūsan","٢٣"],["二十四","にじゅうよん","nijūyon","٢٤"],
+ ["二十五","にじゅうご","nijūgo","٢٥"],["二十六","にじゅうろく","nijūroku","٢٦"],["二十七","にじゅうしち","nijūshichi","٢٧"],
+ ["二十八","にじゅうはち","nijūhachi","٢٨"],["二十九","にじゅうきゅう","nijūkyū","٢٩"],["三十","さんじゅう","sanjū","٣٠"],
+ ["三十一","さんじゅういち","sanjūichi","٣١"]
+].map((x,i)=>({kanji:x[0],reading:x[1],romaji:x[2],ar:x[3],digit:i+1}));
+
+const months = [
+ ["一月","いちがつ","ichigatsu","يناير"],["二月","にがつ","nigatsu","فبراير"],["三月","さんがつ","sangatsu","مارس"],
+ ["四月","しがつ","shigatsu","أبريل"],["五月","ごがつ","gogatsu","مايو"],["六月","ろくがつ","rokugatsu","يونيو"],
+ ["七月","しちがつ","shichigatsu","يوليو"],["八月","はちがつ","hachigatsu","أغسطس"],["九月","くがつ","kugatsu","سبتمبر"],
+ ["十月","じゅうがつ","jūgatsu","أكتوبر"],["十一月","じゅういちがつ","jūichigatsu","نوفمبر"],
+ ["十二月","じゅうにがつ","jūnigatsu","ديسمبر"]
+].map((x,i)=>({kanji:x[0],reading:x[1],romaji:x[2],ar:x[3],digit:i+1}));
+
+const dayRaw = [
+ ["一日","ついたち","tsuitachi","اليوم الأول",true],["二日","ふつか","futsuka","اليوم الثاني",true],
+ ["三日","みっか","mikka","اليوم الثالث",true],["四日","よっか","yokka","اليوم الرابع",true],
+ ["五日","いつか","itsuka","اليوم الخامس",true],["六日","むいか","muika","اليوم السادس",true],
+ ["七日","なのか","nanoka","اليوم السابع",true],["八日","ようか","yōka","اليوم الثامن",true],
+ ["九日","ここのか","kokonoka","اليوم التاسع",true],["十日","とおか","tōka","اليوم العاشر",true],
+ ["十一日","じゅういちにち","jūichinichi","اليوم الحادي عشر",false],
+ ["十二日","じゅうににち","jūninichi","اليوم الثاني عشر",false],
+ ["十三日","じゅうさんにち","jūsannichi","اليوم الثالث عشر",false],
+ ["十四日","じゅうよっか","jūyokka","اليوم الرابع عشر",true],
+ ["十五日","じゅうごにち","jūgonichi","اليوم الخامس عشر",false],
+ ["十六日","じゅうろくにち","jūrokunichi","اليوم السادس عشر",false],
+ ["十七日","じゅうしちにち","jūshichinichi","اليوم السابع عشر",true],
+ ["十八日","じゅうはちにち","jūhachinichi","اليوم الثامن عشر",false],
+ ["十九日","じゅうきゅうにち","jūkyūnichi","اليوم التاسع عشر",false],
+ ["二十日","はつか","hatsuka","اليوم العشرون",true],
+ ["二十一日","にじゅういちにち","nijūichinichi","اليوم الحادي والعشرون",false],
+ ["二十二日","にじゅうににち","nijūninichi","اليوم الثاني والعشرون",false],
+ ["二十三日","にじゅうさんにち","nijūsannichi","اليوم الثالث والعشرون",false],
+ ["二十四日","にじゅうよっか","nijūyokka","اليوم الرابع والعشرون",true],
+ ["二十五日","にじゅうごにち","nijūgonichi","اليوم الخامس والعشرون",false],
+ ["二十六日","にじゅうろくにち","nijūrokunichi","اليوم السادس والعشرون",false],
+ ["二十七日","にじゅうしちにち","nijūshichinichi","اليوم السابع والعشرون",true],
+ ["二十八日","にじゅうはちにち","nijūhachinichi","اليوم الثامن والعشرون",false],
+ ["二十九日","にじゅうきゅうにち","nijūkyūnichi","اليوم التاسع والعشرون",false],
+ ["三十日","さんじゅうにち","sanjūnichi","اليوم الثلاثون",false],
+ ["三十一日","さんじゅういちにち","sanjūichinichi","اليوم الحادي والثلاثون",false]
+];
+const days = dayRaw.map((x,i)=>({kanji:x[0],reading:x[1],romaji:x[2],ar:x[3],star:x[4],digit:i+1}));
+
+/* ================= STATE ================= */
+let idx = 0; // 0-based, digit = idx+1
+
+const stage = document.getElementById('stage');
+const navrow = document.getElementById('navrow');
+const dotsEl = document.getElementById('dots');
+
+function render(){
+  const d = idx+1;
+  const num = numbers.find(x=>x.digit===d);
+  const mon = months.find(x=>x.digit===d);
+  const day = days.find(x=>x.digit===d);
+
+  const rowHtml = (label, item, cls)=>{
+    if(!item) return `<div class="trow missing ${cls}"><span class="lbl">${label}</span><span>غير متوفر</span></div>`;
+    return `<div class="trow ${cls}">
+        <span class="lbl">${label}</span>
+        <span class="kj">${item.kanji}</span>
+        <span class="rd">${item.reading} / ${item.romaji}</span>
+        <span class="ar">${item.ar}</span>
+      </div>`;
+  };
+
+  stage.innerHTML = `
+    <div class="triple-face">
+      <div class="triple-digit">${d}</div>
+      ${rowHtml('🔢 رقم', num, 'num')}
+      ${rowHtml('📅 شهر', mon, 'mon')}
+      ${rowHtml('☀️ يوم', day, 'day')}
+      ${day && day.star ? '<div class="star">⭐ قراءة اليوم غير منتظمة</div>' : ''}
+    </div>`;
+
+  navrow.innerHTML = `
+    <button class="btn prev" id="prevBtn">◀ السابق</button>
+    <button class="btn next" id="nextBtn">التالي ▶</button>`;
+  document.getElementById('prevBtn').onclick = ()=>{ idx=(idx-1+31)%31; render(); };
+  document.getElementById('nextBtn').onclick = ()=>{ idx=(idx+1)%31; render(); };
+
+  document.getElementById('jumpInput').value = d;
+  renderDots();
+}
+
+function renderDots(){
+  dotsEl.innerHTML = Array.from({length:31},(_,i)=>{
+    const d=i+1;
+    return `<div class="dot ${i===idx?'active':''}" data-d="${d}">${d}</div>`;
+  }).join('');
+  dotsEl.querySelectorAll('.dot').forEach(el=>{
+    el.onclick = ()=>{ idx = parseInt(el.getAttribute('data-d'))-1; render(); };
+  });
+}
+
+document.getElementById('jumpBtn').onclick = ()=>{
+  let v = parseInt(document.getElementById('jumpInput').value);
+  if(isNaN(v)) v=1;
+  v = Math.max(1, Math.min(31, v));
+  idx = v-1;
+  render();
+};
+document.getElementById('jumpInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') document.getElementById('jumpBtn').click();
+});
+
+render();
+</script>
+</body>
+</html>

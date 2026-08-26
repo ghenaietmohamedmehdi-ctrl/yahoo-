@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N5への旅 — Japanese N5 Learning Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#14213d; --navy-2:#1e2f52;
+    --cream:#f6f1e6; --cream-2:#efe8d6;
+    --vermillion:#c8102e; --gold:#c9a227; --gold-light:#e6c65c;
+    --ink:#232323; --ink-soft:#5a5648;
+    --rail:#d4cbb2; --white:#fffdf7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Zen Kaku Gothic New',sans-serif; padding-bottom:60px;}
+  .jp{font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700; direction:ltr; unicode-bidi:isolate;}
+  .romaji{font-family:'JetBrains Mono',monospace; direction:ltr; unicode-bidi:isolate; color:var(--ink-soft); font-size:12.5px;}
+  .ar{font-family:'Noto Naskh Arabic',serif;}
+
+  header{
+    background:var(--navy); color:var(--white); text-align:center;
+    padding:34px 16px 22px; position:relative; overflow:hidden;
+  }
+  header::before{content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 15% 20%, rgba(230,198,92,0.12), transparent 40%),
+               radial-gradient(circle at 85% 85%, rgba(200,16,46,0.16), transparent 45%);}
+  header .kicker{position:relative; font-family:'JetBrains Mono',monospace; direction:ltr; letter-spacing:.18em; font-size:11px; color:var(--gold-light); text-transform:uppercase; margin-bottom:8px;}
+  header h1{position:relative; font-family:'Shippori Mincho',serif; direction:ltr; font-size:34px; margin:0 0 6px;}
+  header p{position:relative; font-family:'Noto Naskh Arabic',serif; font-size:16px; color:rgba(255,253,247,0.8); margin:0;}
+
+  nav{
+    display:flex; overflow-x:auto; gap:8px;
+    background:var(--navy-2); padding:10px 14px; position:sticky; top:0; z-index:50;
+    box-shadow:0 4px 10px -6px rgba(0,0,0,.3);
+  }
+  nav button{
+    flex:0 0 auto; background:rgba(255,255,255,0.08); color:var(--white); border:1px solid rgba(255,255,255,0.15);
+    border-radius:20px; padding:8px 16px; font-family:'Noto Naskh Arabic',serif; font-size:13.5px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; line-height:1.3;
+  }
+  nav button .njp{font-family:'Zen Kaku Gothic New',sans-serif; direction:ltr; font-weight:700; font-size:13px;}
+  nav button.active{background:var(--gold); color:var(--navy); border-color:var(--gold);}
+
+  .wrap{max-width:900px; margin:0 auto; padding:22px 16px 0;}
+  .chapter{display:none;}
+  .chapter.active{display:block;}
+  .chapter-head{margin-bottom:18px;}
+  .chapter-head .cjp{font-family:'Shippori Mincho',serif; direction:ltr; font-size:26px; color:var(--navy); margin:0 0 2px;}
+  .chapter-head .car{font-family:'Noto Naskh Arabic',serif; color:var(--ink-soft); font-size:15px; margin:0;}
+
+  .search{
+    width:100%; padding:10px 14px; border-radius:12px; border:1px solid var(--rail);
+    font-family:'Noto Naskh Arabic',serif; font-size:14px; margin-bottom:16px; background:var(--white);
+  }
+
+  .subsec{margin-bottom:26px;}
+  .subsec h3{
+    font-family:'Noto Naskh Arabic',serif; color:var(--vermillion); font-size:16px;
+    border-bottom:2px solid var(--cream-2); padding-bottom:6px; margin:0 0 10px;
+  }
+  .subsec h3 .sjp{font-family:'Zen Kaku Gothic New',sans-serif; direction:ltr; color:var(--navy); font-weight:700; margin-left:8px;}
+
+  /* KANA TABLE */
+  .kana-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:10px;}
+  .kcell{background:var(--white); border:1px solid var(--cream-2); border-radius:8px; text-align:center; padding:8px 4px;}
+  .kcell .kj{font-size:20px; font-weight:700; color:var(--navy); direction:ltr; display:block;}
+  .kcell .kr{font-family:'JetBrains Mono',monospace; direction:ltr; font-size:11px; color:var(--ink-soft);}
+  .kcell.empty{background:transparent; border:none;}
+
+  /* VOCAB / KANJI CARDS */
+  .card{
+    background:var(--white); border:1px solid var(--cream-2); border-radius:12px;
+    padding:12px 16px; margin-bottom:8px; display:flex; align-items:flex-start; gap:14px;
+  }
+  .card .num{font-family:'JetBrains Mono',monospace; direction:ltr; color:var(--gold); font-size:12px; font-weight:700; flex-shrink:0; width:26px; padding-top:2px;}
+  .card .kj{font-size:19px; font-weight:700; color:var(--navy); direction:ltr; display:block;}
+  .card .rd{font-family:'JetBrains Mono',monospace; direction:ltr; font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .card .mn{font-family:'Noto Naskh Arabic',serif; font-size:14px; color:var(--ink); margin-top:3px;}
+
+  /* GRAMMAR */
+  .gcard{background:var(--white); border:1px solid var(--cream-2); border-radius:12px; padding:14px 16px; margin-bottom:10px;}
+  .gcard .gnum{font-family:'JetBrains Mono',monospace; direction:ltr; color:var(--gold); font-size:11px; font-weight:700; text-transform:uppercase;}
+  .gcard .gpattern{font-size:18px; font-weight:700; color:var(--navy); direction:ltr; margin:3px 0 2px;}
+  .gcard .gmeaning{font-family:'Noto Naskh Arabic',serif; font-size:14px; color:var(--ink-soft); margin-bottom:8px;}
+  .gcard .gexample{background:var(--cream); border-radius:8px; padding:8px 12px;}
+  .gcard .gjp{direction:ltr; font-weight:700; font-size:15px; color:var(--ink);}
+  .gcard .gromaji{font-family:'JetBrains Mono',monospace; direction:ltr; font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .gcard .gar{font-family:'Noto Naskh Arabic',serif; font-size:13.5px; color:var(--ink); margin-top:2px;}
+
+  .tip{background:var(--white); border-right:4px solid var(--vermillion); border-radius:10px; padding:12px 16px; margin-bottom:10px; font-family:'Noto Naskh Arabic',serif; font-size:14.5px; line-height:1.9;}
+  .tip b{color:var(--navy);}
+
+  .cat-grid{display:grid; grid-template-columns:1fr; gap:0;}
+  .no-results{text-align:center; color:var(--ink-soft); font-family:'Noto Naskh Arabic',serif; padding:20px; display:none;}
+
+/* ===== N5 PRO UPGRADE ===== */
+:root{--bg:#07111f;--surface:#0e1b2d;--surface-2:#13243b;--text:#f5f7fb;--muted:#aebbd0;--border:rgba(255,255,255,.10);--accent:#e6b84a;--red:#ef476f;--blue:#4cc9f0;--green:#55d187;--purple:#b58cff;--orange:#ff9f43;--shadow:0 18px 50px rgba(0,0,0,.25)}
+html{scroll-behavior:smooth}body{background:radial-gradient(circle at 15% 0%,#122846 0%,var(--bg) 38%,#050b14 100%);color:var(--text);font-size:17px}
+body.light-mode{background:var(--cream);color:var(--ink)}body.light-mode .pro-card,body.light-mode .pro-panel,body.light-mode .flash-face{background:var(--white);color:var(--ink)}
+body.light-mode .pro-muted{color:var(--ink-soft)}body.light-mode .pro-overlay{background:rgba(246,241,230,.96)}
+header{min-height:220px;display:flex;flex-direction:column;justify-content:center}header h1{font-size:clamp(38px,7vw,62px)}header p{font-size:20px}
+nav{backdrop-filter:blur(14px);background:rgba(8,20,35,.92)}.wrap{max-width:1100px}
+.search{font-size:17px;padding:15px 18px;border-radius:16px;background:var(--surface);color:var(--text);border-color:var(--border)}.search::placeholder{color:var(--muted)}
+.pro-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}.pro-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:14px;padding:11px 15px;font:600 15px 'Zen Kaku Gothic New',sans-serif;cursor:pointer;transition:.2s}.pro-btn:hover{transform:translateY(-2px);border-color:var(--accent)}.pro-btn.primary{background:linear-gradient(135deg,#e6b84a,#c99a2e);color:#09111e;border:0}
+.pro-hero{display:grid;grid-template-columns:1.4fr .6fr;gap:16px;margin-bottom:18px}.pro-card{background:linear-gradient(145deg,rgba(19,36,59,.98),rgba(10,24,40,.98));border:1px solid var(--border);border-radius:22px;padding:22px;box-shadow:var(--shadow)}.pro-card h2,.pro-card h3{margin:0 0 8px}.pro-kicker{font:700 12px 'JetBrains Mono',monospace;color:var(--accent);letter-spacing:.12em;direction:ltr}.pro-big-jp{font:700 clamp(36px,8vw,64px) 'Zen Kaku Gothic New',sans-serif;direction:ltr}.pro-muted{color:var(--muted);line-height:1.8}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.04);text-align:center}.stat strong{display:block;font-size:24px}.stat span{font-size:12px;color:var(--muted)}
+.station-map{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.station{padding:12px 7px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);text-align:center;font-size:12px}.station.done{border-color:var(--green)}.station.current{border-color:var(--accent);box-shadow:0 0 0 2px rgba(230,184,74,.15)}.station .ico{font-size:24px;display:block;margin-bottom:5px}
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.legend span{padding:6px 9px;border-radius:10px;font-size:12px;font-weight:700}.legend .l1{color:#74c0fc;background:rgba(116,192,252,.12)}.legend .l2{color:#55d187;background:rgba(85,209,135,.12)}.legend .l3{color:#ff9f43;background:rgba(255,159,67,.12)}.legend .l4{color:#b58cff;background:rgba(181,140,255,.12)}
+.grammar-line{display:flex;gap:4px;flex-wrap:wrap;align-items:baseline;direction:ltr;margin:8px 0}.grammar-mark{padding:2px 6px;border-radius:7px;font-weight:800}.mark-subject{color:#74c0fc;background:rgba(116,192,252,.12)}.mark-particle{color:#55d187;background:rgba(85,209,135,.12)}.mark-verb{color:#ff9f43;background:rgba(255,159,67,.12)}.mark-time{color:#b58cff;background:rgba(181,140,255,.12)}
+.flash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.flashcard{min-height:250px;perspective:1000px;cursor:pointer}.flash-inner{position:relative;width:100%;height:100%;min-height:250px;transition:transform .6s;transform-style:preserve-3d}.flashcard.flipped .flash-inner{transform:rotateY(180deg)}.flash-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;border:1px solid var(--border);background:linear-gradient(145deg,#132942,#0d1b2d);padding:22px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.flash-back{transform:rotateY(180deg)}.flash-jp{font-size:42px;font-weight:900;direction:ltr}.flash-rm{font:700 14px 'JetBrains Mono',monospace;color:var(--accent);direction:ltr;margin-top:8px}.flash-ar{font-size:20px;margin-top:8px}.audio-btn{border:0;background:rgba(76,201,240,.13);color:var(--blue);border-radius:50%;width:46px;height:46px;font-size:21px;cursor:pointer;margin-top:12px}.fav{position:absolute;top:12px;right:12px;background:none;border:0;color:#7d8ba0;font-size:22px;cursor:pointer}.fav.active{color:var(--accent)}
+.pro-overlay{position:fixed;inset:0;background:rgba(4,10,18,.88);backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center;padding:14px}.pro-overlay.open{display:flex}.pro-panel{width:min(1000px,100%);max-height:94vh;overflow:auto;background:#0c1929;color:#f5f7fb;border:1px solid var(--border);border-radius:26px;box-shadow:0 30px 100px rgba(0,0,0,.5);padding:22px}.exam-head{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:-22px;background:rgba(12,25,41,.96);padding:8px 0 14px;z-index:3}.exam-title{font-size:24px;font-weight:900}.timer{font:900 20px 'JetBrains Mono',monospace;color:var(--accent);direction:ltr}.section-badge{display:inline-block;padding:7px 11px;border-radius:10px;background:rgba(230,184,74,.12);color:var(--accent);font-weight:800;margin:8px 0}.q-card{background:#102238;border:1px solid var(--border);border-radius:20px;padding:20px;margin:14px 0}.q-num{font:700 12px 'JetBrains Mono',monospace;color:var(--muted);direction:ltr}.q-text{font-size:22px;font-weight:800;line-height:1.8;margin:8px 0;direction:ltr}.choice-list{display:grid;gap:10px}.choice{display:flex;align-items:center;gap:10px;text-align:left;direction:ltr;background:#0c1a2b;border:1px solid var(--border);color:#f5f7fb;border-radius:14px;padding:14px;cursor:pointer;font-size:17px}.choice.selected{border-color:var(--accent);background:rgba(230,184,74,.10)}.exam-nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}.result-hero{text-align:center;padding:18px}.score-ring{width:170px;height:170px;border-radius:50%;margin:10px auto;display:grid;place-items:center;background:conic-gradient(var(--accent) calc(var(--score)*1%),#1b2d45 0);position:relative}.score-ring:after{content:"";position:absolute;inset:12px;border-radius:50%;background:#0c1929}.score-ring b{position:relative;z-index:1;font-size:42px}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.skill-card{padding:15px;border-radius:16px;background:#102238;border:1px solid var(--border);text-align:center}.skill-card .pct{font-size:28px;font-weight:900}.weak-list{display:flex;flex-wrap:wrap;gap:8px}.weak{padding:8px 11px;border-radius:10px;background:rgba(239,71,111,.12);color:#ff8aa3}
+@media(max-width:700px){body{font-size:18px}.pro-hero{grid-template-columns:1fr}.station-map{grid-template-columns:repeat(3,1fr)}.result-grid{grid-template-columns:repeat(2,1fr)}.pro-panel{padding:15px;border-radius:20px}.q-text{font-size:20px}.card{padding:16px}.card .kj{font-size:23px}.gcard .gpattern{font-size:21px}}
+
+
+/* ===== V2 UX / ACCESSIBILITY / MOBILE UPGRADE ===== */
+.quick-panel{overflow:hidden}
+.quick-head{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.daily-progress{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--accent) 0%, rgba(255,255,255,.08) 0);
+  position:relative;font-weight:900}
+.daily-progress:after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--surface)}
+.daily-progress span{position:relative;z-index:1;font-size:13px}
+.progress-track{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:16px 0}
+.progress-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--accent));border-radius:999px;transition:width .4s}
+.quick-actions{display:flex;gap:8px;flex-wrap:wrap}
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.lesson-item{padding:14px;border:1px solid var(--border);background:var(--surface-2);border-radius:16px}
+.lesson-item strong{display:block;font-size:20px;margin-bottom:3px}
+.lesson-item small{color:var(--muted)}
+.empty-state{text-align:center;padding:36px 15px;color:var(--muted)}
+.favorite-row{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--border);background:var(--surface-2);border-radius:15px;margin-bottom:8px}
+.favorite-row .fav-main{flex:1}
+.favorite-row button{flex-shrink:0}
+.kcell{cursor:pointer;transition:.18s}
+.kcell:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.kcell:focus-visible,.choice:focus-visible,.pro-btn:focus-visible,.audio-btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.card{transition:.18s}
+.card:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.search{position:relative}
+.search-results-note{font-size:13px;color:var(--muted);margin:-7px 0 12px}
+.exam-progress{height:7px;background:#1b2d45;border-radius:999px;overflow:hidden;margin:8px 0 14px}
+.exam-progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--accent));transition:width .25s}
+.choice.correct{border-color:var(--green);background:rgba(85,209,135,.10)}
+.choice.wrong{border-color:var(--red);background:rgba(239,71,111,.10)}
+.answer-feedback{margin-top:12px;padding:12px;border-radius:12px;background:rgba(76,201,240,.08);color:var(--muted);line-height:1.7}
+@media(max-width:700px){
+  .quick-head{align-items:flex-start}
+  .daily-progress{width:62px;height:62px}
+  .quick-actions .pro-btn{flex:1;min-width:135px}
+  .exam-head{top:-15px}
+}
+
+</style>
+
+<style>
+.v3-flash-wrap{max-width:720px;margin:auto;padding:8px}
+.v3-counter{text-align:center;opacity:.7;margin-bottom:12px}
+.v3-card{width:100%;height:350px;background:transparent;border:0;padding:0;cursor:pointer;perspective:1200px}
+.v3-inner{display:block;width:100%;height:100%;position:relative;transition:transform .55s;transform-style:preserve-3d}
+.v3-card.flip .v3-inner{transform:rotateY(180deg)}
+.v3-face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--border,rgba(255,255,255,.12));border-radius:24px;background:var(--surface,#142238);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-shadow:0 15px 40px rgba(0,0,0,.2)}
+.v3-back{transform:rotateY(180deg)}
+.v3-icon{font-size:46px}.v3-jp{font-size:50px;font-weight:900;direction:ltr}.v3-read{font-size:22px;direction:ltr;margin-top:8px}.v3-romaji{font-family:monospace;opacity:.7;margin-top:5px}.v3-mean{font-size:30px;margin:15px}.v3-face small{opacity:.6;margin-top:22px}
+.v3-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.v3-fav{border-color:#e6b84a!important;color:#e6b84a!important}
+.v3-light{--surface:#fffdf7!important;--border:rgba(20,33,61,.16)!important}.v3-light-body{background:#f6f1e6!important;color:#232323!important}
+@media(max-width:700px){.v3-card{height:300px}.v3-jp{font-size:40px}.v3-mean{font-size:24px}.v3-actions{grid-template-columns:1fr 1fr}}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="kicker">JLPT N5 · COMPLETE REFERENCE</div>
+  <h1>N5への旅</h1>
+  <p>الكتاب المرجعي الكامل — من الألف إلى الياء</p>
+</header>
+
+<nav id="navRow"></nav>
+
+<div class="wrap">
+  <input class="search" id="searchBox" placeholder="🔍 ابحث عن كلمة، كانجي، ولا قاعدة..." oninput="onSearch()">
+  
+<div class="pro-toolbar">
+  <button class="pro-btn primary" onclick="openN5Exam()">🏯 N5 Final Test</button>
+  <button class="pro-btn" onclick="openFlashcards()">🃏 Flashcards</button>
+  <button class="pro-btn" onclick="openFavorites()">⭐ المفضلة</button>
+  <button class="pro-btn" onclick="openProgress()">📈 تقدمي</button>
+  <button class="pro-btn" onclick="toggleTheme()">🌙 Theme</button>
+  <button class="pro-btn" onclick="speak('日本語を勉強しましょう')">🔊 اختبار الصوت</button>
+</div>
+<section class="pro-hero">
+  <div class="pro-card">
+    <div class="pro-kicker">JAPANESE LEARNING JOURNEY</div>
+    <div class="pro-big-jp">N5への旅</div>
+    <p class="pro-muted">رحلة تفاعلية من الهيراغانا إلى اختبار N5 النهائي. تعلّم، اسمع، راجع، ثم اختبر نفسك.</p>
+    <div class="station-map">
+      <div class="station done"><span class="ico">🔤</span>かな</div>
+      <div class="station current"><span class="ico">📚</span>ごい</div>
+      <div class="station"><span class="ico">📖</span>ぶんぽう</div>
+      <div class="station"><span class="ico">🎧</span>ちょうかい</div>
+      <div class="station"><span class="ico">🏆</span>N5 TEST</div>
+    </div>
+  </div>
+  <div class="pro-card">
+    <h3>📊 تقدمك</h3>
+    <div class="stat-grid">
+      <div class="stat"><strong id="xpStat">0</strong><span>XP</span></div>
+      <div class="stat"><strong id="learnedStat">0</strong><span>Learned</span></div>
+      <div class="stat"><strong id="streakStat">0</strong><span>Streak 🔥</span></div>
+    </div>
+    <p class="pro-muted">المفضلة تحفظ تلقائيًا على جهازك.</p>
+  </div>
+</section>
+
+<section class="pro-card quick-panel" style="margin-bottom:18px">
+  <div class="quick-head">
+    <div>
+      <div class="pro-kicker">TODAY'S STUDY</div>
+      <h3 style="margin:4px 0">جلسة اليوم</h3>
+      <p class="pro-muted" style="margin:0">ابدأ بدقيقتين فقط: راجع، اسمع، ثم اختبر نفسك.</p>
+    </div>
+    <div class="daily-progress"><span id="dailyPct">0%</span></div>
+  </div>
+  <div class="progress-track"><span id="dailyBar"></span></div>
+  <div class="quick-actions">
+    <button class="pro-btn" onclick="setChapterAndScroll('kana')">🔤 مراجعة Kana</button>
+    <button class="pro-btn" onclick="setChapterAndScroll('vocab')">📚 10 كلمات</button>
+    <button class="pro-btn" onclick="setChapterAndScroll('grammar')">📖 قاعدة</button>
+    <button class="pro-btn primary" onclick="openN5Exam(10)">⚡ اختبار سريع 10 أسئلة</button>
+  </div>
+</section>
+
+<section class="pro-card" style="margin-bottom:18px">
+  <h3>🎨 نظام ألوان القواعد</h3>
+  <div class="legend">
+    <span class="l1">🔵 Subject / الفاعل</span><span class="l2">🟢 Particle / حرف الجر</span>
+    <span class="l3">🟠 Verb / الفعل</span><span class="l4">🟣 Time / الزمن</span>
+  </div>
+  <div class="grammar-line">
+    <span class="grammar-mark mark-subject">私は</span><span class="grammar-mark mark-time">毎日</span>
+    <span class="grammar-mark mark-particle">学校へ</span><span class="grammar-mark mark-verb">行きます</span>
+  </div>
+</section>
+
+<div id="chapters"></div>
+</div>
+
+<script>
+/* ===================== DATA ===================== */
+
+const CHAPTERS = [
+  {id:"kana", jp:"かな", ar:"الكتابة"},
+  {id:"grammar", jp:"ぶんぽう", ar:"القواعد"},
+  {id:"vocab", jp:"ごい", ar:"المفردات"},
+  {id:"kanji", jp:"かんじ", ar:"الكانجي"},
+  {id:"listening", jp:"ちょうかい", ar:"الاستماع"},
+  {id:"reading", jp:"どっかい", ar:"القراءة"},
+];
+
+// ---- KANA ----
+const HIRAGANA_BASE = [
+  ["あ","a"],["い","i"],["う","u"],["え","e"],["お","o"],
+  ["か","ka"],["き","ki"],["く","ku"],["け","ke"],["こ","ko"],
+  ["さ","sa"],["し","shi"],["す","su"],["せ","se"],["そ","so"],
+  ["た","ta"],["ち","chi"],["つ","tsu"],["て","te"],["と","to"],
+  ["な","na"],["に","ni"],["ぬ","nu"],["ね","ne"],["の","no"],
+  ["は","ha"],["ひ","hi"],["ふ","fu"],["へ","he"],["ほ","ho"],
+  ["ま","ma"],["み","mi"],["む","mu"],["め","me"],["も","mo"],
+  ["や","ya"],["","" ],["ゆ","yu"],["","" ],["よ","yo"],
+  ["ら","ra"],["り","ri"],["る","ru"],["れ","re"],["ろ","ro"],
+  ["わ","wa"],["","" ],["","" ],["","" ],["を","wo"],
+  ["ん","n"],
+];
+const HIRAGANA_DAKUTEN = [
+  ["が","ga"],["ぎ","gi"],["ぐ","gu"],["げ","ge"],["ご","go"],
+  ["ざ","za"],["じ","ji"],["ず","zu"],["ぜ","ze"],["ぞ","zo"],
+  ["だ","da"],["ぢ","ji"],["づ","zu"],["で","de"],["ど","do"],
+  ["ば","ba"],["び","bi"],["ぶ","bu"],["べ","be"],["ぼ","bo"],
+  ["ぱ","pa"],["ぴ","pi"],["ぷ","pu"],["ぺ","pe"],["ぽ","po"],
+];
+const HIRAGANA_YOUON = [
+  ["きゃ","kya"],["きゅ","kyu"],["きょ","kyo"],
+  ["しゃ","sha"],["しゅ","shu"],["しょ","sho"],
+  ["ちゃ","cha"],["ちゅ","chu"],["ちょ","cho"],
+  ["にゃ","nya"],["にゅ","nyu"],["にょ","nyo"],
+  ["ひゃ","hya"],["ひゅ","hyu"],["ひょ","hyo"],
+  ["みゃ","mya"],["みゅ","myu"],["みょ","myo"],
+  ["りゃ","rya"],["りゅ","ryu"],["りょ","ryo"],
+  ["ぎゃ","gya"],["ぎゅ","gyu"],["ぎょ","gyo"],
+  ["じゃ","ja"],["じゅ","ju"],["じょ","jo"],
+  ["びゃ","bya"],["びゅ","byu"],["びょ","byo"],
+  ["ぴゃ","pya"],["ぴゅ","pyu"],["ぴょ","pyo"],
+];
+const KATAKANA_BASE = [
+  ["ア","a"],["イ","i"],["ウ","u"],["エ","e"],["オ","o"],
+  ["カ","ka"],["キ","ki"],["ク","ku"],["ケ","ke"],["コ","ko"],
+  ["サ","sa"],["シ","shi"],["ス","su"],["セ","se"],["ソ","so"],
+  ["タ","ta"],["チ","chi"],["ツ","tsu"],["テ","te"],["ト","to"],
+  ["ナ","na"],["ニ","ni"],["ヌ","nu"],["ネ","ne"],["ノ","no"],
+  ["ハ","ha"],["ヒ","hi"],["フ","fu"],["ヘ","he"],["ホ","ho"],
+  ["マ","ma"],["ミ","mi"],["ム","mu"],["メ","me"],["モ","mo"],
+  ["ヤ","ya"],["","" ],["ユ","yu"],["","" ],["ヨ","yo"],
+  ["ラ","ra"],["リ","ri"],["ル","ru"],["レ","re"],["ロ","ro"],
+  ["ワ","wa"],["","" ],["","" ],["","" ],["ヲ","wo"],
+  ["ン","n"],
+];
+const KATAKANA_DAKUTEN = [
+  ["ガ","ga"],["ギ","gi"],["グ","gu"],["ゲ","ge"],["ゴ","go"],
+  ["ザ","za"],["ジ","ji"],["ズ","zu"],["ゼ","ze"],["ゾ","zo"],
+  ["ダ","da"],["ヂ","ji"],["ヅ","zu"],["デ","de"],["ド","do"],
+  ["バ","ba"],["ビ","bi"],["ブ","bu"],["ベ","be"],["ボ","bo"],
+  ["パ","pa"],["ピ","pi"],["プ","pu"],["ペ","pe"],["ポ","po"],
+];
+
+// ---- GRAMMAR (N5 core patterns) ----
+const GRAMMAR = [
+  {n:1, pattern:"Nは Nです", meaning:"N هو/هي N (جملة اسمية أساسية)", jp:"わたしは学生です。", romaji:"Watashi wa gakusei desu.", ar:"أنا طالب."},
+  {n:2, pattern:"Nですか", meaning:"سؤال بسيط بـ 'هل...؟'", jp:"あなたは先生ですか。", romaji:"Anata wa sensei desu ka?", ar:"واش نتا أستاذ؟"},
+  {n:3, pattern:"Nじゃありません", meaning:"النفي الاسمي", jp:"これは本じゃありません。", romaji:"Kore wa hon ja arimasen.", ar:"هادا ماشي كتاب."},
+  {n:4, pattern:"これ・それ・あれ", meaning:"هادا / هاداك / هاداك (بعيد)", jp:"それは何ですか。", romaji:"Sore wa nan desu ka?", ar:"شنو هاداك؟"},
+  {n:5, pattern:"ここ・そこ・あそこ", meaning:"هنا / تما / لهيه", jp:"トイレはあそこです。", romaji:"Toire wa asoko desu.", ar:"المرحاض تما لهيه."},
+  {n:6, pattern:"〜があります/います", meaning:"وجود شيء (جماد) / شخص أو حيوان", jp:"机の上に本があります。", romaji:"Tsukue no ue ni hon ga arimasu.", ar:"كاين كتاب فوق الطاولة."},
+  {n:7, pattern:"い形容詞 (〜いです)", meaning:"تصريف الصفة اللي كتسالي بـ い", jp:"この本は面白いです。", romaji:"Kono hon wa omoshiroi desu.", ar:"هاد الكتاب زوين (ممتع)."},
+  {n:8, pattern:"い形容詞の否定 (〜くないです)", meaning:"نفي صفة い", jp:"今日は暑くないです。", romaji:"Kyou wa atsukunai desu.", ar:"اليوم ماشي سخون."},
+  {n:9, pattern:"な形容詞 (〜です/〜じゃありません)", meaning:"تصريف صفة な", jp:"ここは静かです。", romaji:"Koko wa shizuka desu.", ar:"هنا هادي."},
+  {n:10, pattern:"動詞ます形", meaning:"الفعل فالحاضر/المستقبل المؤدب", jp:"毎日勉強します。", romaji:"Mainichi benkyou shimasu.", ar:"كنقرا كل نهار."},
+  {n:11, pattern:"動詞ません", meaning:"نفي الفعل", jp:"今日は働きません。", romaji:"Kyou wa hatarakimasen.", ar:"اليوم ماخدمش."},
+  {n:12, pattern:"〜ました・〜ませんでした", meaning:"الفعل فالماضي (إيجاب/نفي)", jp:"昨日映画を見ました。", romaji:"Kinou eiga o mimashita.", ar:"البارح شفت فيلم."},
+  {n:13, pattern:"〜て形", meaning:"صيغة الربط بين الأفعال / الطلب", jp:"ここに座ってください。", romaji:"Koko ni suwatte kudasai.", ar:"عافاك كليس هنا."},
+  {n:14, pattern:"〜たいです", meaning:"التعبير على الرغبة", jp:"日本へ行きたいです。", romaji:"Nihon e ikitai desu.", ar:"بغيت نمشي لليابان."},
+  {n:15, pattern:"〜ませんか", meaning:"دعوة مؤدبة", jp:"いっしょに食べませんか。", romaji:"Issho ni tabemasen ka?", ar:"واش بغيتي ناكلو مع بعضياتنا؟"},
+  {n:16, pattern:"〜ましょう", meaning:"اقتراح 'يالله ندارو'", jp:"駅まで歩きましょう。", romaji:"Eki made arukimashou.", ar:"يالله نمشيو للمحطة."},
+  {n:17, pattern:"〜てください", meaning:"طلب مؤدب", jp:"名前を書いてください。", romaji:"Namae o kaite kudasai.", ar:"عافاك كتب سميتك."},
+  {n:18, pattern:"〜ています", meaning:"الاستمرارية / الحالة", jp:"今、雨が降っています。", romaji:"Ima, ame ga futte imasu.", ar:"دابا الشتا كتنزل."},
+  {n:19, pattern:"〜てもいいです", meaning:"الإذن", jp:"ここで写真を撮ってもいいです。", romaji:"Koko de shashin o totte mo ii desu.", ar:"يمكن تاخد تصويرة هنا."},
+  {n:20, pattern:"〜てはいけません", meaning:"المنع", jp:"ここで走ってはいけません。", romaji:"Koko de hashitte wa ikemasen.", ar:"ماشي مسموح تجري هنا."},
+  {n:21, pattern:"どうやって／何で", meaning:"كيفاش / بشناهو (الوسيلة)", jp:"何で会社に行きますか。", romaji:"Nan de kaisha ni ikimasu ka?", ar:"بشناهو كتمشي للخدمة؟"},
+  {n:22, pattern:"〜から〜まで", meaning:"من... حتا...", jp:"家から駅まで10分です。", romaji:"Ie kara eki made juppun desu.", ar:"من الدار للمحطة 10 دقايق."},
+  {n:23, pattern:"〜が好きです／嫌いです", meaning:"التعبير على الحب/الكره", jp:"すしが好きです。", romaji:"Sushi ga suki desu.", ar:"كنحب السوشي."},
+  {n:24, pattern:"〜と思います", meaning:"كنظن / نتصور", jp:"明日雨が降ると思います。", romaji:"Ashita ame ga furu to omoimasu.", ar:"كنظن غادي تشتا غدا."},
+  {n:25, pattern:"疑問詞 (何・誰・いつ・どこ)", meaning:"أدوات الاستفهام", jp:"これは誰の傘ですか。", romaji:"Kore wa dare no kasa desu ka?", ar:"هاد المظلة ديال شكون؟"},
+];
+
+// ---- VOCAB (themed) ----
+const VOCAB = {
+  "الأرقام": [
+    ["一","いち","1"],["二","に","2"],["三","さん","3"],["四","よん","4"],["五","ご","5"],
+    ["六","ろく","6"],["七","なな","7"],["八","はち","8"],["九","きゅう","9"],["十","じゅう","10"],
+    ["百","ひゃく","100"],["千","せん","1000"],["万","まん","10000"],
+  ],
+  "الوقت": [
+    ["今","いま","دابا"],["今日","きょう","اليوم"],["明日","あした","غدا"],["昨日","きのう","البارح"],
+    ["今週","こんしゅう","هاد الأسبوع"],["来週","らいしゅう","الأسبوع الجاي"],["先週","せんしゅう","الأسبوع اللي فات"],
+    ["朝","あさ","الصباح"],["昼","ひる","النهار/الظهر"],["夜","よる","الليل"],["時間","じかん","الوقت/الساعة"],["分","ふん","دقيقة"],
+  ],
+  "أيام الأسبوع": [
+    ["月曜日","げつようび","الاثنين"],["火曜日","かようび","الثلاثاء"],["水曜日","すいようび","الأربعاء"],
+    ["木曜日","もくようび","الخميس"],["金曜日","きんようび","الجمعة"],["土曜日","どようび","السبت"],["日曜日","にちようび","الأحد"],
+  ],
+  "العائلة": [
+    ["家族","かぞく","العائلة"],["お父さん","おとうさん","بابا (ديال حد آخر)"],["お母さん","おかあさん","ماما (ديال حد آخر)"],
+    ["兄","あに","خويا الكبير"],["姉","あね","ختي الكبيرة"],["弟","おとうと","خويا الصغير"],["妹","いもうと","ختي الصغيرة"],
+  ],
+  "الأكل": [
+    ["ご飯","ごはん","الماكلة/الروز"],["パン","ぱん","الخبز"],["水","みず","الما"],["お茶","おちゃ","أتاي"],
+    ["コーヒー","こーひー","القهوة"],["肉","にく","اللحم"],["魚","さかな","الحوت"],["野菜","やさい","الخضرة"],["果物","くだもの","الفاكية"],
+  ],
+  "الأماكن": [
+    ["学校","がっこう","المدرسة"],["会社","かいしゃ","الشركة"],["家","いえ","الدار"],["駅","えき","المحطة"],
+    ["病院","びょういん","المستشفى"],["銀行","ぎんこう","البنك"],["郵便局","ゆうびんきょく","البوسطة"],["公園","こうえん","الحديقة"],["店","みせ","الحانوت"],
+  ],
+  "وسائل النقل": [
+    ["電車","でんしゃ","القطار"],["バス","ばす","الباص"],["車","くるま","الطوموبيل"],["自転車","じてんしゃ","البيسكليطة"],
+    ["飛行機","ひこうき","الطيارة"],["タクシー","たくしー","التاكسي"],["歩いて","あるいて","ماشي على الرجلين"],
+  ],
+  "الصفات": [
+    ["大きい","おおきい","كبير"],["小さい","ちいさい","صغير"],["新しい","あたらしい","جديد"],["古い","ふるい","قديم"],
+    ["高い","たかい","غالي/عالي"],["安い","やすい","رخيص"],["いい","いい","مزيان"],["暑い","あつい","سخون (الجو)"],
+    ["寒い","さむい","بارد (الجو)"],["忙しい","いそがしい","مشغول"],["静か","しずか","هادي"],
+  ],
+  "الأفعال": [
+    ["行きます","いきます","كيمشي"],["来ます","きます","كيجي"],["帰ります","かえります","كيرجع"],
+    ["食べます","たべます","كياكل"],["飲みます","のみます","كيشرب"],["見ます","みます","كيشوف"],
+    ["聞きます","ききます","كيسمع"],["話します","はなします","كيهضر"],["読みます","よみます","كيقرا"],
+    ["書きます","かきます","كيكتب"],["買います","かいます","كيشري"],["会います","あいます","كيلتقي"],
+    ["寝ます","ねます","كينعس"],["起きます","おきます","كيفيق"],["働きます","はたらきます","كيخدم"],
+  ],
+  "عبارات يومية": [
+    ["おはようございます","ohayou gozaimasu","صباح الخير"],["こんにちは","konnichiwa","السلام (النهار)"],
+    ["こんばんは","konbanwa","السلام (العشية)"],["さようなら","sayounara","بسلامة"],
+    ["ありがとうございます","arigatou gozaimasu","شكرا بزاف"],["すみません","sumimasen","سماحة"],
+    ["はじめまして","hajimemashite","تشرفنا"],["よろしくお願いします","yoroshiku onegaishimasu","نتمنى تعاون زوين"],
+  ],
+};
+
+// ---- KANJI ----
+const KANJI = [
+  ["一","いち・ひと","1 / واحد"],["二","に・ふた","2 / جوج"],["三","さん・みっ","3 / تلاتة"],
+  ["四","し・よん","4 / ربعة"],["五","ご・いつ","5 / خمسة"],["六","ろく・むっ","6 / ستة"],
+  ["七","しち・なな","7 / سبعة"],["八","はち・やっ","8 / تمنية"],["九","きゅう・ここの","9 / تسعة"],
+  ["十","じゅう・とお","10 / عشرة"],["百","ひゃく","100"],["千","せん","1000"],["万","まん","10000"],
+  ["円","えん","الين (العملة)"],
+  ["日","にち・ひ","نهار / شمس"],["月","げつ・つき","شهر / قمر"],["火","か・ひ","النار"],
+  ["水","すい・みず","الما"],["木","もく・き","الشجرة"],["金","きん・かね","الذهب / الفلوس"],
+  ["土","ど・つち","الأرض"],["曜","よう","(يوم فالأسبوع)"],["年","ねん・とし","العام"],
+  ["時","じ・とき","الساعة/الوقت"],["分","ふん・わ","دقيقة/جزء"],["間","かん・あいだ","بين/مدة"],["週","しゅう","الأسبوع"],
+  ["人","じん・ひと","الإنسان"],["男","だん・おとこ","راجل"],["女","じょ・おんな","مرا"],["子","し・こ","ولد/بنت (صغير)"],
+  ["父","ふ・ちち","بابا"],["母","ぼ・はは","ماما"],["兄","きょう・あに","خويا الكبير"],["姉","し・あね","ختي الكبيرة"],
+  ["弟","だい・おとうと","خويا الصغير"],["妹","まい・いもうと","ختي الصغيرة"],["友","ゆう・とも","صاحب"],["達","たち","(جمع)"],
+  ["上","じょう・うえ","فوق"],["下","か・した","تحت"],["左","さ・ひだり","اليسار"],["右","う・みぎ","اليمين"],
+  ["中","ちゅう・なか","الوسط/الداخل"],["外","がい・そと","برا"],["前","ぜん・まえ","قدام"],["後","ご・あと","مورا"],
+  ["山","さん・やま","الجبل"],["川","せん・かわ","الواد"],["田","でん・た","الحقل"],["町","ちょう・まち","الحومة/المدينة"],
+  ["村","そん・むら","الدوار"],["国","こく・くに","البلاد"],["語","ご","اللغة"],["文","ぶん","الجملة/النص"],
+  ["字","じ","الحرف"],["本","ほん","الكتاب/الأصل"],
+  ["大","だい・おお","كبير"],["小","しょう・ちい","صغير"],["多","た・おお","بزاف"],["少","しょう・すこ","شوية"],
+  ["高","こう・たか","عالي/غالي"],["安","あん・やす","رخيص/آمن"],["新","しん・あたら","جديد"],["古","こ・ふる","قديم"],
+  ["長","ちょう・なが","طويل"],["短","たん・みじか","قصير"],["早","そう・はや","بكري"],["元","げん","الأصل/الصحة"],
+  ["行","こう・い","كيمشي"],["来","らい・く","كيجي"],["帰","き・かえ","كيرجع"],["食","しょく・た","الماكلة/كياكل"],
+  ["飲","いん・の","كيشرب"],["見","けん・み","كيشوف"],["聞","ぶん・き","كيسمع"],["話","わ・はな","كيهضر"],
+  ["読","どく・よ","كيقرا"],["書","しょ・か","كيكتب"],["買","ばい・か","كيشري"],["会","かい・あ","الاجتماع/كيلتقي"],
+  ["入","にゅう・はい","كيدخل"],["出","しゅつ・で","كيخرج"],["立","りつ・た","كيوقف"],["休","きゅう・やす","كيرتاح"],
+  ["学","がく","التعلم"],["校","こう","المدرسة"],["先","せん・さき","قبل"],["生","せい・い","الحياة/الطالب"],
+  ["社","しゃ","الشركة"],["銀","ぎん","الفضة"],["病","びょう・やまい","المرض"],["院","いん","المؤسسة"],
+  ["駅","えき","محطة القطار"],["天","てん","السما"],["気","き","الجو/الحالة"],["雨","う・あめ","الشتا"],
+  ["電","でん","الكهرباء"],["車","しゃ・くるま","الطوموبيل"],["私","し・わたし","أنا"],["何","か・なん","شنو"],
+  ["今","こん・いま","دابا"],["毎","まい","كل"],["好","こう・す","كيحب"],["近","きん・ちか","قريب"],
+  ["遠","えん・とお","بعيد"],["朝","ちょう・あさ","الصباح"],["夜","や・よる","الليل"],["昼","ちゅう・ひる","النهار"],
+];
+
+/* ===================== RENDER ===================== */
+
+let activeChapter = "kana";
+
+function initNav(){
+  const nav = document.getElementById("navRow");
+  CHAPTERS.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "navbtn" + (c.id===activeChapter ? " active" : "");
+    b.innerHTML = `<span class="njp">${c.jp}</span><span>${c.ar}</span>`;
+    b.onclick = ()=>{ activeChapter = c.id; renderNav(); renderChapters(); document.getElementById("searchBox").value=""; };
+    b.dataset.id = c.id;
+    nav.appendChild(b);
+  });
+}
+function renderNav(){
+  document.querySelectorAll("#navRow button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.id === activeChapter);
+  });
+}
+
+function kanaGrid(list, includeEmpty){
+  let html = '<div class="kana-grid">';
+  list.forEach(([k,r])=>{
+    if(!k){ html += '<div class="kcell empty"></div>'; return; }
+    html += `<div class="kcell" tabindex="0" role="button" aria-label="${k} ${r}" onclick="speak('${k}');touchStudy(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();speak('${k}');touchStudy(1)}"><span class="kj">${k}</span><span class="kr">${r}</span></div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderChapters(){
+  const container = document.getElementById("chapters");
+  container.innerHTML = "";
+
+  // KANA
+  const kanaDiv = document.createElement("div");
+  kanaDiv.className = "chapter" + (activeChapter==="kana" ? " active" : "");
+  kanaDiv.id = "chap-kana";
+  kanaDiv.innerHTML = `
+    <div class="chapter-head"><h2 class="cjp">かな</h2><p class="car">الكتابة الأساسية — هيراغانا وكاتاكانا</p></div>
+    <div class="subsec"><h3><span class="sjp">ひらがな</span>الهيراغانا الأساسية</h3>${kanaGrid(HIRAGANA_BASE)}</div>
+    <div class="subsec"><h3><span class="sjp">濁音</span>الأصوات المجهورة (ば،が...)</h3>${kanaGrid(HIRAGANA_DAKUTEN)}</div>
+    <div class="subsec"><h3><span class="sjp">拗音</span>الأصوات المركبة (きゃ،しゃ...)</h3>${kanaGrid(HIRAGANA_YOUON)}</div>
+    <div class="subsec"><h3><span class="sjp">カタカナ</span>الكاتاكانا الأساسية</h3>${kanaGrid(KATAKANA_BASE)}</div>
+    <div class="subsec"><h3><span class="sjp">濁音</span>كاتاكانا مجهورة</h3>${kanaGrid(KATAKANA_DAKUTEN)}</div>
+    <div class="tip"><b>ملاحظة:</b> っ (سوكوون) كتوقف الصوت شوية قبل الحرف اللي بعدها، مثلا がっこう (gakkou). و ー فالكاتاكانا كتمد الصوت، مثلا コーヒー (koohii).</div>
+  `;
+  container.appendChild(kanaDiv);
+
+  // GRAMMAR
+  const gDiv = document.createElement("div");
+  gDiv.className = "chapter" + (activeChapter==="grammar" ? " active" : "");
+  gDiv.id = "chap-grammar";
+  let gHtml = `<div class="chapter-head"><h2 class="cjp">ぶんぽう</h2><p class="car">25 قاعدة أساسية فمستوى N5</p></div>`;
+  GRAMMAR.forEach(g=>{
+    gHtml += `
+      <div class="gcard searchable" data-text="${g.pattern} ${g.jp} ${g.meaning}">
+        <div class="gnum">Point ${g.n}</div>
+        <div class="gpattern">${g.pattern}</div>
+        <div class="gmeaning">${g.meaning}</div>
+        <div class="gexample">
+          <div class="gjp">${g.jp}</div>
+          <div class="gromaji">${g.romaji}</div>
+          <div class="gar">${g.ar}</div>
+        </div>
+      </div>`;
+  });
+  gDiv.innerHTML = gHtml;
+  container.appendChild(gDiv);
+
+  // VOCAB
+  const vDiv = document.createElement("div");
+  vDiv.className = "chapter" + (activeChapter==="vocab" ? " active" : "");
+  vDiv.id = "chap-vocab";
+  let vHtml = `<div class="chapter-head"><h2 class="cjp">ごい</h2><p class="car">المفردات الأساسية مرتبة حسب الموضوع</p></div>`;
+  Object.keys(VOCAB).forEach(cat=>{
+    vHtml += `<div class="subsec"><h3>${cat}</h3>`;
+    VOCAB[cat].forEach((item, i)=>{
+      const [kj, rd, mn] = item;
+      vHtml += `
+        <div class="card searchable" data-text="${kj} ${rd} ${mn}">
+          <div class="num">${i+1}</div>
+          <div>
+            <span class="kj">${kj}</span>
+            <div class="rd">${rd}</div>
+            <div class="mn">${mn}</div>
+            <button class="audio-btn" onclick="event.stopPropagation(); speak('${kj}')">🔊</button>
+          </div>
+        </div>`;
+    });
+    vHtml += `</div>`;
+  });
+  vDiv.innerHTML = vHtml;
+  container.appendChild(vDiv);
+
+  // KANJI
+  const kDiv = document.createElement("div");
+  kDiv.className = "chapter" + (activeChapter==="kanji" ? " active" : "");
+  kDiv.id = "chap-kanji";
+  let kHtml = `<div class="chapter-head"><h2 class="cjp">かんじ</h2><p class="car">حوالي 90 كانجي أساسي لمستوى N5</p></div>`;
+  KANJI.forEach((item, i)=>{
+    const [kj, rd, mn] = item;
+    kHtml += `
+      <div class="card searchable" data-text="${kj} ${rd} ${mn}">
+        <div class="num">${i+1}</div>
+        <div>
+          <span class="kj">${kj}</span>
+          <div class="rd">${rd}</div>
+          <div class="mn">${mn}</div>
+        </div>
+      </div>`;
+  });
+  kDiv.innerHTML = kHtml;
+  container.appendChild(kDiv);
+
+  // LISTENING
+  const lDiv = document.createElement("div");
+  lDiv.className = "chapter" + (activeChapter==="listening" ? " active" : "");
+  lDiv.id = "chap-listening";
+  lDiv.innerHTML = `
+    <div class="chapter-head"><h2 class="cjp">ちょうかい</h2><p class="car">نصائح واستراتيجيات للاستماع</p></div>
+    <div class="tip"><b>1. تسنى الكلمات المفتاحية:</b> فامتحان N5، غالبا كيسولوك على وقت، مكان، ولا شخص. ركز على どこ (فين)، いつ (فوقاش)، だれ (شكون)، いくつ (شحال).</div>
+    <div class="tip"><b>2. اقرا الأسئلة قبل ما تسمع:</b> إلا كان عندك خيارات مكتوبة، اقراهم قبل، باش تعرف على شنو خاصك تركز.</div>
+    <div class="tip"><b>3. الأرقام والأوقات:</b> تدرب بزاف على سماع الأرقام (7時、3分前، إلخ) حيت هوما غالبا محور الأسئلة.</div>
+    <div class="tip"><b>4. الجمل القصيرة السريعة:</b> فقسم "quick response"، خاصك تعرف الردود المؤدبة السريعة (すみません، いいですよ، わかりました).</div>
+    <div class="tip"><b>5. ماتقلقش على كل كلمة:</b> ماخاصكش تفهم كل شي، خاصك بغير تشد الفكرة العامة والمعلومة المطلوبة.</div>
+  `;
+  container.appendChild(lDiv);
+
+  // READING
+  const rDiv = document.createElement("div");
+  rDiv.className = "chapter" + (activeChapter==="reading" ? " active" : "");
+  rDiv.id = "chap-reading";
+  rDiv.innerHTML = `
+    <div class="chapter-head"><h2 class="cjp">どっかい</h2><p class="car">نصائح واستراتيجيات للقراءة</p></div>
+    <div class="tip"><b>1. اقرا العنوان والسؤال قبل النص:</b> هادشي كيوريك على شنو خاصك تدور فالنص.</div>
+    <div class="tip"><b>2. تعرف على الكانجي الأساسي:</b> N5 كيستعمل كانجي بسيط بزاف، خاصك تكون متقن الـ90 كانجي اللي فوق.</div>
+    <div class="tip"><b>3. اللافتات والرسائل القصيرة:</b> تمرن على قراءة إعلانات، جداول أوقات، ورسائل قصيرة (بحال ديال إيميل بسيط).</div>
+    <div class="tip"><b>4. استعمل السياق:</b> إلا صادفتك كلمة ماتعرفهاش، حاول تفهمها من الكلمات اللي حداها.</div>
+    <div class="tip"><b>5. دير تمارين قراءة يومية:</b> بحال الجمل والحوارات اللي كتقرا فـ Irodori، هادشي بالضبط نوعية النصوص اللي غادي تلقى.</div>
+  `;
+  container.appendChild(rDiv);
+}
+
+function normalizeSearch(s){
+  return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+}
+function onSearch(){
+  const q = normalizeSearch(document.getElementById("searchBox").value);
+  let shown=0;
+  document.querySelectorAll("#chapters .chapter.active .searchable").forEach(el=>{
+    const text=normalizeSearch(el.dataset.text||"");
+    const ok=!q||text.includes(q);
+    el.style.display=ok?"":"none"; if(ok)shown++;
+  });
+  const chapter=document.querySelector("#chapters .chapter.active");
+  let note=chapter?.querySelector(".search-results-note");
+  if(!note && chapter){note=document.createElement("div");note.className="search-results-note";chapter.prepend(note)}
+  if(note)note.textContent=q?`🔎 ${shown} نتيجة مطابقة`:"";
+}
+
+
+/* ===== N5 PRO ENGINE ===== */
+const N5_QUESTIONS=[
+{s:"vocab",q:"「学校」の よみかたは どれですか。",c:["がっこう","がこう","かっこう","がくこう"],a:0,ex:"学校 = がっこう = المدرسة"},
+{s:"vocab",q:"「みず」は どれですか。",c:["木","水","火","月"],a:1,ex:"水（みず）= الماء"},
+{s:"vocab",q:"「あたらしい」の いみは どれですか。",c:["قديم","جديد","صغير","غالي"],a:1,ex:"新しい = جديد"},
+{s:"vocab",q:"「先生」の よみかたは どれですか。",c:["せんせい","せんさい","せいせん","せんしょう"],a:0,ex:"先生 = せんせい = المعلم"},
+{s:"vocab",q:"「駅」は どこですか。",c:["المستشفى","المحطة","البنك","المدرسة"],a:1,ex:"駅 = えき = محطة القطار"},
+{s:"vocab",q:"「やま」は どれですか。",c:["川","山","田","町"],a:1,ex:"山 = やま = الجبل"},
+{s:"vocab",q:"「たべます」の いみは どれですか。",c:["يشرب","يأكل","يكتب","ينام"],a:1,ex:"食べます = يأكل"},
+{s:"vocab",q:"「毎日」の よみかたは どれですか。",c:["まいにち","まいひ","まいじつ","まいび"],a:0,ex:"毎日 = まいにち = كل يوم"},
+{s:"vocab",q:"「病院」は どこですか。",c:["المستشفى","المتجر","الحديقة","المطار"],a:0,ex:"病院 = びょういん = المستشفى"},
+{s:"vocab",q:"「金曜日」の よみかたは どれですか。",c:["きんようび","きょうようび","こんようび","きんよう"],a:0,ex:"金曜日 = الجمعة"},
+{s:"vocab",q:"「でんしゃ」は どれですか。",c:["電車","自転車","車","飛行機"],a:0,ex:"電車 = القطار"},
+{s:"vocab",q:"「すみません」は どんな ことばですか。",c:["شكرًا","عذرًا / آسف","صباح الخير","إلى اللقاء"],a:1,ex:"すみません = عذرًا/آسف"},
+{s:"vocab",q:"「友達」の よみかたは どれですか。",c:["ともだち","ともたち","ゆうだち","ともた"],a:0,ex:"友達 = ともだち = صديق"},
+{s:"vocab",q:"「高い」の いみは どれですか。",c:["رخيص / منخفض","غالي / مرتفع","جديد","بعيد"],a:1,ex:"高い = غالي/مرتفع"},
+{s:"vocab",q:"「今日」の よみかたは どれですか。",c:["きょう","きょお","こんにち","きょ"],a:0,ex:"今日 = きょう = اليوم"},
+{s:"vocab",q:"「くるま」は どれですか。",c:["車","電","雨","駅"],a:0,ex:"車 = السيارة"},
+{s:"vocab",q:"「寒い」は どんな いみですか。",c:["حار","بارد","مشغول","هادئ"],a:1,ex:"寒い = بارد"},
+{s:"vocab",q:"「時間」の よみかたは どれですか。",c:["じかん","じけん","しかん","じがん"],a:0,ex:"時間 = الوقت"},
+{s:"vocab",q:"「帰ります」の いみは どれですか。",c:["يذهب","يرجع","يأتي","يقابل"],a:1,ex:"帰ります = يرجع"},
+{s:"vocab",q:"「お茶」の よみかたは どれですか。",c:["おちゃ","おさ","おじゃ","おちゃあ"],a:0,ex:"お茶 = الشاي"},
+
+{s:"grammar",q:"わたしは 学校＿＿行きます。",c:["を","に","が","の"],a:1,ex:"に للاتجاه: 学校に行きます。"},
+{s:"grammar",q:"ご飯＿＿食べます。",c:["を","へ","で","と"],a:0,ex:"を للمفعول به."},
+{s:"grammar",q:"学校＿＿日本語を勉強します。",c:["で","に","へ","が"],a:0,ex:"で لمكان حدوث الفعل."},
+{s:"grammar",q:"昨日、映画を＿＿。",c:["見ます","見ません","見ました","見て"],a:2,ex:"昨日 يدل على الماضي."},
+{s:"grammar",q:"今日は学校へ＿＿。",c:["行きます","行きません","行きました","行って"],a:1,ex:"النفي المهذب: 行きません."},
+{s:"grammar",q:"これは＿＿ですか。",c:["何","誰","いつ","どこ"],a:0,ex:"何 = ماذا/ما."},
+{s:"grammar",q:"机の上に本＿＿あります。",c:["を","が","で","へ"],a:1,ex:"あります مع الشيء الموجود يستخدم が."},
+{s:"grammar",q:"この町は＿＿です。",c:["静か","静かい","静かな","静かく"],a:0,ex:"静かです."},
+{s:"grammar",q:"いっしょに昼ご飯を＿＿か。",c:["食べます","食べません","食べましょう","食べたい"],a:1,ex:"〜ませんか دعوة مهذبة."},
+{s:"grammar",q:"名前を＿＿ください。",c:["書いて","書きて","書く","書いた"],a:0,ex:"〜てください طلب مهذب."},
+{s:"grammar",q:"ここで写真を撮って＿＿いいです。",c:["は","も","が","を"],a:1,ex:"〜てもいいです إذن."},
+{s:"grammar",q:"ここで走って＿＿いけません。",c:["も","は","が","を"],a:1,ex:"〜てはいけません منع."},
+{s:"grammar",q:"日本へ＿＿たいです。",c:["行き","行く","行って","行きます"],a:0,ex:"جذر ます + たい."},
+{s:"grammar",q:"りんご＿＿好きです。",c:["を","が","に","で"],a:1,ex:"好きです مع が."},
+{s:"grammar",q:"7時＿＿起きます。",c:["を","で","に","へ"],a:2,ex:"に مع وقت محدد."},
+{s:"grammar",q:"9時＿＿5時まで働きます。",c:["から","まで","に","で"],a:0,ex:"から = من."},
+{s:"grammar",q:"9時から5時＿＿働きます。",c:["から","まで","へ","が"],a:1,ex:"まで = حتى."},
+{s:"grammar",q:"電車＿＿会社へ行きます。",c:["を","に","で","が"],a:2,ex:"で لوسيلة النقل."},
+{s:"grammar",q:"これは わたし＿＿本です。",c:["は","の","を","に"],a:1,ex:"わたしの本 = كتابي."},
+{s:"grammar",q:"朝ご飯を食べて、学校へ＿＿。",c:["行きます","行きました","行きません","行きたい"],a:0,ex:"〜て لربط الأفعال."},
+
+{s:"reading",q:"【読解】田中さんは毎朝7時に起きます。8時に学校へ行きます。田中さんは何時に学校へ行きますか。",c:["7時","8時","9時","10時"],a:1,ex:"يذهب إلى المدرسة الساعة 8."},
+{s:"reading",q:"【読解】これは山田さんのかばんです。かばんの中に本とペンがあります。何がありますか。",c:["本とペン","水と本","ペンと車","本と時計"],a:0,ex:"في الحقيبة كتاب وقلم."},
+{s:"reading",q:"【読解】日曜日に私は家族と公園へ行きました。天気がよかったです。いつ公園へ行きましたか。",c:["土曜日","日曜日","月曜日","金曜日"],a:1,ex:"ذهب يوم الأحد."},
+{s:"reading",q:"【読解】駅の前にコンビニがあります。コンビニはどこですか。",c:["駅の後ろ","駅の中","駅の前","学校の前"],a:2,ex:"المتجر أمام المحطة."},
+{s:"reading",q:"【読解】この店は10時から8時までです。店は何時に始まりますか。",c:["8時","9時","10時","20時"],a:2,ex:"المتجر يبدأ الساعة 10."},
+{s:"reading",q:"【読解】私は日曜日に家族と公園へ行きます。いつ公園へ行きますか。",c:["月曜日","土曜日","日曜日","金曜日"],a:2,ex:"يوم الأحد."},
+
+{s:"listening",audio:"男の人：すみません、駅はどこですか。女の人：あの建物のとなりです。",q:"男の人は何を探していますか。",c:["学校","駅","病院","店"],a:1,ex:"الرجل يبحث عن المحطة."},
+{s:"listening",audio:"女の人：明日、何時に会いますか。男の人：午後3時はどうですか。女の人：はい、いいです。",q:"二人は何時に会いますか。",c:["午前3時","午後2時","午後3時","午後4時"],a:2,ex:"سيتقابلان 3 مساءً."},
+{s:"listening",audio:"男の人：何を食べますか。女の人：私はパンを食べます。男の人：じゃあ、私はご飯を食べます。",q:"女の人は何を食べますか。",c:["パン","ご飯","魚","肉"],a:0,ex:"المرأة ستأكل الخبز."},
+{s:"listening",audio:"女の人：田中さんはどこですか。男の人：図書館です。",q:"田中さんはどこですか。",c:["学校","駅","図書館","病院"],a:2,ex:"田中さん في المكتبة."},
+{s:"listening",audio:"男の人：明日は何曜日ですか。女の人：金曜日です。",q:"明日は何曜日ですか。",c:["木曜日","金曜日","土曜日","日曜日"],a:1,ex:"غدًا الجمعة."},
+{s:"listening",audio:"女の人：この電車は東京へ行きますか。男の人：いいえ、大阪へ行きます。",q:"電車はどこへ行きますか。",c:["東京","大阪","京都","千葉"],a:1,ex:"القطار إلى أوساكا."}
+];
+
+const FLASHCARDS=[
+["学校","がっこう","gakkou","المدرسة","🏫"],["駅","えき","eki","المحطة","🚉"],["食べます","たべます","tabemasu","يأكل","🍚"],["飲みます","のみます","nomimasu","يشرب","🥤"],["水","みず","mizu","الماء","💧"],["先生","せんせい","sensei","المعلم","👨‍🏫"],["友達","ともだち","tomodachi","الصديق","🧑‍🤝‍🧑"],["電車","でんしゃ","densha","القطار","🚆"],["新しい","あたらしい","atarashii","جديد","✨"],["時間","じかん","jikan","الوقت","⏰"],["今日","きょう","kyou","اليوم","📅"],["家族","かぞく","kazoku","العائلة","👨‍👩‍👧‍👦"]
+];
+
+function speak(txt){if(!("speechSynthesis" in window)){alert("المتصفح لا يدعم النطق الصوتي.");return} speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang="ja-JP";u.rate=.82;speechSynthesis.speak(u)}
+function highlightGrammar(jp){return jp.replace(/(私|わたし|あなた|彼|彼女)/g,'<span class="grammar-mark mark-subject">$1</span>').replace(/(は|が|を|に|へ|で|と|の|も|から|まで)/g,'<span class="grammar-mark mark-particle">$1</span>').replace(/(ます|ません|ました|ませんでした|です|でした)/g,'<span class="grammar-mark mark-verb">$1</span>')}
+function loadStats(){const st=JSON.parse(localStorage.getItem("n5proStats")||'{"xp":0,"learned":0,"streak":0,"favorites":[]}');document.getElementById("xpStat").textContent=st.xp;document.getElementById("learnedStat").textContent=st.learned;document.getElementById("streakStat").textContent=st.streak;return st}
+function saveStats(st){localStorage.setItem("n5proStats",JSON.stringify(st));loadStats()}
+function toggleTheme(){document.body.classList.toggle("light-mode");localStorage.setItem("n5proTheme",document.body.classList.contains("light-mode")?"light":"dark")}
+function restoreTheme(){if(localStorage.getItem("n5proTheme")==="light")document.body.classList.add("light-mode")}
+function closeOverlay(id){document.getElementById(id).classList.remove("open")}
+function openFlashcards(){const ov=document.getElementById("flashOverlay"),grid=document.getElementById("flashGrid");grid.innerHTML=FLASHCARDS.map((x,i)=>`<div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flash-inner"><div class="flash-face"><button class="fav" onclick="event.stopPropagation();toggleFav(${i},this)">☆</button><div style="font-size:38px">${x[4]}</div><div class="flash-jp">${x[0]}</div><div class="flash-rm">${x[1]} · ${x[2]}</div><button class="audio-btn" onclick="event.stopPropagation();speak('${x[0]}')">🔊</button><small class="pro-muted">اضغط لقلب البطاقة</small></div><div class="flash-face flash-back"><div style="font-size:26px">${x[4]}</div><div class="flash-jp">${x[0]}</div><div class="flash-ar">${x[3]}</div><div class="flash-rm">${x[2]}</div><button class="audio-btn" onclick="event.stopPropagation();speak('${x[0]}')">🔊</button></div></div></div>`).join("");ov.classList.add("open")}
+function toggleFav(i,btn){const st=loadStats();st.favorites=st.favorites||[];if(st.favorites.includes(i)){st.favorites=st.favorites.filter(x=>x!==i);btn.textContent="☆";btn.classList.remove("active")}else{st.favorites.push(i);btn.textContent="★";btn.classList.add("active")}saveStats(st)}
+
+let examState={questions:[],idx:0,answers:{},seconds:35*60,timer:null};
+function openN5Exam(limit){examState.questions=[...N5_QUESTIONS].sort(()=>Math.random()-.5).slice(0,limit||N5_QUESTIONS.length);examState.idx=0;examState.answers={};examState.seconds=35*60;document.getElementById("examOverlay").classList.add("open");renderExam();clearInterval(examState.timer);examState.timer=setInterval(()=>{examState.seconds--;updateTimer();if(examState.seconds<=0){clearInterval(examState.timer);finishExam()}},1000)}
+function updateTimer(){const m=Math.floor(examState.seconds/60),s=examState.seconds%60,el=document.getElementById("examTimer");if(el)el.textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function renderExam(){const q=examState.questions[examState.idx],total=examState.questions.length,section=q.s==="vocab"?"言語知識（文字・語彙）":q.s==="grammar"||q.s==="reading"?"言語知識（文法）・読解":"聴解";document.getElementById("examContent").innerHTML=`<div class="section-badge">${section}</div><div class="exam-progress"><span style="width:${((examState.idx+1)/total)*100}%"></span></div><div class="q-card"><div class="q-num">QUESTION ${examState.idx+1} / ${total}</div>${q.audio?`<div style="text-align:center;margin:12px"><button class="pro-btn primary" onclick="speak('${q.audio.replace(/'/g,"\\'")}')">🔊 PLAY AUDIO</button><p class="pro-muted">استمع جيدًا ثم اختر الإجابة.</p></div>`:""}<div class="q-text">${q.q}</div><div class="choice-list">${q.c.map((c,i)=>`<button class="choice ${examState.answers[examState.idx]===i?"selected":""}" onclick="chooseAnswer(${i})">${String.fromCharCode(65+i)}. ${c}</button>`).join("")}</div></div><div class="exam-nav"><button class="pro-btn" ${examState.idx===0?"disabled":""} onclick="examPrev()">← السابق</button>${examState.idx===total-1?'<button class="pro-btn primary" onclick="finishExam()">🏆 إنهاء الاختبار</button>':'<button class="pro-btn primary" onclick="examNext()">التالي →</button>'}</div>`;updateTimer()}
+function chooseAnswer(i){examState.answers[examState.idx]=i;renderExam()}
+function examNext(){if(examState.idx<examState.questions.length-1){examState.idx++;renderExam()}}
+function examPrev(){if(examState.idx>0){examState.idx--;renderExam()}}
+function finishExam(){
+  clearInterval(examState.timer);
+  let correct=0;
+  const b={vocab:[0,0],grammar:[0,0],reading:[0,0],listening:[0,0]};
+  examState.questions.forEach((q,i)=>{
+    const ok=examState.answers[i]===q.a;
+    if(ok)correct++;
+    b[q.s][1]++;
+    if(ok)b[q.s][0]++;
+  });
+  const total=examState.questions.length, pct=total?Math.round(correct/total*100):0;
+  const weak=Object.entries(b).filter(([k,v])=>v[1]&&v[0]/v[1]<.7)
+    .map(([k])=>({vocab:"Vocabulary / المفردات",grammar:"Grammar / القواعد",reading:"Reading / القراءة",listening:"Listening / الاستماع"}[k]));
+  const st=loadStats(); st.xp=(st.xp||0)+Math.round(pct*1.2); saveStats(st);
+  const s=getV2(); s.exams=(s.exams||0)+1; s.correct=(s.correct||0)+correct; s.total=(s.total||0)+total;
+  s.history=[...(s.history||[]),{date:new Date().toLocaleDateString("ja-JP"),pct,correct,total}].slice(-20); saveV2(s);
+  document.getElementById("examContent").innerHTML=`
+  <div class="result-hero"><div style="font-size:42px">🎌</div><h1>お疲れさまでした！</h1>
+  <p class="pro-muted">N5 Practice / Placement Result</p>
+  <div class="score-ring" style="--score:${pct}"><b>${pct}%</b></div>
+  <h2>${pct>=80?"🟢 N5 READY":pct>=60?"🟡 N5 DEVELOPING":"🔴 N5 NOT READY"}</h2>
+  <p class="pro-muted">${correct} / ${total} إجابة صحيحة</p></div>
+  <div class="result-grid">${Object.entries(b).map(([k,v])=>`<div class="skill-card"><div>${{vocab:"📚 Vocabulary",grammar:"📖 Grammar",reading:"📕 Reading",listening:"🎧 Listening"}[k]}</div><div class="pct">${v[1]?Math.round(v[0]/v[1]*100):0}%</div><small>${v[0]}/${v[1]}</small></div>`).join("")}</div>
+  <div class="q-card"><h3>🎯 مناطق تحتاج مراجعة</h3><div class="weak-list">${weak.length?weak.map(x=>`<span class="weak">${x}</span>`).join(""):'<span style="color:#55d187">ممتاز! لا توجد منطقة ضعيفة واضحة.</span>'}</div></div>
+  <div class="q-card"><h3>📌 الخطوة التالية</h3><p class="pro-muted">${pct>=80?"مستواك جيد جدًا. انتقل إلى تدريب القراءة والاستماع وابدأ اختبارات محاكاة أطول.":pct>=60?"أنت قريب من الجاهزية. ركّز على المناطق الضعيفة ثم أعد الاختبار.":"ابدأ بمراجعة Kana والمفردات والقواعد الأساسية، ثم استخدم الاختبار القصير يوميًا."}</p></div>
+  <div class="exam-nav"><button class="pro-btn" onclick="closeOverlay('examOverlay')">← العودة للكتاب</button><button class="pro-btn primary" onclick="openN5Exam()">🔄 اختبار كامل</button></div>`;
+  touchStudy(2);
+}
+
+initNav();
+renderChapters();
+restoreTheme();
+loadStats();
+
+/* ===== V2 ENGINE ===== */
+const V2_KEY = "n5proV2";
+function getV2(){
+  const fallback={day:"",actions:0,reviewed:0,exams:0,correct:0,total:0,history:[],favorites:[]};
+  try{return {...fallback,...JSON.parse(localStorage.getItem(V2_KEY)||"{}")}}catch(e){return fallback}
+}
+function saveV2(s){localStorage.setItem(V2_KEY,JSON.stringify(s)); updateDailyUI()}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function touchStudy(points=1){
+  const s=getV2(), t=todayKey();
+  if(s.day!==t){s.day=t;s.actions=0}
+  s.actions+=points; s.reviewed=(s.reviewed||0)+points; saveV2(s)
+}
+function updateDailyUI(){
+  const s=getV2(), pct=Math.min(100,(s.day===todayKey()?s.actions:0)*10);
+  const p=document.getElementById("dailyPct"), b=document.getElementById("dailyBar"), c=document.querySelector(".daily-progress");
+  if(p)p.textContent=pct+"%"; if(b)b.style.width=pct+"%";
+  if(c)c.style.background=`conic-gradient(var(--accent) ${pct}%, rgba(255,255,255,.08) 0)`;
+}
+function setChapterAndScroll(id){
+  const b=document.querySelector(`#navRow button[data-id="${id}"]`);
+  if(b)b.click();
+  window.scrollTo({top:document.getElementById("chapters").offsetTop-75,behavior:"smooth"});
+  touchStudy(1);
+}
+function openFavorites(){
+  const s=getV2(), old=loadStats(), ids=[...(old.favorites||[])];
+  const items=ids.map(i=>FLASHCARDS[i]).filter(Boolean);
+  const box=document.getElementById("favoritesContent");
+  box.innerHTML=items.length ? items.map((x,n)=>`<div class="favorite-row">
+    <div style="font-size:28px">${x[4]}</div><div class="fav-main"><strong class="jp">${x[0]}</strong><div class="romaji">${x[1]} · ${x[2]}</div><div>${x[3]}</div></div>
+    <button class="pro-btn" onclick="speak('${x[0]}')">🔊</button>
+  </div>`).join("") : `<div class="empty-state"><div style="font-size:40px">⭐</div><h3>لا توجد كلمات مفضلة بعد</h3><p>افتح البطاقات واضغط ⭐ لإضافة الكلمات المهمة.</p></div>`;
+  document.getElementById("favoritesOverlay").classList.add("open");
+}
+function openProgress(){
+  const s=getV2(), stats=loadStats(), total=s.total||0, correct=s.correct||0, acc=total?Math.round(correct/total*100):0;
+  const hist=(s.history||[]).slice(-8).reverse();
+  document.getElementById("progressContent").innerHTML=`
+    <div class="lesson-grid">
+      <div class="lesson-item"><strong>${stats.xp||0}</strong><small>XP إجمالي</small></div>
+      <div class="lesson-item"><strong>${s.reviewed||0}</strong><small>مراجعات</small></div>
+      <div class="lesson-item"><strong>${s.exams||0}</strong><small>اختبارات</small></div>
+      <div class="lesson-item"><strong>${acc}%</strong><small>دقة الاختبارات</small></div>
+    </div>
+    <div class="q-card" style="margin-top:14px"><h3>📅 سجل الاختبارات</h3>
+      ${hist.length?hist.map(h=>`<div class="favorite-row"><div class="fav-main"><strong>${h.pct}%</strong><div class="pro-muted">${h.correct}/${h.total} — ${h.date}</div></div><span>${h.pct>=80?"🟢":h.pct>=60?"🟡":"🔴"}</span></div>`).join(""):`<div class="empty-state">لم تُسجّل اختبارات بعد.</div>`}
+    </div>
+    <div class="exam-nav"><button class="pro-btn" onclick="closeOverlay('progressOverlay')">إغلاق</button><button class="pro-btn primary" onclick="closeOverlay('progressOverlay');openN5Exam(10)">⚡ اختبر نفسك</button></div>`;
+  document.getElementById("progressOverlay").classList.add("open");
+}
+
+</script>
+
+<div id="favoritesOverlay" class="pro-overlay"><div class="pro-panel">
+<div class="exam-head"><div><div class="pro-kicker">YOUR COLLECTION</div><div class="exam-title">⭐ المفضلة</div></div><button class="pro-btn" onclick="closeOverlay('favoritesOverlay')">✕</button></div>
+<div id="favoritesContent"></div>
+</div></div>
+
+<div id="progressOverlay" class="pro-overlay"><div class="pro-panel">
+<div class="exam-head"><div><div class="pro-kicker">LEARNING ANALYTICS</div><div class="exam-title">📈 تقدمي</div></div><button class="pro-btn" onclick="closeOverlay('progressOverlay')">✕</button></div>
+<div id="progressContent"></div>
+</div></div>
+
+<div id="flashOverlay" class="pro-overlay"><div class="pro-panel">
+<div class="exam-head"><div><div class="pro-kicker">SMART FLASHCARDS</div><div class="exam-title">🃏 Flashcards N5</div></div><button class="pro-btn" onclick="closeOverlay('flashOverlay')">✕</button></div>
+<p class="pro-muted">اضغط على البطاقة لقلبها. استخدم 🔊 لسماع النطق واحفظ الكلمات المهمة ⭐.</p><div id="flashGrid" class="flash-grid"></div>
+</div></div>
+<div id="examOverlay" class="pro-overlay"><div class="pro-panel">
+<div class="exam-head"><div><div class="pro-kicker">JLPT STYLE · N5</div><div class="exam-title">🏯 N5 FINAL TEST</div></div><div style="display:flex;gap:8px;align-items:center"><span id="examTimer" class="timer">35:00</span><button class="pro-btn" onclick="if(confirm('الخروج من الاختبار؟')){clearInterval(examState.timer);closeOverlay('examOverlay')}">✕</button></div></div>
+<div id="examContent"></div>
+</div></div>
+
+
+<script>
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT"){e.preventDefault();document.getElementById("searchBox").focus()}
+  if(e.key==="Escape"){document.querySelectorAll(".pro-overlay.open").forEach(x=>x.classList.remove("open"))}
+});
+</script>
+
+<script>
+/* N5への旅 V3 — functional repair layer */
+(function(){
+"use strict";
+const V3={flashIndex:0,flashList:[],voices:[]};
+
+function safeJSON(k,d){try{const x=localStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}}
+function putJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return [];
+  V3.voices=window.speechSynthesis.getVoices()||[];
+  return V3.voices;
+}
+function jpVoice(){
+  const a=V3.voices.length?V3.voices:loadVoices();
+  return a.find(v=>v.lang==="ja-JP")||a.find(v=>/^ja/i.test(v.lang))||
+         a.find(v=>/japanese|日本語/i.test(v.name))||null;
+}
+window.speak=function(text){
+  text=String(text||"").trim(); if(!text)return;
+  if(!("speechSynthesis" in window)){
+    alert("هذا المتصفح لا يدعم النطق الصوتي. استخدم Chrome أو Edge أو Safari.");
+    return;
+  }
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang="ja-JP"; u.rate=.88; u.pitch=1;
+    const v=jpVoice(); if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){console.error(e);alert("تعذر تشغيل الصوت الياباني.");}
+};
+if("speechSynthesis" in window){
+  loadVoices();
+  speechSynthesis.onvoiceschanged=loadVoices;
+}
+
+function openV3(id){
+  const e=document.getElementById(id); if(!e)return;
+  e.classList.add("open"); e.style.display="flex";
+}
+window.closeOverlay=function(id){
+  const e=document.getElementById(id); if(!e)return;
+  e.classList.remove("open"); e.style.display="";
+};
+
+function stats(){
+  let s={xp:0,learned:0,streak:0,favorites:[]};
+  try{if(typeof window.loadStats==="function")s=Object.assign(s,window.loadStats()||{})}catch(e){}
+  s.favorites=Array.isArray(s.favorites)?s.favorites:[];
+  return s;
+}
+function saveStats(s){
+  try{if(typeof window.saveStats==="function")window.saveStats(s)}catch(e){}
+  putJSON("n5stats",s);
+}
+
+function cards(){
+  const names=["FLASHCARDS","flashcards","flashCards","VOCAB","vocab"];
+  for(const n of names)if(Array.isArray(window[n])&&window[n].length)return window[n];
+  return [];
+}
+function cardData(x){
+  if(Array.isArray(x))return {jp:x[0]||"",read:x[1]||"",romaji:x[2]||"",mean:x[3]||"",icon:x[4]||"🃏"};
+  x=x||{};return {jp:x.jp||x.kanji||x.word||"",read:x.reading||x.kana||"",romaji:x.romaji||"",mean:x.meaning||x.ar||x.translation||"",icon:x.icon||"🃏"};
+}
+function fav(i){
+  const s=stats(),p=s.favorites.findIndex(x=>String(x)===String(i));
+  if(p>=0)s.favorites.splice(p,1);else s.favorites.push(i);
+  saveStats(s);renderFlash();
+}
+window.toggleFavorite=fav;
+
+function renderFlash(){
+  const box=document.getElementById("flashGrid");if(!box)return;
+  const a=cards();
+  if(!a.length){
+    box.innerHTML='<div class="empty-state"><div style="font-size:42px">🃏</div><h3>لا توجد بطاقات</h3><p>لم يتم العثور على بيانات Flashcards في الصفحة.</p></div>';return;
+  }
+  if(V3.flashIndex<0)V3.flashIndex=a.length-1;
+  if(V3.flashIndex>=a.length)V3.flashIndex=0;
+  const i=V3.flashIndex,c=cardData(a[i]),f=stats().favorites.some(x=>String(x)===String(i));
+  const esc=String(c.jp).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+  box.innerHTML=`<div class="v3-flash-wrap">
+    <div class="v3-counter">${i+1} / ${a.length}</div>
+    <button class="v3-card" type="button" onclick="this.classList.toggle('flip')">
+      <span class="v3-inner">
+        <span class="v3-face"><b class="v3-icon">${c.icon}</b><b class="v3-jp">${c.jp}</b><span class="v3-read">${c.read}</span><span class="v3-romaji">${c.romaji}</span><small>اضغط لقلب البطاقة</small></span>
+        <span class="v3-face v3-back"><b class="v3-jp">${c.jp}</b><b class="v3-mean">${c.mean}</b><span class="v3-read">${c.read}</span><span class="v3-romaji">${c.romaji}</span></span>
+      </span>
+    </button>
+    <div class="v3-actions">
+      <button class="pro-btn" onclick="v3Prev()">← السابق</button>
+      <button class="pro-btn" onclick="speak('${esc}')">🔊 النطق</button>
+      <button class="pro-btn ${f?'v3-fav':''}" onclick="toggleFavorite(${i})">${f?'★':'☆'} المفضلة</button>
+      <button class="pro-btn" onclick="v3Next()">التالي →</button>
+    </div></div>`;
+}
+window.v3Next=function(){V3.flashIndex++;renderFlash()};
+window.v3Prev=function(){V3.flashIndex--;renderFlash()};
+window.openFlashcards=function(){V3.flashIndex=0;openV3("flashOverlay");renderFlash()};
+
+window.openFavorites=function(){
+  const box=document.getElementById("favoritesContent"),a=cards();if(!box)return;
+  const ids=stats().favorites.filter(i=>a[i]!==undefined);
+  if(!ids.length)box.innerHTML='<div class="empty-state"><div style="font-size:42px">⭐</div><h3>لا توجد كلمات مفضلة</h3><p>افتح Flashcards واضغط ☆.</p></div>';
+  else box.innerHTML=ids.map(i=>{const c=cardData(a[i]),e=String(c.jp).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    return `<div class="favorite-row"><div style="font-size:28px">${c.icon}</div><div class="fav-main"><strong>${c.jp}</strong><div>${c.read} · ${c.romaji}</div><div>${c.mean}</div></div><button class="pro-btn" onclick="speak('${e}')">🔊</button><button class="pro-btn" onclick="toggleFavorite(${i});openFavorites()">★</button></div>`}).join("");
+  openV3("favoritesOverlay");
+};
+
+window.openProgress=function(){
+  const box=document.getElementById("progressContent");if(!box)return;
+  const s=stats(),p=safeJSON("n5proV2",{}),total=+p.total||0,correct=+p.correct||0,acc=total?Math.round(correct/total*100):0;
+  const h=Array.isArray(p.history)?p.history.slice(-8).reverse():[];
+  box.innerHTML=`<div class="lesson-grid">
+    <div class="lesson-item"><strong>${s.xp||0}</strong><small>XP</small></div>
+    <div class="lesson-item"><strong>${p.reviewed||0}</strong><small>مراجعات</small></div>
+    <div class="lesson-item"><strong>${p.exams||0}</strong><small>اختبارات</small></div>
+    <div class="lesson-item"><strong>${acc}%</strong><small>الدقة</small></div></div>
+    <div class="q-card" style="margin-top:14px"><h3>📅 النتائج</h3>${h.length?h.map(x=>`<div class="favorite-row"><div class="fav-main"><strong>${x.pct}%</strong><div>${x.correct}/${x.total} — ${x.date}</div></div><span>${x.pct>=80?"🟢":x.pct>=60?"🟡":"🔴"}</span></div>`).join(""):'<div class="empty-state">لا توجد نتائج.</div>'}</div>`;
+  openV3("progressOverlay");
+};
+
+const oldExam=window.openN5Exam;
+window.openN5Exam=function(limit){
+  try{
+    if(typeof oldExam==="function")oldExam(limit);
+    else{alert("محرك اختبار N5 غير موجود.");return}
+    openV3("examOverlay");
+  }catch(e){console.error(e);alert("حدث خطأ أثناء تشغيل اختبار N5.");}
+};
+
+window.v3TestVoice=function(){speak("日本語を勉強しましょう。こんにちは。ありがとうございます。")};
+
+window.toggleTheme=function(){
+  const light=document.documentElement.classList.toggle("v3-light");
+  document.body.classList.toggle("v3-light-body",light);
+  putJSON("n5_theme_v3",light?"light":"dark");
+};
+if(safeJSON("n5_theme_v3","dark")==="light"){document.documentElement.classList.add("v3-light");document.body.classList.add("v3-light-body")}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="/"&&document.activeElement?.tagName!=="INPUT"){const x=document.getElementById("searchBox");if(x){e.preventDefault();x.focus()}}
+  if(e.key==="Escape"){document.querySelectorAll(".pro-overlay.open").forEach(x=>closeOverlay(x.id));try{speechSynthesis.cancel()}catch(_){}}
+});
+document.addEventListener("click",e=>{
+  const o=e.target.closest(".pro-overlay");if(o&&e.target===o)closeOverlay(o.id);
+});
+
+function init(){
+  const f=[...document.querySelectorAll("button")].find(x=>/Flashcards/.test(x.textContent||""));
+  if(f)f.onclick=window.openFlashcards;
+  const v=[...document.querySelectorAll("button")].find(x=>/Test Voice|اختبار الصوت/.test(x.textContent||""));
+  if(v)v.onclick=window.v3TestVoice;
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(init,80));else setTimeout(init,80);
+})();
+</script>
+
+</body>
+</html>

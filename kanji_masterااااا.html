@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字マスター - برنامج حفظ الكانجي</title>
+<style>
+  :root{
+    --bg-top:#fff8f5; --bg-bottom:#fdf1ef;
+    --pink:#f7c9d8; --pink-dark:#d6608a; --pink-deep:#a8305c;
+    --card:#ffffff; --ink:#2c2624; --ink-soft:#77685f;
+    --green:#4caf82; --red:#e05a5a; --amber:#e0a13a;
+    --border:#f0dcd7; --chip-bg:#fdeef2;
+    --shadow:0 6px 20px rgba(214,96,138,.12);
+  }
+  [data-theme="dark"]{
+    --bg-top:#1a1614; --bg-bottom:#120f0e;
+    --pink:#5c2c3f; --pink-dark:#e8799e; --pink-deep:#f4a3bf;
+    --card:#241e1c; --ink:#f0e6e2; --ink-soft:#b8a89f;
+    --green:#6fce9f; --red:#f07a7a; --amber:#f0bb5e;
+    --border:#3a2f2b; --chip-bg:#33221f;
+    --shadow:0 6px 20px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Hiragino Sans","Segoe UI",Tahoma,sans-serif;
+    background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+    color:var(--ink); min-height:100vh; padding-bottom:40px;
+    transition:background .3s, color .3s;
+  }
+  header{
+    text-align:center; padding:22px 12px 14px;
+    background:var(--card); border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:10; transition:background .3s, border-color .3s;
+  }
+  .theme-toggle{
+    position:absolute; left:14px; top:18px; width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--border); background:var(--chip-bg); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:17px;
+  }
+  header h1{margin:0; font-size:24px; color:var(--pink-deep); font-weight:700;}
+  header p{margin:4px 0 0; font-size:13px; color:var(--ink-soft);}
+  .stats{
+    display:flex; justify-content:center; gap:18px; margin-top:10px; font-size:12px; flex-wrap:wrap;
+  }
+  .stats span{background:var(--chip-bg); border-radius:20px; padding:4px 12px; color:var(--pink-deep); font-weight:600;}
+  .overall-bar{max-width:400px; margin:12px auto 0; padding:0 14px;}
+  .overall-track{height:8px; border-radius:5px; background:var(--chip-bg); overflow:hidden;}
+  .overall-fill{height:100%; background:linear-gradient(90deg,var(--pink-dark),var(--pink-deep)); border-radius:5px; transition:width .4s;}
+  .overall-label{font-size:11px; color:var(--ink-soft); margin-top:4px; text-align:center;}
+  nav{
+    display:flex; justify-content:center; gap:8px; margin:16px auto; max-width:520px; padding:0 12px; flex-wrap:wrap;
+  }
+  nav button{
+    flex:1; min-width:100px; padding:10px 6px; border:none; border-radius:12px;
+    background:var(--card); border:1.5px solid var(--border); color:var(--ink-soft);
+    font-size:13px; font-weight:600; cursor:pointer; transition:.15s;
+  }
+  nav button.active{background:var(--pink-dark); color:#fff; border-color:var(--pink-dark);}
+  main{max-width:520px; margin:0 auto; padding:0 14px;}
+
+  /* Lesson filter */
+  .lesson-filter{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:16px;}
+  .lesson-filter button{
+    padding:5px 12px; border-radius:16px; border:1px solid var(--border);
+    background:var(--card); font-size:12px; color:var(--ink-soft); cursor:pointer;
+  }
+  .lesson-filter button.on{background:var(--pink-deep); color:#fff; border-color:var(--pink-deep);}
+
+  /* Flashcard */
+  .card-wrap{perspective:1200px; height:280px; margin-bottom:18px;}
+  .card{
+    width:100%; height:100%; position:relative; transform-style:preserve-3d;
+    transition:transform .5s; cursor:pointer;
+  }
+  .card.flipped{transform:rotateY(180deg);}
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:20px; background:var(--card); border:1px solid var(--border);
+    box-shadow:var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+  }
+  .face .lesson-tag{position:absolute; top:14px; right:16px; font-size:11px; color:var(--ink-soft); background:var(--chip-bg); padding:3px 10px; border-radius:10px;}
+  .face .level-badge{position:absolute; top:14px; left:16px; font-size:16px;}
+  .face .kanji-big{font-size:78px; font-weight:700; color:var(--ink); line-height:1;}
+  .face .kana{font-size:16px; color:var(--pink-dark); margin-top:8px;}
+  .back{transform:rotateY(180deg);}
+  .back .romaji{font-size:20px; font-style:italic; color:var(--ink-soft); margin-bottom:10px;}
+  .back .arabic{font-size:26px; font-weight:700; color:var(--pink-deep); direction:rtl;}
+  .hint{position:absolute; bottom:14px; font-size:11px; color:var(--ink-soft); opacity:.6;}
+
+  .controls{display:flex; gap:10px; justify-content:center; margin-bottom:10px;}
+  .controls button{
+    flex:1; max-width:150px; padding:12px; border:none; border-radius:14px;
+    font-size:14px; font-weight:700; cursor:pointer; transition:transform .1s;
+  }
+  .controls button:active{transform:scale(.96);}
+  .btn-no{background:#fdeaea; color:var(--red);}
+  [data-theme="dark"] .btn-no{background:#3a2020;}
+  .btn-yes{background:#e9f6ee; color:var(--green);}
+  [data-theme="dark"] .btn-yes{background:#1c3327;}
+  .nav-row{display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:13px; color:var(--ink-soft);}
+  .nav-row button{background:none; border:none; color:var(--pink-dark); font-weight:700; cursor:pointer; font-size:14px;}
+
+  /* Quiz */
+  .quiz-type-toggle{display:flex; justify-content:center; gap:8px; margin-bottom:10px;}
+  .qtbtn{padding:6px 14px; border-radius:16px; border:1px solid var(--border); background:var(--card); font-size:12px; color:var(--ink-soft); cursor:pointer;}
+  .qtbtn.on{background:var(--pink-dark); color:#fff; border-color:var(--pink-dark);}
+  .quiz-box{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:22px; text-align:center; box-shadow:var(--shadow);}
+  .quiz-q{font-size:60px; font-weight:700; margin-bottom:6px;}
+  .quiz-kana{font-size:15px; color:var(--pink-dark); margin-bottom:18px;}
+  .options{display:grid; gap:10px;}
+  .opt{padding:13px; border-radius:12px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); font-size:15px; cursor:pointer; direction:rtl; transition:.15s;}
+  .opt.correct{background:#e9f6ee; border-color:var(--green); color:var(--green);}
+  [data-theme="dark"] .opt.correct{background:#1c3327;}
+  .opt.wrong{background:#fdeaea; border-color:var(--red); color:var(--red);}
+  [data-theme="dark"] .opt.wrong{background:#3a2020;}
+  .opt:disabled{cursor:default;}
+  .quiz-progress{font-size:12px; color:var(--ink-soft); margin-bottom:10px;}
+  .next-btn{margin-top:16px; width:100%; padding:12px; border:none; border-radius:12px; background:var(--pink-dark); color:#fff; font-weight:700; font-size:14px; cursor:pointer; display:none;}
+
+  /* List view */
+  .list-item{
+    display:flex; align-items:center; gap:14px; background:var(--card);
+    border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px;
+  }
+  .list-item .k{font-size:28px; font-weight:700; min-width:60px; text-align:center;}
+  .list-item .mid{flex:1;}
+  .list-item .mid .r{font-size:13px; color:var(--ink-soft); font-style:italic;}
+  .list-item .mid .a{font-size:15px; color:var(--pink-deep); font-weight:600; direction:rtl;}
+  .list-item .lvl{font-size:11px; padding:3px 9px; border-radius:10px; background:var(--chip-bg); color:var(--pink-deep); white-space:nowrap;}
+
+  .empty{text-align:center; color:var(--ink-soft); padding:40px 0; font-size:14px;}
+  .loading{text-align:center; padding:30px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+  <h1>漢字マスター Kanji Master</h1>
+  <p>いろどり 入門 · 第3〜12課 · برنامج حفظ الكانجي</p>
+  <div class="stats" id="statsBar"></div>
+  <div class="overall-bar">
+    <div class="overall-track"><div class="overall-fill" id="overallFill" style="width:0%"></div></div>
+    <div class="overall-label" id="overallLabel"></div>
+  </div>
+</header>
+
+<nav>
+  <button id="tabCards" class="active">🎴 بطاقات</button>
+  <button id="tabQuiz">📝 اختبار</button>
+  <button id="tabList">📋 قائمة</button>
+</nav>
+
+<main>
+  <div class="lesson-filter" id="lessonFilter"></div>
+  <div id="content" class="loading">جاري التحميل...</div>
+</main>
+
+<script>
+const KANJI = [
+  {k:"名前",kana:"なまえ",r:"namae",a:"الاسم",l:3},
+  {k:"国",kana:"くに",r:"kuni",a:"البلد",l:3},
+  {k:"私",kana:"わたし",r:"watashi",a:"أنا",l:3},
+  {k:"父",kana:"ちち",r:"chichi",a:"بابا / والدي",l:4},
+  {k:"母",kana:"はは",r:"haha",a:"ماما / والدتي",l:4},
+  {k:"子ども",kana:"こども",r:"kodomo",a:"ولد / طفل",l:4},
+  {k:"日本",kana:"にほん",r:"nihon",a:"اليابان",l:4},
+  {k:"水",kana:"みず",r:"mizu",a:"الماء",l:5},
+  {k:"食べます",kana:"たべます",r:"tabemasu",a:"ياكل",l:5},
+  {k:"飲みます",kana:"のみます",r:"nomimasu",a:"يشرب",l:5},
+  {k:"魚",kana:"さかな",r:"sakana",a:"الحوت (سمك)",l:6},
+  {k:"肉",kana:"にく",r:"niku",a:"اللحم",l:6},
+  {k:"好き",kana:"すき",r:"suki",a:"يعجبه / يحب",l:6},
+  {k:"家",kana:"いえ",r:"ie",a:"الدار",l:7},
+  {k:"新しい",kana:"あたらしい",r:"atarashii",a:"جديد",l:7},
+  {k:"広い",kana:"ひろい",r:"hiroi",a:"واسع",l:7},
+  {k:"古い",kana:"ふるい",r:"furui",a:"قديم",l:7},
+  {k:"上",kana:"うえ",r:"ue",a:"فوق",l:8},
+  {k:"下",kana:"した",r:"shita",a:"تحت",l:8},
+  {k:"中",kana:"なか",r:"naka",a:"لداخل / وسط",l:8},
+  {k:"月",kana:"げつ",r:"getsu",a:"الإثنين",l:9},
+  {k:"火",kana:"か",r:"ka",a:"الثلاثاء",l:9},
+  {k:"水曜",kana:"すい",r:"sui",a:"الأربعاء",l:9},
+  {k:"木",kana:"もく",r:"moku",a:"الخميس",l:9},
+  {k:"金",kana:"きん",r:"kin",a:"الجمعة",l:9},
+  {k:"土",kana:"ど",r:"do",a:"السبت",l:9},
+  {k:"日曜",kana:"にち",r:"nichi",a:"الأحد",l:9},
+  {k:"～曜日",kana:"ようび",r:"yōbi",a:"يوم (لاحقة)",l:9},
+  {k:"～年",kana:"ねん",r:"nen",a:"سنة",l:12},
+  {k:"～月",kana:"がつ",r:"gatsu",a:"شهر",l:12},
+  {k:"～日",kana:"にち",r:"nichi",a:"يوم",l:12},
+  {k:"今日",kana:"きょう",r:"kyō",a:"اليوم",l:12},
+  {k:"今週",kana:"こんしゅう",r:"konshū",a:"هذا الأسبوع",l:12},
+  {k:"今度",kana:"こんど",r:"kondo",a:"المرة الجاية",l:12},
+];
+KANJI.forEach((item,i)=> item.id = "k"+i);
+
+const LESSONS = [...new Set(KANJI.map(x=>x.l))].sort((a,b)=>a-b);
+let activeLessons = new Set(LESSONS);
+let progress = {}; // id -> {level, seen}
+let tab = "cards";
+let theme = "light";
+
+async function loadTheme(){
+  try{
+    const res = await window.storage.get('kanji-theme');
+    if(res && res.value) theme = res.value;
+  }catch(e){ theme = "light"; }
+  applyTheme();
+}
+function applyTheme(){
+  document.body.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+async function toggleTheme(){
+  theme = theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+  try{ await window.storage.set('kanji-theme', theme); }catch(e){}
+}
+
+let cardOrder = [];
+let cardIdx = 0;
+let quizOrder = [];
+let quizIdx = 0;
+let quizScore = 0;
+let quizType = "arabic"; // "arabic" or "romaji"
+
+async function loadProgress(){
+  try{
+    const res = await window.storage.get('kanji-progress');
+    if(res && res.value) progress = JSON.parse(res.value);
+  }catch(e){ progress = {}; }
+  KANJI.forEach(item=>{ if(!progress[item.id]) progress[item.id] = {level:0, seen:0}; });
+}
+async function saveProgress(){
+  try{ await window.storage.set('kanji-progress', JSON.stringify(progress)); }catch(e){}
+}
+
+function activeItems(){
+  return KANJI.filter(x=>activeLessons.has(x.l));
+}
+
+function renderStats(){
+  const items = KANJI;
+  const known = items.filter(x=>progress[x.id] && progress[x.id].level>=3).length;
+  const learning = items.filter(x=>progress[x.id] && progress[x.id].level>0 && progress[x.id].level<3).length;
+  document.getElementById('statsBar').innerHTML = `
+    <span>✅ محفوظ: ${known}/${items.length}</span>
+    <span>📖 قيد الحفظ: ${learning}</span>
+  `;
+  const pct = Math.round((known/items.length)*100);
+  document.getElementById('overallFill').style.width = pct + "%";
+  document.getElementById('overallLabel').textContent = `التقدم الإجمالي: ${pct}%`;
+}
+
+function renderLessonFilter(){
+  const wrap = document.getElementById('lessonFilter');
+  wrap.innerHTML = "";
+  const allBtn = document.createElement('button');
+  allBtn.textContent = "الكل";
+  allBtn.className = activeLessons.size===LESSONS.length ? "on":"";
+  allBtn.onclick = ()=>{ activeLessons = new Set(LESSONS); refreshAll(); };
+  wrap.appendChild(allBtn);
+  LESSONS.forEach(l=>{
+    const b = document.createElement('button');
+    b.textContent = "第"+l+"課";
+    b.className = activeLessons.has(l) ? "on":"";
+    b.onclick = ()=>{
+      if(activeLessons.has(l)){ activeLessons.delete(l); } else { activeLessons.add(l); }
+      if(activeLessons.size===0) activeLessons = new Set(LESSONS);
+      refreshAll();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ---------- FLASHCARDS ---------- */
+function initCards(){
+  cardOrder = shuffle(activeItems());
+  cardIdx = 0;
+  renderCard();
+}
+function renderCard(){
+  const content = document.getElementById('content');
+  if(cardOrder.length===0){ content.innerHTML = '<div class="empty">اختر درساً واحداً على الأقل</div>'; return; }
+  const item = cardOrder[cardIdx];
+  const lvl = progress[item.id] ? progress[item.id].level : 0;
+  const levelIcons = ["🆕","🌱","🌿","🌳","⭐","💎"];
+  content.innerHTML = `
+    <div class="card-wrap">
+      <div class="card" id="flipCard">
+        <div class="face">
+          <span class="level-badge">${levelIcons[lvl]}</span>
+          <span class="lesson-tag">第${item.l}課</span>
+          <div class="kanji-big">${item.k}</div>
+          <div class="kana">${item.kana}</div>
+          <div class="hint">اضغط لقلب البطاقة</div>
+        </div>
+        <div class="face back">
+          <div class="romaji">${item.r}</div>
+          <div class="arabic">${item.a}</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn-no" id="btnNo">صعب 😕</button>
+      <button class="btn-yes" id="btnYes">سهل 😊</button>
+    </div>
+    <div class="nav-row">
+      <button id="prevCard">→ السابق</button>
+      <span>${cardIdx+1} / ${cardOrder.length}</span>
+      <button id="nextCard">التالي ←</button>
+    </div>
+  `;
+  const flip = document.getElementById('flipCard');
+  flip.onclick = ()=> flip.classList.toggle('flipped');
+
+  document.getElementById('btnYes').onclick = ()=>{ markCard(item, true); };
+  document.getElementById('btnNo').onclick = ()=>{ markCard(item, false); };
+  document.getElementById('prevCard').onclick = ()=>{ cardIdx = (cardIdx-1+cardOrder.length)%cardOrder.length; renderCard(); };
+  document.getElementById('nextCard').onclick = ()=>{ cardIdx = (cardIdx+1)%cardOrder.length; renderCard(); };
+}
+function markCard(item, easy){
+  const p = progress[item.id] || {level:0, seen:0};
+  p.seen += 1;
+  p.level = easy ? Math.min(5, p.level+1) : Math.max(0, p.level-1);
+  progress[item.id] = p;
+  saveProgress();
+  renderStats();
+  cardIdx = (cardIdx+1)%cardOrder.length;
+  renderCard();
+}
+
+/* ---------- QUIZ ---------- */
+function initQuiz(){
+  const items = activeItems();
+  quizOrder = shuffle(items).slice(0, Math.min(10, items.length));
+  quizIdx = 0; quizScore = 0;
+  renderQuiz();
+}
+function renderQuiz(){
+  const content = document.getElementById('content');
+  const pool = activeItems();
+  if(quizOrder.length===0 || pool.length < 3){ content.innerHTML = '<div class="empty">اختر 3 دروس على الأقل للاختبار</div>'; return; }
+  if(quizIdx >= quizOrder.length){
+    content.innerHTML = `<div class="quiz-box">
+      <div style="font-size:20px;font-weight:700;color:var(--pink-deep);margin-bottom:8px;">النتيجة النهائية</div>
+      <div style="font-size:40px;font-weight:700;">${quizScore} / ${quizOrder.length}</div>
+      <button class="next-btn" style="display:block;margin-top:18px;" onclick="initQuiz()">اختبار جديد 🔁</button>
+    </div>`;
+    return;
+  }
+  const item = quizOrder[quizIdx];
+  const answerKey = quizType === "romaji" ? "r" : "a";
+  let choices = [item[answerKey]];
+  const others = shuffle(pool.filter(x=>x.id!==item.id)).slice(0,3);
+  others.forEach(o=>choices.push(o[answerKey]));
+  choices = shuffle(choices);
+
+  content.innerHTML = `
+    <div class="quiz-type-toggle">
+      <button class="qtbtn ${quizType==='arabic'?'on':''}" id="qtArabic">🇸🇦 عربي</button>
+      <button class="qtbtn ${quizType==='romaji'?'on':''}" id="qtRomaji">🔤 روماجي</button>
+    </div>
+    <div class="quiz-progress">سؤال ${quizIdx+1} من ${quizOrder.length} · النقاط: ${quizScore}</div>
+    <div class="quiz-box">
+      <div class="quiz-q">${item.k}</div>
+      <div class="quiz-kana">${item.kana}</div>
+      <div class="options" id="opts"></div>
+      <button class="next-btn" id="nextQ">التالي ←</button>
+    </div>
+  `;
+  document.getElementById('qtArabic').onclick = ()=>{ if(quizType!=='arabic'){ quizType='arabic'; initQuiz(); } };
+  document.getElementById('qtRomaji').onclick = ()=>{ if(quizType!=='romaji'){ quizType='romaji'; initQuiz(); } };
+
+  const optsWrap = document.getElementById('opts');
+  choices.forEach(c=>{
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = c;
+    if(quizType==='romaji'){ b.style.direction='ltr'; b.style.fontStyle='italic'; }
+    b.onclick = ()=>{
+      const allBtns = optsWrap.querySelectorAll('.opt');
+      allBtns.forEach(bt=>bt.disabled=true);
+      const correctVal = item[answerKey];
+      if(c === correctVal){
+        b.classList.add('correct');
+        quizScore++;
+        const p = progress[item.id] || {level:0,seen:0};
+        p.level = Math.min(5, p.level+1); p.seen++;
+        progress[item.id] = p;
+      } else {
+        b.classList.add('wrong');
+        allBtns.forEach(bt=>{ if(bt.textContent===correctVal) bt.classList.add('correct'); });
+        const p = progress[item.id] || {level:0,seen:0};
+        p.level = Math.max(0, p.level-1); p.seen++;
+        progress[item.id] = p;
+      }
+      saveProgress(); renderStats();
+      document.getElementById('nextQ').style.display = 'block';
+    };
+    optsWrap.appendChild(b);
+  });
+  document.getElementById('nextQ').onclick = ()=>{ quizIdx++; renderQuiz(); };
+}
+
+/* ---------- LIST ---------- */
+function renderList(){
+  const content = document.getElementById('content');
+  const items = activeItems();
+  if(items.length===0){ content.innerHTML = '<div class="empty">اختر درساً واحداً على الأقل</div>'; return; }
+  content.innerHTML = items.map(item=>{
+    const lvl = progress[item.id] ? progress[item.id].level : 0;
+    const labels = ["جديد","🌱","🌿","🌳","⭐","💎"];
+    return `<div class="list-item">
+      <div class="k">${item.k}</div>
+      <div class="mid"><div class="r">${item.kana} · ${item.r}</div><div class="a">${item.a}</div></div>
+      <div class="lvl">${labels[lvl]}</div>
+    </div>`;
+  }).join('');
+}
+
+function refreshAll(){
+  renderLessonFilter();
+  renderStats();
+  if(tab==="cards") initCards();
+  else if(tab==="quiz") initQuiz();
+  else renderList();
+}
+
+function setTab(t){
+  tab = t;
+  document.getElementById('tabCards').classList.toggle('active', t==='cards');
+  document.getElementById('tabQuiz').classList.toggle('active', t==='quiz');
+  document.getElementById('tabList').classList.toggle('active', t==='list');
+  if(t==="cards") initCards();
+  else if(t==="quiz") initQuiz();
+  else renderList();
+}
+
+document.getElementById('tabCards').onclick = ()=>setTab('cards');
+document.getElementById('tabQuiz').onclick = ()=>setTab('quiz');
+document.getElementById('tabList').onclick = ()=>setTab('list');
+document.getElementById('themeToggle').onclick = toggleTheme;
+
+(async function init(){
+  await loadTheme();
+  await loadProgress();
+  renderLessonFilter();
+  renderStats();
+  initCards();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レベル1クラス - اختبارات اليابانية الشاملة (Dark Mode)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+Arabic:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#120e18; --bg2:#1c1626; --bg3:#241c30; --bg4:#2b2138;
+    --ink:#f6eef7; --muted:#c3a9cf; --muted-dim:#8f7a9c;
+    --pink:#ff9dce; --pink-dim:#e078b0; --plum:#ffd7ee;
+    --gold:#f3bd6c; --green:#68d9a4; --green-dim:#1f3d33;
+    --red:#ff8c9d; --red-dim:#3d2130;
+    --line:#3a2c48; --line-soft:#2a2038;
+    --shadow: 0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;}
+  html{font-size:18px;}
+  body{
+    margin:0; font-family:'Noto Sans Arabic','Noto Sans JP',sans-serif;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,157,206,.10) 0%, transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(243,189,108,.08) 0%, transparent 45%),
+      var(--bg);
+    color:var(--ink); min-height:100vh; padding-bottom:60px; font-size:1.05rem;
+  }
+  .jp{font-family:'Zen Maru Gothic','Noto Sans JP',sans-serif; direction:ltr; unicode-bidi:isolate;}
+
+  header{
+    background:linear-gradient(135deg,#3a1d3a,#1f1530 70%);
+    color:#fff; padding:28px 18px 30px; text-align:center; position:relative; overflow:hidden;
+    box-shadow:0 6px 24px rgba(0,0,0,.5); border-bottom:1px solid var(--line);
+  }
+  header::after{ content:"🌸"; position:absolute; font-size:130px; opacity:.10; left:-25px; top:-35px; filter:blur(.3px);}
+  header::before{ content:"🌙"; position:absolute; font-size:95px; opacity:.10; right:-10px; bottom:-40px;}
+  header h1{margin:0 0 8px; font-size:1.55rem; font-weight:900; color:var(--plum);}
+  header h1 .jp{display:block; font-size:2.35rem; margin-bottom:6px; color:#fff; text-shadow:0 2px 14px rgba(255,157,206,.35);}
+  header p.sub{margin:0; opacity:.9; font-size:1rem; color:var(--muted);}
+
+  .groupBanner{
+    margin:16px auto 0; max-width:520px; background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,215,238,.25); border-radius:18px; padding:12px 18px;
+  }
+  .groupLine{margin:0; font-size:1.02rem; font-weight:800; color:var(--plum);}
+  .groupLine span{color:#fff;}
+  .groupSub{margin:6px 0 0; font-size:.92rem; font-weight:700; color:var(--gold);}
+
+  .flagBanner{
+    display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-top:16px;
+  }
+  .flagChip{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:16px;
+    padding:8px 14px; display:flex; align-items:center; gap:8px; font-size:1rem; font-weight:700;
+  }
+  .flagChip .fl{font-size:1.6rem;}
+  .flagChip.japan{
+    background:rgba(243,189,108,.14); border:1.5px solid var(--gold); box-shadow:0 0 14px rgba(243,189,108,.25);
+  }
+
+  .wrap{max-width:800px; margin:0 auto; padding:20px;}
+
+  .sectionHeading{
+    display:flex; align-items:center; gap:10px; margin:26px 4px 12px; font-size:1.35rem; font-weight:900; color:var(--gold);
+  }
+  .sectionHeading .em{font-size:1.6rem;}
+  .sectionHeading:first-of-type{margin-top:6px;}
+
+  #lessonGrid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-top:6px;
+  }
+  .lessonCard{
+    background:var(--bg2); border:2px solid var(--line); border-radius:20px; padding:18px 14px;
+    text-align:center; cursor:pointer; transition:.2s; position:relative; box-shadow:var(--shadow);
+  }
+  .lessonCard:hover{transform:translateY(-4px); border-color:var(--pink); box-shadow:0 12px 28px rgba(255,157,206,.18);}
+  .lessonCard .num{
+    width:44px; height:44px; border-radius:50%; background:var(--bg4); color:var(--pink);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-weight:900; font-size:1.5rem;
+    border:2px solid var(--line);
+  }
+  .lessonCard h3{margin:0 0 6px; font-size:1.15rem; color:var(--ink);}
+  .lessonCard p{margin:0; font-size:.9rem; color:var(--muted);}
+  .lessonCard .badge{
+    position:absolute; top:10px; left:10px; background:var(--green); color:#0f2a20; font-size:.78rem;
+    padding:3px 10px; border-radius:12px; display:none; font-weight:900;
+  }
+  .lessonCard.done .badge{display:inline-block;}
+  .lessonCard .qcount{margin-top:8px; color:var(--pink); font-weight:800; font-size:.92rem;}
+
+  .finalCard{
+    grid-column:1/-1; background:linear-gradient(135deg,var(--bg4),var(--bg2)); border:2px solid var(--gold);
+    box-shadow:0 12px 30px rgba(243,189,108,.18);
+  }
+  .finalCard .num{background:var(--gold); color:#2a1a05; border-color:var(--gold);}
+  .finalCard h3{color:var(--gold); font-size:1.3rem;}
+
+  .card{
+    background:var(--bg2); border-radius:22px; padding:22px; box-shadow:var(--shadow);
+    border:1px solid var(--line); margin-bottom:16px;
+  }
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
+  .backBtn{
+    background:var(--bg3); border:2px solid var(--line); color:var(--ink); border-radius:14px;
+    padding:9px 16px; cursor:pointer; font-weight:800; font-family:inherit; font-size:.95rem;
+  }
+  .backBtn:hover{border-color:var(--pink);}
+  .progress{font-size:.95rem; color:var(--muted); font-weight:800;}
+  .scoreBadge{
+    background:var(--bg4); border:2px solid var(--gold); color:var(--gold); border-radius:14px;
+    padding:7px 14px; font-weight:900; font-size:1rem; display:flex; align-items:center; gap:6px;
+    transition:transform .25s;
+  }
+  .scoreBadge.pulse{transform:scale(1.15);}
+  .progressBarOuter{background:var(--bg3); border-radius:10px; height:10px; margin-bottom:18px; overflow:hidden;}
+  .progressBarInner{background:linear-gradient(90deg,var(--pink),var(--gold)); height:100%; transition:.3s;}
+
+  .qHeader{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+  .qNumBadge{
+    background:var(--pink); color:#3a0f27; width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0; font-size:1.1rem;
+  }
+  .qPrompt .jp{font-size:1.75rem; font-weight:900; color:var(--plum); line-height:1.4;}
+  .qPromptAr{font-size:1.05rem; color:var(--muted); margin-top:4px; line-height:1.5;}
+
+  .visualBox{
+    background:var(--bg3); border-radius:16px; padding:16px; margin:16px 0; text-align:center; border:1px solid var(--line-soft);
+  }
+  .emojiGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .emojiCell{
+    background:var(--bg2); border:2px solid var(--line); border-radius:16px; padding:16px 8px;
+  }
+  .emojiCell .letter{
+    display:inline-block; background:var(--gold); color:#2a1a05; width:26px; height:26px; border-radius:50%;
+    font-size:.85rem; line-height:26px; font-weight:900; margin-bottom:8px;
+  }
+  .emojiCell .emo{font-size:2.6rem; display:block; margin:4px 0;}
+  .emojiCell .lbl{font-size:.85rem; color:var(--muted);}
+
+  .stationLine{display:flex; align-items:flex-end; justify-content:space-between; overflow-x:auto; padding:24px 4px 4px; gap:6px;}
+  .station{display:flex; flex-direction:column; align-items:center; min-width:50px; flex-shrink:0; position:relative;}
+  .station .dot{width:16px; height:16px; border-radius:50%; background:var(--pink); border:2px solid var(--bg2); box-shadow:0 0 0 2px var(--pink);}
+  .station .name{font-size:.68rem; margin-top:6px; writing-mode:vertical-rl; height:64px; color:var(--muted);}
+  .station .mark{position:absolute; top:-28px; font-size:.68rem; background:var(--gold); color:#2a1a05; padding:3px 8px; border-radius:8px; white-space:nowrap; font-weight:800;}
+  .station .mark.now{background:var(--green); color:#0f2a20;}
+  .trackArrow{font-size:1.4rem; text-align:center; margin-top:6px; color:var(--pink);}
+
+  .calTable{width:100%; border-collapse:collapse; font-size:.9rem;}
+  .calTable th,.calTable td{border:1px solid var(--line); padding:9px 3px; text-align:center; color:var(--ink);}
+  .calTable th{background:var(--bg4); color:var(--pink);}
+  .calTable .markCell{background:var(--gold); color:#2a1a05; font-weight:900; border-radius:6px;}
+  .calTable .circleCell{position:relative;}
+  .calTable .circleCell::after{content:""; position:absolute; inset:3px; border:2px solid var(--gold); border-radius:50%;}
+  .calNote{font-size:.8rem; color:var(--muted-dim); margin-top:8px;}
+
+  .formTable{width:100%; border-collapse:collapse; font-size:.92rem;}
+  .formTable td{border:1px solid var(--line); padding:8px 10px; color:var(--ink);}
+  .formTable .letterCol{background:var(--bg4); color:var(--pink); font-weight:900; width:38px; text-align:center;}
+
+  .familyTree{display:flex; flex-direction:column; align-items:center; gap:12px;}
+  .ftRow{display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center;}
+  .ftBox{
+    background:var(--bg2); border:2px solid var(--pink-dim); border-radius:14px; padding:10px 12px; text-align:center; min-width:60px;
+  }
+  .ftBox.letter{border-color:var(--gold);}
+  .ftBox .icon{font-size:1.7rem; display:block;}
+  .ftBox .tag{font-size:.72rem; color:var(--muted);}
+  .ftBox .letterTag{background:var(--gold); color:#2a1a05; border-radius:50%; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:900; margin-bottom:3px;}
+
+  .choices{display:flex; flex-direction:column; gap:12px; margin-top:18px;}
+  .choiceBtn{
+    background:var(--bg3); border:2px solid var(--line); border-radius:16px; padding:14px 18px;
+    text-align:right; cursor:pointer; font-family:inherit; font-size:1.05rem; display:flex; align-items:center; gap:12px;
+    transition:.15s; color:var(--ink);
+  }
+  .choiceBtn:hover{border-color:var(--pink); background:var(--bg4);}
+  .choiceBtn .circleMark{font-size:1.3rem; flex-shrink:0; line-height:1;}
+  .choiceBtn .txtWrap{display:flex; flex-direction:column; gap:3px; text-align:right;}
+  .choiceBtn .jp{font-size:1.2rem; font-weight:800; color:var(--ink);}
+  .choiceBtn .ro{font-size:.82rem; color:var(--gold); opacity:.9;}
+  .choiceBtn .ar{font-size:.95rem; color:var(--muted);}
+  .choiceBtn.correct{background:var(--green-dim); border-color:var(--green);}
+  .choiceBtn.correct .circleMark{color:var(--green);}
+  .choiceBtn.wrong{background:var(--red-dim); border-color:var(--red);}
+  .choiceBtn.wrong .circleMark{color:var(--red);}
+  .choiceBtn.disabledBtn{pointer-events:none; opacity:.85;}
+  .choiceBtn.disabledBtn.correct, .choiceBtn.disabledBtn.wrong{opacity:1;}
+
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; font-size:1rem; display:none; font-weight:700; line-height:1.6;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:var(--green-dim); color:var(--green); border:1px solid var(--green);}
+  .feedback.bad{background:var(--red-dim); color:var(--red); border:1px solid var(--red);}
+
+  .navRow{display:flex; justify-content:space-between; margin-top:20px; gap:12px;}
+  .navBtn{
+    flex:1; padding:14px; border-radius:16px; border:none; font-weight:900; cursor:pointer; font-family:inherit; font-size:1rem;
+  }
+  .navBtn.next{background:linear-gradient(135deg,var(--pink),var(--gold)); color:#2a1420;}
+  .navBtn.next:disabled{opacity:.35; cursor:not-allowed;}
+  .navBtn.prev{background:var(--bg3); color:var(--ink); border:2px solid var(--line);}
+  .navBtn.prev:disabled{opacity:.35; cursor:not-allowed;}
+
+  .resultBox{text-align:center; padding:24px;}
+  .resultBox .big{font-size:3.4rem;}
+  .resultBox h2{color:var(--plum); margin:8px 0;}
+  .resultBox p{color:var(--muted); font-size:1.05rem;}
+
+  footer{text-align:center; color:var(--muted-dim); font-size:.85rem; margin-top:26px; padding:0 20px;}
+
+  @media (max-width:420px){
+    html{font-size:16px;}
+    header h1 .jp{font-size:1.9rem;}
+    .qPrompt .jp{font-size:1.5rem;}
+  }
+
+  /* ===================================================================
+     さいしゅうてすと — Japanese-only / Hiragana-only final exam
+     Fully isolated styling: no Arabic, no romaji, text-based, no images.
+  =================================================================== */
+  .feWrap{max-width:640px; margin:40px auto; padding:0 18px;}
+  .feCard{
+    background:var(--bg2); border:1px solid var(--line); border-radius:24px; padding:36px 28px;
+    box-shadow:var(--shadow); text-align:center;
+  }
+  .feGroupBadge{
+    display:inline-block; background:var(--bg4); border:1px solid var(--gold); color:var(--gold);
+    padding:8px 20px; border-radius:999px; font-weight:900; font-size:1.15rem; letter-spacing:.5px; margin-bottom:18px;
+  }
+  .feTag{
+    color:var(--pink); font-weight:900; font-size:1.05rem; margin:0 0 14px;
+  }
+  .feDesc{
+    color:var(--muted); font-size:1.05rem; line-height:2; margin:0 0 28px;
+  }
+  .feBtn{
+    display:inline-block; background:linear-gradient(135deg,var(--pink),var(--gold)); color:#2a1420;
+    border:none; border-radius:18px; padding:16px 46px; font-size:1.25rem; font-weight:900; cursor:pointer;
+    font-family:inherit;
+  }
+  .feBtn.secondary{
+    background:var(--bg3); color:var(--ink); border:2px solid var(--line);
+  }
+  .feBtnRow{display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:10px;}
+
+  .feTopbar{display:flex; justify-content:center; margin-bottom:22px;}
+  .feProgress{
+    background:var(--bg4); border:1px solid var(--line); color:var(--muted); font-weight:900;
+    padding:8px 20px; border-radius:999px; font-size:1.05rem;
+  }
+  .feProgressBarOuter{background:var(--bg3); border-radius:10px; height:8px; margin:0 0 30px; overflow:hidden;}
+  .feProgressBarInner{background:linear-gradient(90deg,var(--pink),var(--gold)); height:100%; transition:.3s;}
+
+  .fePrompt{
+    font-size:2.1rem; font-weight:900; color:var(--plum); text-align:center; line-height:1.6; margin-bottom:34px;
+    direction:ltr; unicode-bidi:isolate;
+  }
+
+  .feChoices{display:flex; flex-direction:column; gap:14px;}
+  .feChoiceBtn{
+    display:flex; align-items:center; gap:16px; background:var(--bg3); border:2px solid var(--line);
+    border-radius:18px; padding:16px 20px; cursor:pointer; font-family:inherit; transition:.15s;
+    direction:ltr; unicode-bidi:isolate;
+  }
+  .feChoiceBtn:hover:not(.feDisabled){border-color:var(--pink); background:var(--bg4);}
+  .feChoiceBtn .feOptText{font-size:1.35rem; font-weight:800; color:var(--ink);}
+  .feChoiceBtn.feDisabled{opacity:.4; pointer-events:none; text-decoration:line-through;}
+
+  .feCircle{
+    width:28px; height:28px; border-radius:50%; border:2.5px solid #ff5a72; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; background:transparent;
+  }
+  .feCircle .feDot{
+    width:13px; height:13px; border-radius:50%; background:#ffd23f; display:none;
+  }
+  .feCircle.feFilled .feDot{display:block;}
+
+  .feMsg{
+    margin-top:22px; text-align:center; font-size:1.1rem; font-weight:800; color:var(--red); min-height:1.6em;
+    direction:ltr; unicode-bidi:isolate;
+  }
+
+  .feResultBig{font-size:3.6rem; margin-bottom:10px;}
+  .feResultTitle{font-size:1.7rem; font-weight:900; color:var(--plum); margin:0 0 6px; direction:ltr; unicode-bidi:isolate;}
+  .feResultSub{color:var(--muted); font-size:1.1rem; margin:0 0 18px; direction:ltr; unicode-bidi:isolate;}
+  .feScoreBig{font-size:2.6rem; font-weight:900; color:var(--gold); margin:0 0 22px; text-shadow:0 2px 14px rgba(243,189,108,.3);}
+  .feStatsRow{display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-bottom:30px;}
+  .feStat{
+    background:var(--bg3); border:1px solid var(--line); border-radius:16px; padding:16px 22px; min-width:120px;
+  }
+  .feStat .feStatLabel{color:var(--muted); font-size:.95rem; font-weight:800; direction:ltr; unicode-bidi:isolate;}
+  .feStat .feStatVal{color:var(--gold); font-size:1.6rem; font-weight:900; margin-top:4px;}
+
+  @media (max-width:420px){
+    .fePrompt{font-size:1.6rem;}
+    .feChoiceBtn .feOptText{font-size:1.1rem;}
+    .feCard{padding:26px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+  <h1><span class="jp">レベル1クラス</span>اختبارات اللغة اليابانية N5 — نسخة الوضع الليلي 🌙</h1>
+  <p class="sub">9 دروس + اختبار شامل نهائي · ياباني — روماجي — عربي · مع صور توضيحية للأسئلة المصوّرة</p>
+  <div class="groupBanner">
+    <p class="groupLine">صُنع خصيصًا لطلاب المجموعة <span>سعاد مهدي تهاني</span> 🌸</p>
+    <p class="groupSub">استمر في التقدّم نحو JLPT N5 🇯🇵</p>
+  </div>
+  <div class="flagBanner">
+    <div class="flagChip"><span class="fl">🇸🇩</span> السودان</div>
+    <div class="flagChip"><span class="fl">🇾🇪</span> اليمن</div>
+    <div class="flagChip"><span class="fl">🇩🇿</span> الجزائر</div>
+    <div class="flagChip japan"><span class="fl">🇯🇵</span> اليابان</div>
+  </div>
+</header>
+
+<div class="wrap" id="app"></div>
+
+<footer id="mainFooter">صُنع خصيصًا لمذي 🌸 — استمر في التقدّم نحو JLPT N5</footer>
+
+<script>
+const lessons = [
+{
+  id:1, jp:"だい1か", ar:"الأماكن والاتجاهات والصفات",
+  questions:[
+    {jp:"①じどうはんばいき", ar:"آلة البيع الذاتية (jidou-hanbaiki)",
+     visual:{grid:[{k:"A",e:"🗄️",l:"ロッカー"},{k:"B",e:"🥤",l:"自動販売機"},{k:"C",e:"🏧",l:"ATM"},{k:"D",e:"🚪",l:"自動ドア"}]},
+     opts:[{jp:"ロッカー",ro:"rokkaa",ar:"خزانة إيداع"},{jp:"自動販売機",ro:"jidou-hanbaiki",ar:"آلة بيع ذاتية"},{jp:"ATM",ro:"eetiiemu",ar:"صرّاف آلي"},{jp:"自動ドア",ro:"jidou doa",ar:"باب أوتوماتيكي"}],
+     ans:1},
+    {jp:"②エーティーエム", ar:"الصرّاف الآلي (ATM)",
+     visual:{grid:[{k:"A",e:"🗄️",l:"ロッカー"},{k:"B",e:"🥤",l:"自動販売機"},{k:"C",e:"🏧",l:"ATM"},{k:"D",e:"🚪",l:"自動ドア"}]},
+     opts:[{jp:"ロッカー",ro:"rokkaa",ar:"خزانة إيداع"},{jp:"自動販売機",ro:"jidou-hanbaiki",ar:"آلة بيع ذاتية"},{jp:"ATM",ro:"eetiiemu",ar:"صرّاف آلي"},{jp:"自動ドア",ro:"jidou doa",ar:"باب أوتوماتيكي"}],
+     ans:2},
+    {jp:"③امرأة تُشير إلى متجر بعيد وتقول...", ar:"ماذا تقول وهي تشير إلى المكان؟",
+     opts:[{jp:"このさきです",ro:"kono saki desu",ar:"إنه في هذا الاتجاه / أمامك مباشرة"},{jp:"まっててください",ro:"matte te kudasai",ar:"انتظر من فضلك"},{jp:"ちょっと、わからないですね",ro:"chotto, wakaranai desu ne",ar:"لا أعرف بالضبط، للأسف"}],
+     ans:0},
+    {jp:"④القطة أمام السيارة تمامًا — أين هي؟", ar:"موقع القطة المُشار إليها بالسهم",
+     opts:[{jp:"うえ",ro:"ue",ar:"فوق"},{jp:"した",ro:"shita",ar:"تحت"},{jp:"まえ",ro:"mae",ar:"أمام"},{jp:"うしろ",ro:"ushiro",ar:"خلف"}],
+     ans:2},
+    {jp:"⑤القطة خلف السيارة تمامًا — أين هي؟", ar:"موقع القطة المُشار إليها بالسهم",
+     opts:[{jp:"まえ",ro:"mae",ar:"أمام"},{jp:"うしろ",ro:"ushiro",ar:"خلف"},{jp:"なか",ro:"naka",ar:"داخل"},{jp:"よこ",ro:"yoko",ar:"بجانب"}],
+     ans:1},
+    {jp:"⑥صورة بوابات تذاكر المحطة", ar:"ما اسم هذا المكان؟",
+     opts:[{jp:"ビル",ro:"biru",ar:"مبنى"},{jp:"エスカレーター",ro:"esukareetaa",ar:"سلّم متحرك"},{jp:"かいさつ",ro:"kaisatsu",ar:"بوابة تذاكر القطار"},{jp:"インフォメーション",ro:"infomeeshon",ar:"مكتب معلومات"}],
+     ans:2},
+    {jp:"⑦صورة سلّم متحرك", ar:"ما اسم هذا الشيء؟",
+     opts:[{jp:"ビル",ro:"biru",ar:"مبنى"},{jp:"エスカレーター",ro:"esukareetaa",ar:"سلّم متحرك"},{jp:"かいさつ",ro:"kaisatsu",ar:"بوابة تذاكر القطار"},{jp:"インフォメーション",ro:"infomeeshon",ar:"مكتب معلومات"}],
+     ans:1},
+    {jp:"⑧きれい(な) ⟷ عكسها: بحر نظيف مقابل شاطئ قذر", ar:"ما هو عكس كلمة 'نظيف/جميل'؟",
+     opts:[{jp:"ふるい",ro:"furui",ar:"قديم"},{jp:"おおきい",ro:"ookii",ar:"كبير"},{jp:"たかい",ro:"takai",ar:"مرتفع/غالٍ"},{jp:"きたない",ro:"kitanai",ar:"وسخ/قذر"}],
+     ans:3},
+    {jp:"⑨せまい ⟷ عكسها: حديقة واسعة مقابل قفص ضيّق", ar:"ما هو عكس كلمة 'ضيّق'؟",
+     opts:[{jp:"あたらしい",ro:"atarashii",ar:"جديد"},{jp:"ちいさい",ro:"chiisai",ar:"صغير"},{jp:"しずか(な)",ro:"shizuka na",ar:"هادئ"},{jp:"ひろい",ro:"hiroi",ar:"واسع"}],
+     ans:3},
+    {jp:"⑩شارع تسوّق مزدحم وصاخب بالحيوية", ar:"كيف تصف هذا الشارع؟",
+     opts:[{jp:"ふるい",ro:"furui",ar:"قديم"},{jp:"あたらしい",ro:"atarashii",ar:"جديد"},{jp:"にぎやか(な)",ro:"nigiyaka na",ar:"صاخب بالحيوية / نابض بالحياة"},{jp:"しずか(な)",ro:"shizuka na",ar:"هادئ"}],
+     ans:2},
+  ]
+},
+{
+  id:2, jp:"だい2か", ar:"أيام الأسبوع",
+  questions:[
+    {jp:"①火曜日", ar:"ما هو المقابل الياباني لـ 'الثلاثاء'؟",
+     opts:[{jp:"げつようび",ro:"getsuyoubi",ar:"الاثنين"},{jp:"かようび",ro:"kayoubi",ar:"الثلاثاء"},{jp:"もくようび",ro:"mokuyoubi",ar:"الخميس"},{jp:"どようび",ro:"doyoubi",ar:"السبت"}], ans:1},
+    {jp:"②水曜日", ar:"ما هو المقابل الياباني لـ 'الأربعاء'؟",
+     opts:[{jp:"げつようび",ro:"getsuyoubi",ar:"الاثنين"},{jp:"すいようび",ro:"suiyoubi",ar:"الأربعاء"},{jp:"きんようび",ro:"kin\'youbi",ar:"الجمعة"},{jp:"にちようび",ro:"nichiyoubi",ar:"الأحد"}], ans:1},
+    {jp:"③土曜日", ar:"ما هو المقابل الياباني لـ 'السبت'؟",
+     opts:[{jp:"かようび",ro:"kayoubi",ar:"الثلاثاء"},{jp:"もくようび",ro:"mokuyoubi",ar:"الخميس"},{jp:"どようび",ro:"doyoubi",ar:"السبت"},{jp:"にちようび",ro:"nichiyoubi",ar:"الأحد"}], ans:2},
+    {jp:"④げつようび", ar:"بالكانجي، كيف تُكتب 'الاثنين'؟",
+     opts:[{jp:"月曜日",ro:"getsuyoubi",ar:"الاثنين"},{jp:"水曜日",ro:"suiyoubi",ar:"الأربعاء"},{jp:"金曜日",ro:"kin\'youbi",ar:"الجمعة"},{jp:"日曜日",ro:"nichiyoubi",ar:"الأحد"}], ans:0},
+    {jp:"⑤きんようび", ar:"بالكانجي، كيف تُكتب 'الجمعة'؟",
+     opts:[{jp:"火曜日",ro:"kayoubi",ar:"الثلاثاء"},{jp:"木曜日",ro:"mokuyoubi",ar:"الخميس"},{jp:"金曜日",ro:"kin\'youbi",ar:"الجمعة"},{jp:"土曜日",ro:"doyoubi",ar:"السبت"}], ans:2},
+    {jp:"⑥木曜日 — أي حرف في التقويم؟", ar:"حدّد يوم الخميس على التقويم",
+     visual:{cal:{marks:{"28":"A","30":"B","2":"C"}}}, opts:[{jp:"A",ar:"الحرف A"},{jp:"B",ar:"الحرف B"},{jp:"C",ar:"الحرف C"}], ans:1},
+    {jp:"⑦日曜日 — أي حرف في التقويم؟", ar:"حدّد يوم الأحد على التقويم",
+     visual:{cal:{marks:{"28":"A","30":"B","2":"C"}}}, opts:[{jp:"A",ar:"الحرف A"},{jp:"B",ar:"الحرف B"},{jp:"C",ar:"الحرف C"}], ans:2},
+    {jp:"⑧火曜日 — أي حرف في التقويم؟", ar:"حدّد يوم الثلاثاء على التقويم",
+     visual:{cal:{marks:{"28":"A","30":"B","2":"C"}}}, opts:[{jp:"A",ar:"الحرف A"},{jp:"B",ar:"الحرف B"},{jp:"C",ar:"الحرف C"}], ans:0},
+    {jp:"⑨A: いつがいいですか？ B: (　)と(　)がいいです。", ar:"الأيام المُحاطة بدائرة: 5 يناير و 8 يناير",
+     visual:{cal:{marks:{}, circles:["5","8"]}},
+     opts:[{jp:"月曜日と水曜日",ro:"getsuyoubi to suiyoubi",ar:"الاثنين والأربعاء"},{jp:"火曜日と金曜日",ro:"kayoubi to kin\'youbi",ar:"الثلاثاء والجمعة"},{jp:"水曜日と土曜日",ro:"suiyoubi to doyoubi",ar:"الأربعاء والسبت"},{jp:"金曜日と土曜日",ro:"kin\'youbi to doyoubi",ar:"الجمعة والسبت"}],
+     ans:2},
+    {jp:"⑩A: いつがいいですか？ B: (　)と(　)がいいです。", ar:"الأيام المُحاطة بدائرة: 3 يناير و 6 يناير",
+     visual:{cal:{marks:{}, circles:["3","6"]}},
+     opts:[{jp:"月曜日と水曜日",ro:"getsuyoubi to suiyoubi",ar:"الاثنين والأربعاء"},{jp:"火曜日と木曜日",ro:"kayoubi to mokuyoubi",ar:"الثلاثاء والخميس"},{jp:"木曜日と日曜日",ro:"mokuyoubi to nichiyoubi",ar:"الخميس والأحد"},{jp:"月曜日と木曜日",ro:"getsuyoubi to mokuyoubi",ar:"الاثنين والخميس"}],
+     ans:3},
+  ]
+},
+{
+  id:3, jp:"だい3か", ar:"المواصلات والاتجاهات والوقت",
+  questions:[
+    {jp:"①じてんしゃ", ar:"أي صورة تمثّل 'الدراجة الهوائية'؟",
+     visual:{grid:[{k:"A",e:"🚶",l:"あるいて"},{k:"B",e:"🚗",l:"くるま"},{k:"C",e:"🛵",l:"バイク"},{k:"D",e:"🚲",l:"じてんしゃ"}]},
+     opts:[{jp:"あるいて",ro:"aruite",ar:"سيرًا على الأقدام"},{jp:"くるま",ro:"kuruma",ar:"سيارة"},{jp:"バイク",ro:"baiku",ar:"دراجة نارية"},{jp:"じてんしゃ",ro:"jitensha",ar:"دراجة هوائية"}], ans:3},
+    {jp:"②あるいて", ar:"أي صورة تمثّل 'سيرًا على الأقدام'؟",
+     visual:{grid:[{k:"A",e:"🚶",l:"あるいて"},{k:"B",e:"🚗",l:"くるま"},{k:"C",e:"🛵",l:"バイク"},{k:"D",e:"🚲",l:"じてんしゃ"}]},
+     opts:[{jp:"あるいて",ro:"aruite",ar:"سيرًا على الأقدام"},{jp:"くるま",ro:"kuruma",ar:"سيارة"},{jp:"バイク",ro:"baiku",ar:"دراجة نارية"},{jp:"じてんしゃ",ro:"jitensha",ar:"دراجة هوائية"}], ans:0},
+    {jp:"③شخص يعبر بين قطارين على الرصيف", ar:"ماذا يفعل هذا الشخص؟",
+     opts:[{jp:"のります",ro:"norimasu",ar:"يركب"},{jp:"おります",ro:"orimasu",ar:"ينزل"},{jp:"のりかえます",ro:"norikaemasu",ar:"يُبدّل القطار (تبديل خط)"}], ans:2},
+    {jp:"④سهم يشير إلى داخل القطار (شخص يدخل)", ar:"ماذا يفعل هذا الشخص؟",
+     opts:[{jp:"のります",ro:"norimasu",ar:"يركب"},{jp:"おります",ro:"orimasu",ar:"ينزل"},{jp:"のりかえます",ro:"norikaemasu",ar:"يُبدّل القطار"}], ans:0},
+    {jp:"⑤سهم يشير إلى خارج القطار (شخص يخرج)", ar:"ماذا يفعل هذا الشخص؟",
+     opts:[{jp:"のります",ro:"norimasu",ar:"يركب"},{jp:"おります",ro:"orimasu",ar:"ينزل"},{jp:"のりかえます",ro:"norikaemasu",ar:"يُبدّل القطار"}], ans:1},
+    {jp:"⑥🕘 9:00 ← ⏱️ 9:01 (فرق دقيقة واحدة فقط)", ar:"كم الفرق الزمني بين الساعتين؟",
+     opts:[{jp:"いっぷん",ro:"ippun",ar:"دقيقة واحدة"},{jp:"じゅっぷん",ro:"juppun",ar:"10 دقائق"},{jp:"いちじかん",ro:"ichi-jikan",ar:"ساعة واحدة"},{jp:"いちじかんはん",ro:"ichi-jikan han",ar:"ساعة ونصف"}], ans:0},
+    {jp:"⑦🕘 9:00 ← 🕘 9:10 (فرق حوالي 10 دقائق)", ar:"كم الفرق الزمني بين الساعتين؟",
+     opts:[{jp:"いっぷん",ro:"ippun",ar:"دقيقة واحدة"},{jp:"じゅっぷん",ro:"juppun",ar:"10 دقائق"},{jp:"いちじかん",ro:"ichi-jikan",ar:"ساعة واحدة"},{jp:"いちじかんはん",ro:"ichi-jikan han",ar:"ساعة ونصف"}], ans:1},
+    {jp:"⑧🕘 9:00 ← 🕚 10:30 (فرق ساعة ونصف)", ar:"كم الفرق الزمني بين الساعتين؟",
+     opts:[{jp:"いっぷん",ro:"ippun",ar:"دقيقة واحدة"},{jp:"じゅっぷん",ro:"juppun",ar:"10 دقائق"},{jp:"いちじかん",ro:"ichi-jikan",ar:"ساعة واحدة"},{jp:"いちじかんはん",ro:"ichi-jikan han",ar:"ساعة ونصف"}], ans:3},
+    {jp:"⑨القطار متجه ← والمحطة الحالية «浦田»، والعلامة ؟ عند «北浦田» (المحطة التالية باتجاه سير القطار)", ar:"ماذا نسمّي المحطة القادمة مباشرة؟",
+     visual:{station:{now:3,mark:2}},
+     opts:[{jp:"しゅうてん",ro:"shuuten",ar:"المحطة النهائية"},{jp:"でぐち",ro:"deguchi",ar:"المخرج"},{jp:"つぎ",ro:"tsugi",ar:"التالي"},{jp:"はんたいがわ",ro:"hantaigawa",ar:"الجهة المعاكسة"}], ans:2},
+    {jp:"⑩القطار متجه ←، والعلامة ؟ عند «本宮» وهي آخر محطة في نهاية الخط", ar:"ماذا نسمّي آخر محطة في الخط؟",
+     visual:{station:{now:3,mark:0}},
+     opts:[{jp:"しゅうてん",ro:"shuuten",ar:"المحطة النهائية / آخر محطة"},{jp:"でぐち",ro:"deguchi",ar:"المخرج"},{jp:"つぎ",ro:"tsugi",ar:"التالي"},{jp:"はんたいがわ",ro:"hantaigawa",ar:"الجهة المعاكسة"}], ans:0},
+  ]
+},
+{
+  id:4, jp:"だい4か", ar:"صفات المنزل",
+  questions:[
+    {jp:"①家", ar:"ما معنى كلمة 'منزل'؟",
+     opts:[{jp:"くに",ro:"kuni",ar:"بلد"},{jp:"わたし",ro:"watashi",ar:"أنا"},{jp:"いえ",ro:"ie",ar:"منزل"},{jp:"みず",ro:"mizu",ar:"ماء"}], ans:2},
+    {jp:"②新しい", ar:"ما معنى 'جديد'؟",
+     opts:[{jp:"きたない",ro:"kitanai",ar:"وسخ"},{jp:"ひろい",ro:"hiroi",ar:"واسع"},{jp:"あたらしい",ro:"atarashii",ar:"جديد"},{jp:"うるさい",ro:"urusai",ar:"صاخب/مزعج"}], ans:2},
+    {jp:"③広い", ar:"ما معنى 'واسع'؟",
+     opts:[{jp:"ふるい",ro:"furui",ar:"قديم"},{jp:"ひろい",ro:"hiroi",ar:"واسع"},{jp:"せまい",ro:"semai",ar:"ضيّق"},{jp:"ちいさい",ro:"chiisai",ar:"صغير"}], ans:1},
+    {jp:"④古い", ar:"ما معنى 'قديم'؟",
+     opts:[{jp:"ふるい",ro:"furui",ar:"قديم"},{jp:"うるさい",ro:"urusai",ar:"صاخب"},{jp:"あたらしい",ro:"atarashii",ar:"جديد"},{jp:"おおきい",ro:"ookii",ar:"كبير"}], ans:0},
+    {jp:"⑤いえ", ar:"ما الكانجي المطابق لـ 'いえ'؟",
+     opts:[{jp:"水",ro:"mizu",ar:"ماء"},{jp:"国",ro:"kuni",ar:"بلد"},{jp:"魚",ro:"sakana",ar:"سمك"},{jp:"家",ro:"ie",ar:"منزل"}], ans:3},
+    {jp:"⑥家 — أي صورة؟", ar:"اختر صورة 'المنزل'",
+     visual:{grid:[{k:"A",e:"🏫",l:"がっこう"},{k:"B",e:"🏠",l:"いえ"},{k:"C",e:"🍖",l:"にく料理"},{k:"D",e:"🥗",l:"やさい"}]},
+     opts:[{jp:"A",ar:"A - مدرسة"},{jp:"B",ar:"B - منزل"},{jp:"C",ar:"C - أطباق لحم"},{jp:"D",ar:"D - خضار"}], ans:1},
+    {jp:"⑦新しい — أي منزل جديد؟", ar:"قارن بين المنزلين: أيّهما جديد؟",
+     visual:{grid:[{k:"A",e:"✨🏠",l:"جديد ولامع"},{k:"B",e:"🏚️",l:"قديم"}]},
+     opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"}], ans:0},
+    {jp:"⑧広い — أيّ غرفة واسعة؟", ar:"قارن بين الغرفتين: أيّهما واسعة؟",
+     visual:{grid:[{k:"A",e:"🏠↔️",l:"غرفة واسعة"},{k:"B",e:"📦",l:"غرفة ضيّقة"}]},
+     opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"}], ans:0},
+    {jp:"⑨私のへやはちょっと（　）です。", ar:"غرفتي (   ) قليلًا.",
+     opts:[{jp:"好きな",ro:"suki na",ar:"محبوب"},{jp:"古い",ro:"furui",ar:"قديمة"},{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"}], ans:1},
+    {jp:"⑩A: 家はどうですか？ B: (　)です。", ar:"A: كيف هو منزلك؟ B: (   ).",
+     opts:[{jp:"広い",ro:"hiroi",ar:"واسع"},{jp:"好きな",ro:"suki na",ar:"محبوب"},{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"}], ans:0},
+  ]
+},
+{
+  id:5, jp:"だい5か", ar:"اللحم والسمك والأفعال",
+  questions:[
+    {jp:"①魚", ar:"ما نطق كلمة 'سمك'؟",
+     opts:[{jp:"さかな",ro:"sakana",ar:"سمك"},{jp:"にく",ro:"niku",ar:"لحم"},{jp:"みず",ro:"mizu",ar:"ماء"},{jp:"くに",ro:"kuni",ar:"بلد"}], ans:0},
+    {jp:"②肉", ar:"ما نطق كلمة 'لحم'؟",
+     opts:[{jp:"さかな",ro:"sakana",ar:"سمك"},{jp:"にく",ro:"niku",ar:"لحم"},{jp:"みず",ro:"mizu",ar:"ماء"},{jp:"くに",ro:"kuni",ar:"بلد"}], ans:1},
+    {jp:"③ビールが【好きです】。", ar:"أحبّ البيرة — أي كلمة تعبّر عن 'أحبّ'؟",
+     opts:[{jp:"のみます",ro:"nomimasu",ar:"يشرب"},{jp:"たべます",ro:"tabemasu",ar:"يأكل"},{jp:"すきです",ro:"suki desu",ar:"أُحبّ"},{jp:"おねがいします",ro:"onegaishimasu",ar:"من فضلك"}], ans:2},
+    {jp:"④さかなを食べます = ", ar:"أعِد صياغة: 'يأكل السمك'",
+     opts:[{jp:"魚を食べます",ro:"sakana wo tabemasu",ar:"يأكل السمك"},{jp:"肉を食べます",ro:"niku wo tabemasu",ar:"يأكل اللحم"},{jp:"水を食べます",ro:"mizu wo tabemasu",ar:"يأكل الماء (غير صحيح)"}], ans:0},
+    {jp:"⑤にくを食べます = ", ar:"أعِد صياغة: 'يأكل اللحم'",
+     opts:[{jp:"魚を食べます",ro:"sakana wo tabemasu",ar:"يأكل السمك"},{jp:"肉を食べます",ro:"niku wo tabemasu",ar:"يأكل اللحم"},{jp:"水を食べます",ro:"mizu wo tabemasu",ar:"يأكل الماء (غير صحيح)"}], ans:1},
+    {jp:"⑥魚 — أي صورة؟", ar:"اختر صورة 'السمك'",
+     visual:{grid:[{k:"A",e:"💧",l:"みず"},{k:"B",e:"🐟",l:"さかな"},{k:"C",e:"🥩",l:"にく"},{k:"D",e:"🥗",l:"やさい"}]},
+     opts:[{jp:"A",ar:"A - ماء"},{jp:"B",ar:"B - سمك"},{jp:"C",ar:"C - لحم"},{jp:"D",ar:"D - خضار"}], ans:1},
+    {jp:"⑦肉 — أي صورة؟", ar:"اختر صورة 'اللحم'",
+     visual:{grid:[{k:"A",e:"💧",l:"みず"},{k:"B",e:"🐟",l:"さかな"},{k:"C",e:"🥩",l:"にく"},{k:"D",e:"🥗",l:"やさい"}]},
+     opts:[{jp:"A",ar:"A - ماء"},{jp:"B",ar:"B - سمك"},{jp:"C",ar:"C - لحم"},{jp:"D",ar:"D - خضار"}], ans:2},
+    {jp:"⑧やさいが好きです", ar:"أحبّ الخضار — أي صورة تعبّر عن ذلك؟",
+     visual:{grid:[{k:"1",e:"💧",l:"يشرب ماء"},{k:"2",e:"🍖",l:"يأكل لحم"},{k:"3",e:"🥗❤️",l:"يحبّ الخضار"},{k:"4",e:"😴",l:"ينام"}]},
+     opts:[{jp:"選択肢1",ar:"الخيار 1"},{jp:"選択肢2",ar:"الخيار 2"},{jp:"選択肢3",ar:"الخيار 3"},{jp:"選択肢4",ar:"الخيار 4"}], ans:2},
+    {jp:"⑨肉を（　）。", ar:"يأكل اللحم",
+     opts:[{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"},{jp:"好きです",ro:"suki desu",ar:"يحبّ"}], ans:0},
+    {jp:"⑩水を（　）。", ar:"يشرب الماء",
+     opts:[{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"},{jp:"好きです",ro:"suki desu",ar:"يحبّ"}], ans:1},
+  ]
+},
+{
+  id:6, jp:"だい6か", ar:"الماء والأكل والشرب",
+  questions:[
+    {jp:"①水", ar:"ما نطق كلمة 'ماء'؟",
+     opts:[{jp:"わたし",ro:"watashi",ar:"أنا"},{jp:"くに",ro:"kuni",ar:"بلد"},{jp:"みず",ro:"mizu",ar:"ماء"},{jp:"ちち",ro:"chichi",ar:"أب"}], ans:2},
+    {jp:"②飲みます", ar:"ما معنى 'يشرب'؟",
+     opts:[{jp:"たべます",ro:"tabemasu",ar:"يأكل"},{jp:"のみます",ro:"nomimasu",ar:"يشرب"},{jp:"おねがいします",ro:"onegaishimasu",ar:"من فضلك"}], ans:1},
+    {jp:"③食べます", ar:"ما معنى 'يأكل'؟",
+     opts:[{jp:"たべます",ro:"tabemasu",ar:"يأكل"},{jp:"のみます",ro:"nomimasu",ar:"يشرب"},{jp:"おねがいします",ro:"onegaishimasu",ar:"من فضلك"}], ans:0},
+    {jp:"④水 — أي صورة؟", ar:"اختر صورة 'الماء'",
+     visual:{grid:[{k:"A",e:"🍶",l:"にほんしゅ"},{k:"B",e:"🧋",l:"おちゃ・ジュース"},{k:"C",e:"🍵",l:"おちゃ"},{k:"D",e:"💧",l:"みず"}]},
+     opts:[{jp:"A",ar:"A - ساكي"},{jp:"B",ar:"B - عصير/شاي مثلج"},{jp:"C",ar:"C - شاي"},{jp:"D",ar:"D - ماء"}], ans:3},
+    {jp:"⑤食べます — أي صورة؟", ar:"اختر صورة 'الأكل'",
+     visual:{grid:[{k:"A",e:"💧",l:"のみます"},{k:"B",e:"🍽️",l:"たべます"},{k:"C",e:"😊",l:"ゆっくりします"},{k:"D",e:"😴",l:"ねます"}]},
+     opts:[{jp:"A",ar:"A - يشرب"},{jp:"B",ar:"B - يأكل"},{jp:"C",ar:"C - يسترخي"},{jp:"D",ar:"D - ينام"}], ans:1},
+    {jp:"⑥飲みます — أي صورة؟", ar:"اختر صورة 'الشرب'",
+     visual:{grid:[{k:"A",e:"💧",l:"のみます"},{k:"B",e:"🍽️",l:"たべます"},{k:"C",e:"😊",l:"ゆっくりします"},{k:"D",e:"😴",l:"ねます"}]},
+     opts:[{jp:"A",ar:"A - يشرب"},{jp:"B",ar:"B - يأكل"},{jp:"C",ar:"C - يسترخي"},{jp:"D",ar:"D - ينام"}], ans:0},
+    {jp:"⑦水を（　）。", ar:"يشرب الماء",
+     opts:[{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"},{jp:"住んでいます",ro:"sunde imasu",ar:"يسكن"}], ans:1},
+    {jp:"⑧パンを（　）。", ar:"يأكل الخبز",
+     opts:[{jp:"食べます",ro:"tabemasu",ar:"يأكل"},{jp:"飲みます",ro:"nomimasu",ar:"يشرب"},{jp:"母です",ro:"haha desu",ar:"هذه أمي"}], ans:0},
+  ]
+},
+{
+  id:7, jp:"だい7か", ar:"أفراد العائلة",
+  questions:[
+    {jp:"①父", ar:"ما نطق كلمة 'أب'؟",
+     opts:[{jp:"ちち",ro:"chichi",ar:"أب (عائلتي)"},{jp:"はは",ro:"haha",ar:"أم (عائلتي)"},{jp:"こども",ro:"kodomo",ar:"طفل"},{jp:"わたし",ro:"watashi",ar:"أنا"}], ans:0},
+    {jp:"②子ども", ar:"ما نطق كلمة 'طفل'؟",
+     opts:[{jp:"ちち",ro:"chichi",ar:"أب"},{jp:"はは",ro:"haha",ar:"أم"},{jp:"こども",ro:"kodomo",ar:"طفل"},{jp:"わたし",ro:"watashi",ar:"أنا"}], ans:2},
+    {jp:"③はは", ar:"ما الكانجي المطابق؟",
+     opts:[{jp:"父",ro:"chichi",ar:"أب"},{jp:"母",ro:"haha",ar:"أم"},{jp:"私",ro:"watashi",ar:"أنا"},{jp:"国",ro:"kuni",ar:"بلد"}], ans:1},
+    {jp:"④にほん", ar:"ما الكانجي المطابق؟",
+     opts:[{jp:"国",ro:"kuni",ar:"بلد"},{jp:"名前",ro:"namae",ar:"اسم"},{jp:"日本",ro:"nihon",ar:"اليابان"},{jp:"父母",ro:"fubo",ar:"الوالدان"}], ans:2},
+    {jp:"⑤父 — من هو الأب في شجرة العائلة؟", ar:"الجيل الأعلى: A و B هما والدا '私' وإخوته",
+     visual:{tree:true}, opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"},{jp:"E",ar:"E"}], ans:0},
+    {jp:"⑥母 — من هي الأم في شجرة العائلة؟", ar:"الجيل الأعلى: A و B هما والدا '私' وإخوته",
+     visual:{tree:true}, opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"},{jp:"E",ar:"E"}], ans:1},
+    {jp:"⑦子ども — من هم أطفال '私'؟", ar:"الجيل الأصغر أسفل الشجرة",
+     visual:{tree:true}, opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"},{jp:"E",ar:"E"}], ans:4},
+    {jp:"⑧（　）にすんでいます。", ar:"أعيش في (اليابان).",
+     opts:[{jp:"私",ro:"watashi",ar:"أنا"},{jp:"日本",ro:"nihon",ar:"اليابان"},{jp:"名前",ro:"namae",ar:"اسم"}], ans:1},
+    {jp:"⑨A: これ、だれですか？ B: 私の（　）です。 (صورة تُظهر امرأة)", ar:"A: من هذا؟ B: إنها (أمي).",
+     opts:[{jp:"名前",ro:"namae",ar:"اسم"},{jp:"日本",ro:"nihon",ar:"اليابان"},{jp:"母",ro:"haha",ar:"أمي"},{jp:"国",ro:"kuni",ar:"بلد"}], ans:2},
+    {jp:"⑩こちら、（　）と母とあにです。", ar:"هذا (أبي) وأمي وأخي الأكبر.",
+     opts:[{jp:"名前",ro:"namae",ar:"اسم"},{jp:"日本",ro:"nihon",ar:"اليابان"},{jp:"父",ro:"chichi",ar:"أبي"},{jp:"私",ro:"watashi",ar:"أنا"}], ans:2},
+  ]
+},
+{
+  id:8, jp:"だい8か", ar:"الهوايات وتكرار الأفعال",
+  questions:[
+    {jp:"①امرأة تقرأ كتابًا في الأريكة", ar:"ماذا تفعل؟",
+     opts:[{jp:"おんがく",ro:"ongaku",ar:"موسيقى"},{jp:"えいが",ro:"eiga",ar:"فيلم"},{jp:"どくしょ",ro:"dokusho",ar:"قراءة"},{jp:"かいもの",ro:"kaimono",ar:"تسوّق"}], ans:2},
+    {jp:"②يد تطهو لحمًا في مقلاة", ar:"ماذا يفعل؟",
+     opts:[{jp:"りょうり",ro:"ryouri",ar:"طبخ"},{jp:"そうじ",ro:"souji",ar:"تنظيف"},{jp:"せんたく",ro:"sentaku",ar:"غسيل ملابس"},{jp:"ゆっくりします",ro:"yukkuri shimasu",ar:"يسترخي"}], ans:0},
+    {jp:"③امرأة تُشغّل الغسّالة", ar:"ماذا تفعل؟",
+     opts:[{jp:"りょうり",ro:"ryouri",ar:"طبخ"},{jp:"そうじ",ro:"souji",ar:"تنظيف"},{jp:"せんたく",ro:"sentaku",ar:"غسيل ملابس"},{jp:"ゆっくりします",ro:"yukkuri shimasu",ar:"يسترخي"}], ans:2},
+    {jp:"④جدول أسبوعي كل الأيام فيه علامة ✓ (كل الأيام)", ar:"أي كلمة تكرار تناسب 'كل يوم'؟",
+     opts:[{jp:"いつも",ro:"itsumo",ar:"دائمًا"},{jp:"たいてい",ro:"taitei",ar:"غالبًا"},{jp:"よく",ro:"yoku",ar:"كثيرًا"},{jp:"ときどき",ro:"tokidoki",ar:"أحيانًا"}], ans:0},
+    {jp:"⑤جدول أسبوعي فارغ تمامًا (بدون أي علامة)", ar:"أي كلمة تكرار تناسب 'أبدًا'؟",
+     opts:[{jp:"たいてい",ro:"taitei",ar:"غالبًا"},{jp:"よく",ro:"yoku",ar:"كثيرًا"},{jp:"ときどき",ro:"tokidoki",ar:"أحيانًا"},{jp:"ぜんぜん",ro:"zenzen",ar:"أبدًا / إطلاقًا"}], ans:3},
+    {jp:"⑥شخص مسترخٍ في كرسي مع قهوة", ar:"ماذا يفعل؟",
+     opts:[{jp:"ききます",ro:"kikimasu",ar:"يستمع"},{jp:"よみます",ro:"yomimasu",ar:"يقرأ"},{jp:"みます",ro:"mimasu",ar:"يشاهد"},{jp:"ゆっくりします",ro:"yukkuri shimasu",ar:"يسترخي"}], ans:3},
+    {jp:"⑦شخص يشاهد التلفاز", ar:"ماذا يفعل؟",
+     opts:[{jp:"ききます",ro:"kikimasu",ar:"يستمع"},{jp:"よみます",ro:"yomimasu",ar:"يقرأ"},{jp:"みます",ro:"mimasu",ar:"يشاهد"},{jp:"ゆっくりします",ro:"yukkuri shimasu",ar:"يسترخي"}], ans:2},
+    {jp:"⑧شخص يستمع للموسيقى بسماعات", ar:"ماذا يفعل؟",
+     opts:[{jp:"ききます",ro:"kikimasu",ar:"يستمع"},{jp:"よみます",ro:"yomimasu",ar:"يقرأ"},{jp:"みます",ro:"mimasu",ar:"يشاهد"},{jp:"ゆっくりします",ro:"yukkuri shimasu",ar:"يسترخي"}], ans:0},
+    {jp:"⑨ひとりで — أي صورة تمثّل 'لوحده'؟", ar:"اختر الصورة الصحيحة",
+     visual:{grid:[{k:"A",e:"🥾👥",l:"تنزّه جماعي"},{k:"B",e:"🍖👥",l:"شواء جماعي"},{k:"C",e:"🎾👥",l:"تنس مع صديق"},{k:"D",e:"🧍🌳",l:"شخص لوحده"}]},
+     opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"}], ans:3},
+    {jp:"⑩そと — أي صورة تمثّل 'بالخارج'؟", ar:"اختر الصورة الصحيحة",
+     visual:{grid:[{k:"A",e:"🏠🍽️",l:"يأكل داخل المنزل"},{k:"B",e:"🌳🪑",l:"يجلس بالخارج"}]},
+     opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"}], ans:1},
+  ]
+},
+{
+  id:9, jp:"だい9か", ar:"التعريف بالنفس",
+  questions:[
+    {jp:"①名前", ar:"ما معنى كلمة 'اسم'؟",
+     opts:[{jp:"わたし",ro:"watashi",ar:"أنا"},{jp:"なまえ",ro:"namae",ar:"اسم"},{jp:"くに",ro:"kuni",ar:"بلد"}], ans:1},
+    {jp:"②国", ar:"ما معنى كلمة 'بلد'؟",
+     opts:[{jp:"しゅっしん",ro:"shusshin",ar:"مسقط الرأس/الأصل"},{jp:"なまえ",ro:"namae",ar:"اسم"},{jp:"くに",ro:"kuni",ar:"بلد"}], ans:2},
+    {jp:"③私", ar:"ما معنى كلمة 'أنا'؟",
+     opts:[{jp:"じゅうしょ",ro:"juusho",ar:"عنوان"},{jp:"しゅっしん",ro:"shusshin",ar:"مسقط الرأس"},{jp:"わたし",ro:"watashi",ar:"أنا"}], ans:2},
+    {jp:"④名前 — أي حرف في استمارة التسجيل يمثّل 'الاسم'؟", ar:"استمارة تسجيل: A=山田太郎, B=日本, C=تاريخ الميلاد, D=العنوان, E=الهاتف, F=البريد",
+     visual:{form:true}, opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"},{jp:"E",ar:"E"},{jp:"F",ar:"F"}], ans:0},
+    {jp:"⑤国 — أي حرف في استمارة التسجيل يمثّل 'البلد'؟", ar:"نفس الاستمارة أعلاه",
+     visual:{form:true}, opts:[{jp:"A",ar:"A"},{jp:"B",ar:"B"},{jp:"C",ar:"C"},{jp:"D",ar:"D"},{jp:"E",ar:"E"},{jp:"F",ar:"F"}], ans:1},
+    {jp:"⑥（　）はカンボジアからきました。", ar:"(أنا) أتيت من كمبوديا.",
+     opts:[{jp:"名前",ro:"namae",ar:"اسم"},{jp:"国",ro:"kuni",ar:"بلد"},{jp:"私",ro:"watashi",ar:"أنا"}], ans:2},
+    {jp:"⑦A: お（　）は？ B: ベトナムからきました。", ar:"A: ما هو (بلدك)؟ B: أتيت من فيتنام.",
+     opts:[{jp:"名前",ro:"namae",ar:"اسم"},{jp:"国",ro:"kuni",ar:"بلد"},{jp:"私",ro:"watashi",ar:"أنا"}], ans:1},
+  ]
+},
+];
+/* ============ VISUAL RENDERERS ============ */
+function renderGrid(grid){
+  return `<div class="emojiGrid">${grid.map(c=>`
+    <div class="emojiCell">
+      <span class="letter">${c.k}</span>
+      <span class="emo">${c.e}</span>
+      <span class="lbl jp">${c.l}</span>
+    </div>`).join('')}</div>`;
+}
+
+function renderCal(v){
+  // Dec 27 2021 - Jan 9 2022, headers Mon..Sun
+  const headers = ["月","火","水","木","金","土","日"];
+  const row1 = [27,28,29,30,31,1,2];
+  const row2 = [3,4,5,6,7,8,9];
+  function cell(d, isRow1){
+    const key = String(d);
+    let cls = '';
+    let content = d;
+    if(v.marks && v.marks[key]){
+      cls='markCell'; content = v.marks[key];
+    }
+    if(v.circles && v.circles.includes(key)){
+      cls='circleCell';
+    }
+    return `<td class="${cls}">${content}</td>`;
+  }
+  return `<table class="calTable">
+    <tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>
+    <tr>${row1.map(d=>cell(d,true)).join('')}</tr>
+    <tr>${row2.map(d=>cell(d,false)).join('')}</tr>
+  </table>
+  <div class="calNote">1 January 2022（令和4年）</div>`;
+}
+
+function renderStation(v){
+  const names = ["本宮","さきやま新都心","北浦田","浦田","南浦田","西沢口","沢口","黒羽","東九条"];
+  return `<div class="stationLine">${names.map((n,i)=>`
+    <div class="station">
+      ${i===v.now?'<div class="mark now">いま</div>':''}
+      ${i===v.mark?'<div class="mark">？</div>':''}
+      <div class="dot"></div>
+      <div class="name jp">${n}</div>
+    </div>`).join('')}</div>
+  <div class="trackArrow">⬅️ 列車の進行方向</div>`;
+}
+
+function renderForm(){
+  const rows = [
+    ["A","山田 太郎"],["B","日本"],["C","1995年12月31日"],
+    ["D","〒330-0074 さいたま市浦和区北浦和 5-6-36"],["E","090-1234-5678"],["F","Yamada@irodori-jpf.co.jp"]
+  ];
+  return `<table class="formTable">${rows.map(r=>`<tr><td class="letterCol">${r[0]}</td><td class="jp">${r[1]}</td></tr>`).join('')}</table>`;
+}
+
+function renderTree(){
+  return `<div class="familyTree">
+    <div class="ftRow">
+      <div class="ftBox letter"><span class="letterTag">A</span><span class="icon">👴</span></div>
+      <div class="ftBox letter"><span class="letterTag">B</span><span class="icon">👵</span></div>
+    </div>
+    <div class="ftRow">
+      <div class="ftBox letter"><span class="letterTag">C</span><span class="icon">👨</span></div>
+      <div class="ftBox"><span class="icon">👩</span><span class="tag jp">姉</span></div>
+      <div class="ftBox"><span class="icon">🧑</span><span class="tag jp">私</span></div>
+      <div class="ftBox"><span class="icon">🧑‍🤝‍🧑</span><span class="tag jp">夫/妻</span></div>
+      <div class="ftBox"><span class="icon">👦</span><span class="tag jp">弟</span></div>
+      <div class="ftBox letter"><span class="letterTag">D</span><span class="icon">👩</span></div>
+    </div>
+    <div class="ftRow">
+      <div class="ftBox letter"><span class="letterTag">E</span><span class="icon">👧🧒</span></div>
+    </div>
+  </div>`;
+}
+
+function renderVisual(v){
+  if(!v) return '';
+  let inner = '';
+  if(v.grid) inner = renderGrid(v.grid);
+  else if(v.cal) inner = renderCal(v.cal);
+  else if(v.station) inner = renderStation(v.station);
+  else if(v.form) inner = renderForm();
+  else if(v.tree) inner = renderTree();
+  return `<div class="visualBox">${inner}</div>`;
+}
+
+
+/* ============ SECTION / EMOJI METADATA ============ */
+const lessonEmojis = {1:"🧭",2:"📅",3:"🚉",4:"🏠",5:"🍖",6:"🥤",7:"👨‍👩‍👧",8:"🎨",9:"📝"};
+
+function getLesson(idx){ return lessons[idx]; }
+
+/* ===================================================================
+   さいしゅうてすと — Japanese-only / Hiragana-only final exam data.
+   日本語のみ・ひらがなのみ。漢字は元の問題文にすでにある場合のみ残す。
+   選択肢はすべてひらがな（漢字なし）。アラビア語・ローマ字・画像・
+   ヒントは一切なし。
+=================================================================== */
+const finalExamGroupName = "めでぃ・すあど・たはに";
+const finalExamQuestions = [
+  {q:"火曜日", opts:["げつようび", "かようび", "もくようび", "どようび"], ans:1, w:1},
+  {q:"水曜日", opts:["げつようび", "すいようび", "きんようび", "にちようび"], ans:1, w:1},
+  {q:"木曜日", opts:["かようび", "すいようび", "もくようび", "きんようび"], ans:2, w:1},
+  {q:"金曜日", opts:["すいようび", "もくようび", "きんようび", "どようび"], ans:2, w:1},
+  {q:"日曜日", opts:["どようび", "にちようび", "げつようび", "かようび"], ans:1, w:1},
+  {q:"学校", opts:["がっこう", "かいしゃ", "としょかん", "びょういん"], ans:0, w:1},
+  {q:"病院", opts:["がっこう", "びょういん", "ぎんこう", "ゆうびんきょく"], ans:1, w:1},
+  {q:"会社", opts:["かいしゃ", "がっこう", "こうえん", "えき"], ans:0, w:1},
+  {q:"図書館", opts:["としょかん", "びじゅつかん", "はくぶつかん", "えいがかん"], ans:0, w:1},
+  {q:"銀行", opts:["ぎんこう", "ゆうびんきょく", "やっきょく", "こうばん"], ans:0, w:1},
+  {q:"大きい の はんたいは？", opts:["ちいさい", "たかい", "やすい", "あたらしい"], ans:0, w:1},
+  {q:"新しい の はんたいは？", opts:["ふるい", "ひろい", "せまい", "おおきい"], ans:0, w:1},
+  {q:"暑い の はんたいは？", opts:["さむい", "あつい", "すずしい", "あたたかい"], ans:0, w:1},
+  {q:"高い の はんたいは？", opts:["やすい", "たかい", "おおきい", "ちいさい"], ans:0, w:1},
+  {q:"長い の はんたいは？", opts:["みじかい", "ながい", "ひろい", "せまい"], ans:0, w:1},
+  {q:"重い の はんたいは？", opts:["かるい", "おもい", "おおきい", "ちいさい"], ans:0, w:1},
+  {q:"早い の はんたいは？", opts:["おそい", "はやい", "ながい", "みじかい"], ans:0, w:1},
+  {q:"明るい の はんたいは？", opts:["くらい", "あかるい", "あつい", "さむい"], ans:0, w:1},
+  {q:"忙しい の はんたいは？", opts:["ひまな", "いそがしい", "たのしい", "げんきな"], ans:0, w:1},
+  {q:"上手 の はんたいは？", opts:["へた", "じょうず", "しんせつ", "げんき"], ans:0, w:1},
+  {q:"わたし＿がくせいです。", opts:["は", "を", "に", "で"], ans:0, w:1},
+  {q:"これは わたし＿ ほんです。", opts:["の", "は", "を", "に"], ans:0, w:1},
+  {q:"まいあさ　7じ＿おきます。", opts:["に", "で", "を", "へ"], ans:0, w:1},
+  {q:"がっこう＿いきます。", opts:["へ", "を", "が", "と"], ans:0, w:1},
+  {q:"ほん＿よみます。", opts:["を", "に", "で", "へ"], ans:0, w:1},
+  {q:"としょかん＿べんきょうします。", opts:["で", "に", "を", "へ"], ans:0, w:1},
+  {q:"ともだち＿はなします。", opts:["と", "を", "に", "で"], ans:0, w:1},
+  {q:"この かばんは たなかさん＿です。", opts:["の", "は", "が", "を"], ans:0, w:1},
+  {q:"きょうは あめ＿ふっています。", opts:["が", "を", "に", "で"], ans:0, w:1},
+  {q:"まど＿あけてください。", opts:["を", "が", "に", "で"], ans:0, w:1},
+  {q:"あそこ＿ゆうびんきょくが あります。", opts:["に", "へ", "を", "と"], ans:0, w:1},
+  {q:"わたしは にほんご＿はなせません。", opts:["が", "を", "に", "で"], ans:0, w:1},
+  {q:"テーブルの うえ＿ねこが います。", opts:["に", "で", "を", "へ"], ans:0, w:1},
+  {q:"これは だれ＿かさですか。", opts:["の", "は", "が", "を"], ans:0, w:1},
+  {q:"わたしは あさごはん＿たべませんでした。", opts:["を", "が", "に", "で"], ans:0, w:1},
+  {q:"かぞく＿しゃしんを とりました。", opts:["と", "に", "で", "を"], ans:0, w:1},
+  {q:"せんせい＿しつもんを しました。", opts:["に", "を", "で", "と"], ans:0, w:1},
+  {q:"でんしゃ＿がっこうへ いきます。", opts:["で", "に", "を", "へ"], ans:0, w:1},
+  {q:"にほん＿りょこうしたいです。", opts:["へ", "を", "が", "と"], ans:0, w:1},
+  {q:"コーヒー＿さとうを いれます。", opts:["に", "を", "で", "と"], ans:0, w:1},
+  {q:"たべます の てけい は？", opts:["たべて", "たべる", "たべた", "たべない"], ans:0, w:1},
+  {q:"のみます の てけい は？", opts:["のんで", "のみて", "のむ", "のんだ"], ans:0, w:1},
+  {q:"いきます の てけい は？", opts:["いって", "いきて", "いく", "いった"], ans:0, w:1},
+  {q:"かきます の てけい は？", opts:["かいて", "かきて", "かく", "かいだ"], ans:0, w:1},
+  {q:"よみます の ないけい は？", opts:["よまない", "よみない", "よむない", "よんない"], ans:0, w:1},
+  {q:"します の たけい は？", opts:["した", "します", "して", "しない"], ans:0, w:1},
+  {q:"きます の たけい は？", opts:["きた", "きます", "きて", "こない"], ans:0, w:1},
+  {q:"あそびます の てけい は？", opts:["あそんで", "あそびて", "あそぶ", "あそんだ"], ans:0, w:1},
+  {q:"しずかです の ひていけいは？", opts:["しずかじゃありません", "しずくないです", "しずかいです", "しずかませんでした"], ans:0, w:1},
+  {q:"たのしい の かこけいは？", opts:["たのしかったです", "たのしいでした", "たのしくないです", "たのしましたです"], ans:0, w:1},
+  {q:"おいしい の ひていけいは？", opts:["おいしくないです", "おいしいじゃないです", "おいしませんでした", "おいしくます"], ans:0, w:1},
+  {q:"げんきです の かこけいは？", opts:["げんきでした", "げんきいでした", "げんきくでした", "げんきましたでした"], ans:0, w:1},
+  {q:"きれいな はな の きれいな は なんですか。", opts:["なけいようし", "いけいようし", "どうし", "めいし"], ans:0, w:1},
+  {q:"あたらしい くるま の あたらしい は なんですか。", opts:["いけいようし", "なけいようし", "どうし", "めいし"], ans:0, w:1},
+  {q:"りんごが　3＿あります。", opts:["こ", "ほん", "まい", "にん"], ans:0, w:1},
+  {q:"えんぴつが　2＿あります。", opts:["ほん", "こ", "まい", "さつ"], ans:0, w:1},
+  {q:"かみが　5＿あります。", opts:["まい", "ほん", "こ", "だい"], ans:0, w:1},
+  {q:"がくせいが　4＿います。", opts:["にん", "こ", "ほん", "だい"], ans:0, w:1},
+  {q:"くるまが　1＿あります。", opts:["だい", "こ", "ほん", "まい"], ans:0, w:1},
+  {q:"ほんが　6＿あります。", opts:["さつ", "まい", "ほん", "こ"], ans:0, w:1},
+  {q:"いぬが　2＿います。", opts:["ひき", "にん", "こ", "だい"], ans:0, w:1},
+  {q:"たまごが　10＿あります。", opts:["こ", "ほん", "まい", "にん"], ans:0, w:1},
+  {q:"いま　9じです。ただしい よみかたは？", opts:["くじ", "きゅうじ", "ここのじ", "くうじ"], ans:0, w:1},
+  {q:"3じはん は なんじですか。", opts:["さんじ　さんじゅっぷん", "さんじ", "じゅうごふん", "よじ"], ans:0, w:1},
+  {q:"あした の つぎの ひは？", opts:["あさって", "きのう", "おととい", "きょう"], ans:0, w:1},
+  {q:"きのう の まえの ひは？", opts:["おととい", "あさって", "あした", "きょう"], ans:0, w:1},
+  {q:"1がつ の つぎの つきは？", opts:["にがつ", "じゅうにがつ", "さんがつ", "しがつ"], ans:0, w:1},
+  {q:"12じの　30ぷんまえは　なんじですか。", opts:["じゅういちじ　さんじゅっぷん", "じゅうにじ", "じゅういちじ", "じゅうさんじ"], ans:0, w:1},
+  {q:"4がつ ようか の ようか は なんにちですか。", opts:["8にち", "4にち", "14にち", "24にち"], ans:0, w:1},
+  {q:"らいしゅう の はんたいは？", opts:["せんしゅう", "こんしゅう", "らいげつ", "せんげつ"], ans:0, w:1},
+  {q:"すみません、といれは どこですか。への こたえは？", opts:["あそこです", "げんきです", "どうも", "おねがいします"], ans:0, w:1},
+  {q:"がっこうの まえに なにが ありますか。への こたえは？", opts:["こうえんが あります", "げんきです", "たべます", "いきます"], ans:0, w:1},
+  {q:"いえは えきから ちかいです。ちかい の はんたいは？", opts:["とおい", "ひろい", "せまい", "たかい"], ans:0, w:1},
+  {q:"まっすぐ いってください の いみに ちかい ことばは？", opts:["すすんで", "まがって", "とまって", "もどって"], ans:0, w:1},
+  {q:"みぎに まがってください の みぎ の はんたいは？", opts:["ひだり", "まえ", "うしろ", "した"], ans:0, w:1},
+  {q:"うえ の はんたいは？", opts:["した", "まえ", "よこ", "なか"], ans:0, w:1},
+  {q:"あさ あって いう あいさつは？", opts:["おはようございます", "こんにちは", "こんばんは", "おやすみなさい"], ans:0, w:1},
+  {q:"よる ねる まえに いう あいさつは？", opts:["おやすみなさい", "おはようございます", "こんにちは", "さようなら"], ans:0, w:1},
+  {q:"はじめて あった ひとに いう ことばは？", opts:["はじめまして", "さようなら", "ただいま", "おかえりなさい"], ans:0, w:1},
+  {q:"いえに かえった とき いう ことばは？", opts:["ただいま", "いってきます", "おかえりなさい", "おやすみなさい"], ans:0, w:1},
+  {q:"たべる まえに いう ことばは？", opts:["いただきます", "ごちそうさまでした", "すみません", "おねがいします"], ans:0, w:1},
+  {q:"「おなまえは？」と きかれました。ただしい こたえは？", opts:["たなかです", "げんきです", "どうもです", "そうです"], ans:0, w:1},
+  {q:"「これは いくらですか。」と きかれました。ただしい こたえは？", opts:["500えんです", "5じです", "5にんです", "5さいです"], ans:0, w:1},
+  {q:"「おげんきですか。」と きかれました。ただしい こたえは？", opts:["はい、げんきです", "はい、5じです", "いいえ、5にんです", "はい、たなかです"], ans:0, w:1},
+  {q:"「すみません、いま なんじですか。」と きかれました。ただしい こたえは？", opts:["3じです", "3にんです", "3かいです", "3さつです"], ans:0, w:1},
+  {q:"「にほんごが じょうずですね。」と いわれました。ただしい へんじは？", opts:["いいえ、まだまだです", "はい、たかいです", "はい、あついです", "いいえ、おおきいです"], ans:0, w:1},
+  {q:"「しゅみは なんですか。」と きかれました。ただしい こたえは？", opts:["どくしょです", "げつようびです", "あたらしいです", "たかいです"], ans:0, w:1},
+  {q:"「わたしは まいあさ 6じに おきます。7じに あさごはんを たべます。8じに いえを でます。」わたしが いえを でる じかんは？", opts:["8じ", "6じ", "7じ", "9じ"], ans:0, w:2},
+  {q:"「きょうは あめです。だから、かさを もって いきます。」なぜ かさを もって いきますか。", opts:["あめだから", "はれだから", "あついから", "さむいから"], ans:0, w:2},
+  {q:"「たなかさんは まいにち としょかんで べんきょうします。としょかんは がっこうの となりに あります。」としょかんは どこに ありますか。", opts:["がっこうの となり", "えきの まえ", "こうえんの なか", "いえの ちかく"], ans:0, w:2},
+  {q:"「わたしの かぞくは 4にんです。ちちと ははと あにと わたしです。」わたしの かぞくは なんにんですか。", opts:["4にん", "3にん", "5にん", "2にん"], ans:0, w:2},
+  {q:"ただしい じゅんばんは どれですか。「1.がっこう　2.いきます　3.へ　4.わたしは」", opts:["4→1→3→2", "1→2→3→4", "4→3→1→2", "2→1→3→4"], ans:0, w:2},
+  {q:"ただしい じゅんばんは どれですか。「1.たべます　2.わたしは　3.ごはんを　4.あさ」", opts:["2→4→3→1", "1→2→3→4", "4→2→1→3", "3→1→2→4"], ans:0, w:1},
+  {q:"ただしい じゅんばんは どれですか。「1.います　2.こうえんに　3.こどもが　4.たくさん」", opts:["2→4→3→1", "1→2→3→4", "3→2→4→1", "4→3→2→1"], ans:0, w:1},
+  {q:"ただしい じゅんばんは どれですか。「1.です　2.これは　3.わたしの　4.ほん」", opts:["2→3→4→1", "1→2→3→4", "4→3→2→1", "3→2→1→4"], ans:0, w:1},
+];
+
+function toFullWidthNum(n){
+  return String(n).replace(/[0-9]/g, d => "０１２３４５６７８９"[d]);
+}
+
+/* ============ さいしゅうてすと STATE & RENDER ============
+   100てん まんてん・95もん・1かい こたえたら つぎのもんへ。
+   さいしょに ただしく こたえた もんだけ てんすうが もらえます。
+   ページを さいよみこみしても、とちゅうから さいかいできます。
+=================================================================== */
+const feTotalPoints = finalExamQuestions.reduce((s,q)=>s+(q.w||1), 0); // = 100
+const FE_STORAGE_KEY = 'feFinalExamState_v1';
+
+function feDefaultState(){
+  return { active:false, qIdx:0, score:0, correct:0, mistakes:0, answering:false, erred:false };
+}
+let feState = feDefaultState();
+
+function feSaveState(){
+  try{ sessionStorage.setItem(FE_STORAGE_KEY, JSON.stringify(feState)); }catch(e){}
+}
+function feLoadState(){
+  try{
+    const raw = sessionStorage.getItem(FE_STORAGE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(typeof parsed.qIdx !== 'number' || parsed.qIdx < 0 || parsed.qIdx > finalExamQuestions.length) return null;
+    return parsed;
+  }catch(e){ return null; }
+}
+function feClearState(){
+  try{ sessionStorage.removeItem(FE_STORAGE_KEY); }catch(e){}
+}
+
+function hideChrome(){
+  document.getElementById('mainHeader').style.display = 'none';
+  document.getElementById('mainFooter').style.display = 'none';
+}
+function showChrome(){
+  document.getElementById('mainHeader').style.display = '';
+  document.getElementById('mainFooter').style.display = '';
+}
+
+function startFinalExam(){
+  hideChrome();
+  feState = feDefaultState();
+  feState.active = true;
+  feSaveState();
+  renderFinalIntro();
+}
+
+function resumeFinalExam(saved){
+  hideChrome();
+  feState = saved;
+  feState.answering = false;
+  feState.erred = false;
+  if(feState.qIdx >= finalExamQuestions.length){ renderFinalResult(); }
+  else{ renderFinalQuestion(); }
+}
+
+function exitFinalExam(){
+  feClearState();
+  showChrome();
+  state.view = 'home';
+  renderHome();
+}
+
+function renderFinalIntro(){
+  app.innerHTML = `
+    <div class="feWrap">
+      <div class="feCard">
+        <div class="feGroupBadge">${finalExamGroupName}</div>
+        <p class="feTag">とくべつな さいしゅうてすと</p>
+        <p class="feDesc">この てすとは ${finalExamGroupName} の<br>ぐるーぷの がくせいのために<br>とくべつに つくられました。</p>
+        <p class="feDesc" style="margin-top:-14px">ぜんぶで ${toFullWidthNum(finalExamQuestions.length)}もん・${toFullWidthNum(feTotalPoints)}てん まんてんです。</p>
+        <div class="feBtnRow">
+          <button class="feBtn" id="feStartBtn">はじめる</button>
+          <button class="feBtn secondary" id="feBackBtn">もどる</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('feStartBtn').onclick = ()=>{
+    feState.qIdx = 0;
+    feSaveState();
+    renderFinalQuestion();
+  };
+  document.getElementById('feBackBtn').onclick = ()=> exitFinalExam();
+}
+
+function renderFinalQuestion(){
+  if(feState.qIdx >= finalExamQuestions.length){ renderFinalResult(); return; }
+  const q = finalExamQuestions[feState.qIdx];
+  const total = finalExamQuestions.length;
+  const pct = Math.round((feState.qIdx)/total*100);
+  feState.answering = false;
+  feState.erred = false;
+  feSaveState();
+
+  app.innerHTML = `
+    <div class="feWrap">
+      <div class="feTopbar"><div class="feProgress">${toFullWidthNum(feState.qIdx+1)}／${toFullWidthNum(total)}</div></div>
+      <div class="feProgressBarOuter"><div class="feProgressBarInner" style="width:${pct}%"></div></div>
+      <div class="feCard">
+        <div class="fePrompt jp">${q.q}</div>
+        <div class="feChoices" id="feChoicesWrap"></div>
+        <div class="feMsg" id="feMsg"></div>
+      </div>
+    </div>
+  `;
+
+  const wrap = document.getElementById('feChoicesWrap');
+  const triedWrong = new Set();
+
+  q.opts.forEach((optText, idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'feChoiceBtn';
+    btn.innerHTML = `<span class="feCircle"><span class="feDot"></span></span><span class="feOptText jp">${optText}</span>`;
+    btn.onclick = ()=>{
+      if(feState.answering || triedWrong.has(idx)) return;
+      const circle = btn.querySelector('.feCircle');
+      circle.classList.add('feFilled');
+      const msg = document.getElementById('feMsg');
+
+      if(idx === q.ans){
+        feState.answering = true;
+        if(!feState.erred){
+          feState.score += (q.w || 1);
+          feState.correct++;
+        }
+        msg.textContent = '';
+        feSaveState();
+        setTimeout(()=>{
+          feState.qIdx++;
+          feSaveState();
+          renderFinalQuestion();
+        }, 650);
+      } else {
+        if(!feState.erred){
+          feState.mistakes++;
+          feState.erred = true;
+          feSaveState();
+        }
+        triedWrong.add(idx);
+        btn.classList.add('feDisabled');
+        msg.textContent = 'ざんねん！もういちど かんがえてください。';
+      }
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderFinalResult(){
+  feClearState();
+  const score = feState.score;
+  let emoji = '🌸';
+  if(score===feTotalPoints) emoji='🏆'; else if(score>=feTotalPoints*0.7) emoji='🎉'; else if(score<feTotalPoints*0.5) emoji='📚';
+
+  app.innerHTML = `
+    <div class="feWrap">
+      <div class="feCard">
+        <div class="feResultBig">${emoji}</div>
+        <h2 class="feResultTitle jp">おつかれさまでした！</h2>
+        <p class="feResultSub jp">よく がんばりました！</p>
+        <div class="feScoreBig">${toFullWidthNum(score)}／${toFullWidthNum(feTotalPoints)}</div>
+        <div class="feStatsRow">
+          <div class="feStat"><div class="feStatLabel jp">せいかい</div><div class="feStatVal">${toFullWidthNum(feState.correct)}</div></div>
+          <div class="feStat"><div class="feStatLabel jp">まちがい</div><div class="feStatVal">${toFullWidthNum(feState.mistakes)}</div></div>
+          <div class="feStat"><div class="feStatLabel jp">てんすう</div><div class="feStatVal">${toFullWidthNum(score)}／${toFullWidthNum(feTotalPoints)}</div></div>
+        </div>
+        <div class="feBtnRow">
+          <button class="feBtn" id="feRetryBtn">もういちど</button>
+          <button class="feBtn secondary" id="feHomeBtn">もどる</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('feRetryBtn').onclick = ()=> startFinalExam();
+  document.getElementById('feHomeBtn').onclick = ()=> exitFinalExam();
+}
+
+/* ============ APP STATE & LOGIC ============ */
+const app = document.getElementById('app');
+let state = { view:'home', lessonIdx:0, qIdx:0, answered:false, score:0, results:[] };
+const progressStore = {}; // lessonIdx -> {score,total}
+
+function renderHome(){
+  const totalQ = lessons.reduce((s,l)=>s+l.questions.length,0);
+  app.innerHTML = `
+    <div class="card" style="text-align:center">
+      <h2 class="jp" style="margin:0;color:var(--plum)">レベル1クラス</h2>
+      <p style="color:var(--muted);margin:8px 0 0">اختر قسمًا لتبدأ الاختبار (${lessons.length} دروس، ${totalQ} سؤالًا)</p>
+    </div>
+    <div class="sectionHeading"><span class="em">📚</span> أقسام الدروس</div>
+    <div id="lessonGrid"></div>
+    <div class="sectionHeading"><span class="em">🏆</span> الاختبار الشامل النهائي</div>
+    <div id="finalGrid"></div>
+  `;
+
+  const grid = document.getElementById('lessonGrid');
+  lessons.forEach((l,i)=>{
+    const done = progressStore[i];
+    const el = document.createElement('div');
+    el.className = 'lessonCard' + (done?' done':'');
+    el.innerHTML = `
+      <div class="badge">${done?done.score+'/'+done.total:''}</div>
+      <div class="num">${lessonEmojis[l.id]||i+1}</div>
+      <h3 class="jp">${l.jp}</h3>
+      <p>${l.ar}</p>
+      <p class="qcount">${l.questions.length} أسئلة</p>
+    `;
+    el.onclick = ()=>startLesson(i);
+    grid.appendChild(el);
+  });
+
+  const finalGrid = document.getElementById('finalGrid');
+  const fc = document.createElement('div');
+  fc.id = 'lessonGrid';
+  fc.style.display = 'grid';
+  fc.innerHTML = `
+    <div class="lessonCard finalCard">
+      <div class="num">🏆</div>
+      <h3 class="jp">まとめテスト</h3>
+      <p>اختبار ياباني بالكامل (هيراغانا فقط، بدون مساعدة) — خاص بمجموعة ${finalExamGroupName}</p>
+      <p class="qcount">${finalExamQuestions.length} سؤالًا</p>
+    </div>
+  `;
+  fc.querySelector('.finalCard').onclick = ()=>startFinalExam();
+  finalGrid.appendChild(fc);
+}
+
+function startLesson(i){
+  state = {view:'quiz', lessonIdx:i, qIdx:0, answered:false, score:0, results:[]};
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const lesson = getLesson(state.lessonIdx);
+  const q = lesson.questions[state.qIdx];
+  const total = lesson.questions.length;
+  const pct = Math.round((state.qIdx)/total*100);
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="topbar">
+        <button class="backBtn" id="backBtn">🏠 القائمة</button>
+        <div class="scoreBadge" id="scoreBadge"><span>🔘</span><span class="scoreNum">${state.score}</span></div>
+        <div class="progress">${state.qIdx+1} / ${total}</div>
+      </div>
+      <div class="progressBarOuter"><div class="progressBarInner" style="width:${pct}%"></div></div>
+
+      <div class="qHeader">
+        <div class="qNumBadge">${state.qIdx+1}</div>
+        <div class="qPrompt">
+          <div class="jp">${q.jp}</div>
+          <div class="qPromptAr">${q.ar}</div>
+        </div>
+      </div>
+
+      ${renderVisual(q.visual)}
+
+      <div class="choices" id="choicesWrap"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="navRow">
+        <button class="navBtn prev" id="prevBtn" ${state.qIdx===0?'disabled':''}>⬅️ السابق</button>
+        <button class="navBtn next" id="nextBtn" disabled>${state.qIdx===total-1?'إنهاء ✅':'التالي ➡️'}</button>
+      </div>
+    </div>
+  `;
+
+  const choicesWrap = document.getElementById('choicesWrap');
+  q.opts.forEach((o,idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choiceBtn';
+    btn.innerHTML = `<span class="circleMark">⚪</span><span class="txtWrap"><span class="jp">${o.jp}</span>${o.ro?`<span class="ro">[${o.ro}]</span>`:''}<span class="ar">${o.ar||''}</span></span>`;
+    btn.onclick = ()=>selectAnswer(idx, q, choicesWrap, total);
+    choicesWrap.appendChild(btn);
+  });
+
+  document.getElementById('backBtn').onclick = ()=>{ state.view='home'; renderHome(); };
+  document.getElementById('prevBtn').onclick = ()=>{ state.qIdx--; state.answered=false; renderQuiz(); };
+  document.getElementById('nextBtn').onclick = ()=> goNext(total);
+}
+
+function goNext(total){
+  if(state.qIdx === total-1){ finishLesson(); }
+  else { state.qIdx++; state.answered=false; renderQuiz(); }
+}
+
+function pulseScore(){
+  const el = document.getElementById('scoreBadge');
+  if(!el) return;
+  el.querySelector('.scoreNum').textContent = state.score;
+  el.classList.add('pulse');
+  setTimeout(()=>el.classList.remove('pulse'), 250);
+}
+
+function selectAnswer(idx, q, wrap, total){
+  if(state.answered) return;
+  state.answered = true;
+  const buttons = wrap.querySelectorAll('.choiceBtn');
+  buttons.forEach((b,i)=>{
+    b.classList.add('disabledBtn');
+    const circle = b.querySelector('.circleMark');
+    if(i===q.ans){ b.classList.add('correct'); circle.textContent='🔘'; }
+    else if(i===idx){ b.classList.add('wrong'); circle.textContent='🔘'; }
+  });
+  const correct = idx===q.ans;
+  if(correct) { state.score++; pulseScore(); }
+  state.results.push(correct);
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show', correct?'ok':'bad');
+  fb.innerHTML = correct
+    ? `✅ صحيح! <span class="jp">${q.opts[q.ans].jp}</span> — ${q.opts[q.ans].ar||''}`
+    : `❌ غير صحيح. الإجابة الصحيحة: <span class="jp">${q.opts[q.ans].jp}</span> — ${q.opts[q.ans].ar||''}`;
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.disabled = false;
+
+  if(correct){
+    /* إجابة صحيحة: انتقال مباشر للسؤال التالي دون إطالة أو تكرار */
+    nextBtn.disabled = true;
+    setTimeout(()=> goNext(total), 650);
+  }
+}
+
+function finishLesson(){
+  const lesson = getLesson(state.lessonIdx);
+  const total = lesson.questions.length;
+  progressStore[state.lessonIdx] = {score:state.score, total};
+  const pct = Math.round(state.score/total*100);
+  let emoji = '🌸';
+  let msgAr = 'أحسنت! واصل التدرّب.';
+  if(pct===100){ emoji='🏆'; msgAr='ممتاز! نتيجة كاملة، أنت جاهز للدرس التالي!'; }
+  else if(pct>=70){ emoji='🎉'; msgAr='جيد جدًا! استمر في المراجعة قليلاً.'; }
+  else if(pct<50){ emoji='📚'; msgAr='لا بأس، راجع هذا الدرس مرة أخرى للتثبيت.'; }
+
+  app.innerHTML = `
+    <div class="card resultBox">
+      <div class="big">${emoji}</div>
+      <h2 class="jp">${lesson.jp} — ${lesson.ar}</h2>
+      <h2>${state.score} / ${total} (${pct}%)</h2>
+      <p>${msgAr}</p>
+      <div class="navRow">
+        <button class="navBtn prev" id="retryBtn">🔁 إعادة المحاولة</button>
+        <button class="navBtn next" id="homeBtn" style="opacity:1">🏠 القائمة الرئيسية</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('retryBtn').onclick = ()=>startLesson(state.lessonIdx);
+  document.getElementById('homeBtn').onclick = ()=>{ state.view='home'; renderHome(); };
+}
+
+(function initApp(){
+  const saved = feLoadState();
+  if(saved && saved.active){
+    resumeFinalExam(saved);
+  } else {
+    renderHome();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعلم الكانجي - KANJI N5</title>
+    <style>
+        :root {
+            --primary-color: #d9534f;
+            --secondary-color: #337ab7;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Grid Layout */
+        .kanji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Kanji Card */
+        .kanji-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: relative; /* مهم لتموضع الأيقونة أعلى اليمين */
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kanji-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Info Icon (أعلى اليمين) */
+        .info-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 26px;
+            height: 26px;
+            background-color: #f0ad4e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .info-btn:hover {
+            background-color: #ec971f;
+            transform: scale(1.1);
+        }
+
+        /* Card Contents */
+        .kanji-symbol {
+            font-size: 4rem;
+            color: #2c3e50;
+            margin: 10px 0;
+            font-family: "Yu Mincho", "MS Mincho", serif;
+        }
+
+        .kanji-meaning-ar {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 5px;
+        }
+
+        .kanji-readings {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+            direction: ltr;
+        }
+
+        /* Modal / Popup for Explanation */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            direction: rtl;
+            text-align: right;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close-modal:hover { color: #000; }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .modal-kanji {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .modal-title-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .modal-section {
+            margin-bottom: 15px;
+        }
+
+        .modal-section h4 {
+            margin: 0 0 6px 0;
+            color: var(--secondary-color);
+            font-size: 1.05rem;
+        }
+
+        .example-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .example-item {
+            background: #f9f9f9;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border-right: 3px solid var(--secondary-color);
+        }
+
+        .jp-word { font-weight: bold; color: #222; }
+        .jp-reading { color: #666; font-size: 0.85rem; }
+        .ar-meaning { color: #d9534f; font-size: 0.9rem; float: left; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>مكتبة تعلم اليابانية</h1>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchSection('kanji-n5')">KANJI N5</button>
+            <!-- يمكنك الحفاظ على أقسامك السابقة هنا -->
+            <!-- <button class="tab-btn" onclick="switchSection('hiragana')">Hiragana</button> -->
+        </div>
+    </div>
+
+    <!-- قسم KANJI N5 الجديد -->
+    <div id="kanji-n5" class="kanji-grid"></div>
+
+    <!-- نافذة الشرح المنبثقة عند الضغط على ! -->
+    <div id="infoModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات قسم KANJI N5 المستخرجة من ملف N5漢字.pptx.pdf
+        const kanjiN5Data = [
+            {
+                kanji: "日",
+                meaningAr: "الشمس / اليوم / يوم الأسبوع",
+                meaningEn: "Sun, Day",
+                kunyomi: "ひ、-び、-か",
+                onyomi: "ニチ、ニ、-ジツ",
+                explanation: "رمز الكانجي للسيادة واليوم والشمس. يمثل شكل الشمس دائرية وفي منتصفها خط.",
+                examples: [
+                    { jp: "日", read: "ひ", ar: "الشمس / يوم" },
+                    { jp: "日本", read: "にほん / にっぽん", ar: "اليابان" },
+                    { jp: "日曜日", read: "にちようび", ar: "يوم الأحد" },
+                    { jp: "三日", read: "みっか", ar: "اليوم الثالث من الشهر" }
+                ]
+            },
+            {
+                kanji: "月",
+                meaningAr: "القمر / الشهر",
+                meaningEn: "Moon, Month",
+                kunyomi: "つき",
+                onyomi: "ゲツ、ガツ",
+                explanation: "يمثل هذا الرمز شكل الهلال والقمر في السماء والشهر الزمني.",
+                examples: [
+                    { jp: "月", read: "つき", ar: "القمر / شهر" },
+                    { jp: "一月", read: "いちがつ", ar: "شهر يناير (كانون الثاني)" },
+                    { jp: "月曜日", read: "げつようび", ar: "يوم الاثنين" },
+                    { jp: "1か月", read: "いっかげつ", ar: "شهر واحد (مدة)" }
+                ]
+            },
+            {
+                kanji: "火",
+                meaningAr: "النار",
+                meaningEn: "Fire",
+                kunyomi: "ひ",
+                onyomi: "カ",
+                explanation: "يمثل ألسنة اللهب المتصاعدة من النار.",
+                examples: [
+                    { jp: "火", read: "ひ", ar: "النار" },
+                    { jp: "火山", read: "かざん", ar: "بركان" },
+                    { jp: "火曜日", read: "かようび", ar: "يوم الثلاثاء" }
+                ]
+            },
+            {
+                kanji: "水",
+                meaningAr: "الماء",
+                meaningEn: "Water",
+                kunyomi: "みず",
+                onyomi: "スイ",
+                explanation: "يمثل شكل تدفق المياه والقطرات المنسابة.",
+                examples: [
+                    { jp: "水", read: "みず", ar: "الماء" },
+                    { jp: "水田", read: "すいでん", ar: "حقل أرز مغمور بالماء" },
+                    { jp: "水曜日", read: "すいようび", ar: "يوم الأربعاء" }
+                ]
+            },
+            {
+                kanji: "木",
+                meaningAr: "الشجرة / الخشب",
+                meaningEn: "Tree, Wood",
+                kunyomi: "き",
+                onyomi: "モク、ボク",
+                explanation: "يمثل شكل الشجرة بوفروعها وجذورها الممتدة.",
+                examples: [
+                    { jp: "木", read: "き", ar: "شجرة" },
+                    { jp: "木曜日", read: "もくようび", ar: "يوم الخميس" },
+                    { jp: "木村", read: "きむら", ar: "كيمورا (اسم عائلة ياباني)" }
+                ]
+            },
+            {
+                kanji: "金",
+                meaningAr: "الذهب / المال / المعدن",
+                meaningEn: "Gold, Money",
+                kunyomi: "かね",
+                onyomi: "キン",
+                explanation: "يمثل الكنز المستخرج من تحت الأرض والمعادن الثمينة.",
+                examples: [
+                    { jp: "お金", read: "おかね", ar: "النقود / المال" },
+                    { jp: "金", read: "きん", ar: "الذهب" },
+                    { jp: "金曜日", read: "きんようび", ar: "يوم الجمعة" }
+                ]
+            },
+            {
+                kanji: "土",
+                meaningAr: "التربة / الأرض",
+                meaningEn: "Soil, Ground",
+                kunyomi: "つち",
+                onyomi: "ド",
+                explanation: "يمثل نبتة تنمو وتخرج من طبقات التربة والأرض.",
+                examples: [
+                    { jp: "土", read: "つち", ar: "الأرض / التربة" },
+                    { jp: "土曜日", read: "どようび", ar: "يوم السبت" },
+                    { jp: "土木", read: "どぼく", ar: "الهندسة المدنية" }
+                ]
+            },
+            {
+                kanji: "山",
+                meaningAr: "الجبل",
+                meaningEn: "Mountain",
+                kunyomi: "やま",
+                onyomi: "サン",
+                explanation: "رسم تخطيطي لثلاث قمم جبلية.",
+                examples: [
+                    { jp: "山", read: "やま", ar: "جبل" },
+                    { jp: "富士山", read: "ふじさん", ar: "جبل فوجي" },
+                    { jp: "火山", read: "かざん", ar: "بركان" }
+                ]
+            },
+            {
+                kanji: "川",
+                meaningAr: "النهر",
+                meaningEn: "River",
+                kunyomi: "かわ (-がわ)",
+                onyomi: "セン",
+                explanation: "ثلاثة خطوط تمثل مجرى النهر الجاري.",
+                examples: [
+                    { jp: "川", read: "かわ", ar: "نهر" },
+                    { jp: "アマゾン川", read: "アマゾンがわ", ar: "نهر الأمازون" }
+                ]
+            },
+            {
+                kanji: "雨",
+                meaningAr: "المطر",
+                meaningEn: "Rain",
+                kunyomi: "あめ",
+                onyomi: "ウ",
+                explanation: "يمثل السماء وقطرات المطر الهابطة من الغيوم.",
+                examples: [
+                    { jp: "雨", read: "あめ", ar: "مطر" },
+                    { jp: "雨天", read: "うてん", ar: "طقس ممطر" }
+                ]
+            },
+            {
+                kanji: "電",
+                meaningAr: "الكهرباء",
+                meaningEn: "Electricity",
+                kunyomi: "-",
+                onyomi: "デン",
+                explanation: "القسم العلوي مطر (雨) والسفلي يمثل وميض البرق والكهرباء.",
+                examples: [
+                    { jp: "電気", read: "でんき", ar: "كهرباء / إضاءة" },
+                    { jp: "電話", read: "でんわ", ar: "هاتف" },
+                    { jp: "電車", read: "でんしゃ", ar: "قطار كهربائي" }
+                ]
+            },
+            {
+                kanji: "天",
+                meaningAr: "السماء / الجو",
+                meaningEn: "Heavens, Sky",
+                kunyomi: "あまつ、あめ",
+                onyomi: "テン",
+                explanation: "يمثل الإنسان وشيء أعلى منه بكثير وهو السماء.",
+                examples: [
+                    { jp: "天気", read: "てんき", ar: "الطقس / حالة الجو" }
+                ]
+            },
+            {
+                kanji: "気",
+                meaningAr: "الروح / الهواء / المزاج",
+                meaningEn: "Spirit, Mind, Air, Mood",
+                kunyomi: "-",
+                onyomi: "キ",
+                explanation: "يعبر عن الطاقة والروح والمزاج والهواء المحيط.",
+                examples: [
+                    { jp: "気持ち", read: "きもち", ar: "شعور / إحساس" },
+                    { jp: "天気", read: "てんき", ar: "الطقس" },
+                    { jp: "気分", read: "きぶん", ar: "مزاج / حالة نفسية" },
+                    { jp: "病気", read: "びょうき", ar: "مرض" }
+                ]
+            },
+            {
+                kanji: "一",
+                meaningAr: "واحد (1)",
+                meaningEn: "One",
+                kunyomi: "ひと-",
+                onyomi: "イチ",
+                explanation: "خط أفقي واحد يمثل الرقم واحد.",
+                examples: [
+                    { jp: "一つ", read: "ひとつ", ar: "شيء واحد" },
+                    { jp: "一人", read: "ひとり", ar: "شخص واحد" },
+                    { jp: "一月", read: "いちがつ", ar: "يناير" }
+                ]
+            },
+            {
+                kanji: "二",
+                meaningAr: "اثنان (2)",
+                meaningEn: "Two",
+                kunyomi: "ふた-",
+                onyomi: "ニ",
+                explanation: "خطان أفقيمان يمثلان الرقم اثنان.",
+                examples: [
+                    { jp: "二つ", read: "ふたつ", ar: "شيئان" },
+                    { jp: "二人", read: "ふたり", ar: "شخصان" },
+                    { jp: "二月", read: "にがつ", ar: "فبراير" }
+                ]
+            },
+            {
+                kanji: "三",
+                meaningAr: "ثلاثة (3)",
+                meaningEn: "Three",
+                kunyomi: "みっ-",
+                onyomi: "サン",
+                explanation: "ثلاثة خطوط أفقية تمثل الرقم ثلاثة.",
+                examples: [
+                    { jp: "三つ", read: "みっつ", ar: "ثلاثة أشياء" },
+                    { jp: "三日", read: "みっか", ar: "اليوم الثالث" },
+                    { jp: "三月", read: "さんがつ", ar: "مارس" }
+                ]
+            },
+            {
+                kanji: "四",
+                meaningAr: "أربعة (4)",
+                meaningEn: "Four",
+                kunyomi: "よっ-、よん、よ",
+                onyomi: "シ",
+                explanation: "رمز الإطار وبداخله خطوط تقسم الشيء لأربعة أجزاء.",
+                examples: [
+                    { jp: "四つ", read: "よっつ", ar: "أربعة أشياء" },
+                    { jp: "四日", read: "よっか", ar: "اليوم الرابع" },
+                    { jp: "四月", read: "しがつ", ar: "أبريل" }
+                ]
+            },
+            {
+                kanji: "五",
+                meaningAr: "خمسة (5)",
+                meaningEn: "Five",
+                kunyomi: "いつ-",
+                onyomi: "ゴ",
+                explanation: "رمز يمثل الرقم خمسة.",
+                examples: [
+                    { jp: "五つ", read: "いつつ", ar: "خمسة أشياء" },
+                    { jp: "五日", read: "いつか", ar: "اليوم الخامس" },
+                    { jp: "五月", read: "ごがつ", ar: "مايو" }
+                ]
+            },
+            {
+                kanji: "六",
+                meaningAr: "ستة (6)",
+                meaningEn: "Six",
+                kunyomi: "むっ-",
+                onyomi: "ロク",
+                explanation: "رمز يمثل الرقم ستة.",
+                examples: [
+                    { jp: "六つ", read: "むっつ", ar: "ستة أشياء" },
+                    { jp: "六日", read: "むいか", ar: "اليوم السادس" },
+                    { jp: "六月", read: "ろくがつ", ar: "يونيو" }
+                ]
+            },
+            {
+                kanji: "七",
+                meaningAr: "سبعة (7)",
+                meaningEn: "Seven",
+                kunyomi: "なな-",
+                onyomi: "シチ",
+                explanation: "رمز يمثل الرقم سبعة.",
+                examples: [
+                    { jp: "七つ", read: "ななつ", ar: "سبعة أشياء" },
+                    { jp: "七日", read: "なのか", ar: "اليوم السابع" },
+                    { jp: "七月", read: "しちがつ", ar: "يوليو" }
+                ]
+            },
+            {
+                kanji: "八",
+                meaningAr: "ثمانية (8)",
+                meaningEn: "Eight",
+                kunyomi: "やっ-",
+                onyomi: "ハチ",
+                explanation: "رمز يمثل الانفتاح والرقم ثمانية.",
+                examples: [
+                    { jp: "八つ", read: "やっつ", ar: "ثمانية أشياء" },
+                    { jp: "八日", read: "ようか", ar: "اليوم الثامن" },
+                    { jp: "八百", read: "はっぴゃく", ar: "800" }
+                ]
+            },
+            {
+                kanji: "九",
+                meaningAr: "تسعة (9)",
+                meaningEn: "Nine",
+                kunyomi: "ここの-",
+                onyomi: "ク、キュウ",
+                explanation: "رمز يمثل الرقم تسعة.",
+                examples: [
+                    { jp: "九つ", read: "ここのつ", ar: "تسعة أشياء" },
+                    { jp: "九日", read: "ここのか", ar: "اليوم التاسع" },
+                    { jp: "九月", read: "くがつ", ar: "سبتمبر" }
+                ]
+            },
+            {
+                kanji: "十",
+                meaningAr: "عشرة (10)",
+                meaningEn: "Ten",
+                kunyomi: "とお",
+                onyomi: "ジュウ",
+                explanation: "تقاطع خطين يمثل الرقم عشرة الأكتمال.",
+                examples: [
+                    { jp: "十", read: "とお", ar: "عشرة أشياء" },
+                    { jp: "十日", read: "とおか", ar: "اليوم العاشر" },
+                    { jp: "十月", read: "じゅうがつ", ar: "أكتوبر" }
+                ]
+            },
+            {
+                kanji: "百",
+                meaningAr: "مائة (100)",
+                meaningEn: "Hundred",
+                kunyomi: "-",
+                onyomi: "ヒャク",
+                explanation: "يعبر عن العدد مائة.",
+                examples: [
+                    { jp: "百", read: "ひゃく", ar: "مائة" },
+                    { jp: "三百", read: "さんびゃく", ar: "ثلاثمائة" }
+                ]
+            },
+            {
+                kanji: "千",
+                meaningAr: "ألف (1000)",
+                meaningEn: "Thousand",
+                kunyomi: "ち",
+                onyomi: "セン",
+                explanation: "يعبر عن العدد ألف.",
+                examples: [
+                    { jp: "千円", read: "せんえん", ar: "ألف ين" },
+                    { jp: "三千", read: "さんぜん", ar: "ثلاثة آلاف" }
+                ]
+            },
+            {
+                kanji: "万",
+                meaningAr: "عشرة آلاف (10,000)",
+                meaningEn: "Ten thousand",
+                kunyomi: "-",
+                onyomi: "マン、バン",
+                explanation: "وحدة الحساب الكبيرة في اليابان (10 آلاف).",
+                examples: [
+                    { jp: "一万円", read: "いちまんえん", ar: "عشرة آلاف ين" }
+                ]
+            },
+            {
+                kanji: "円",
+                meaningAr: "دائرة / الين الياباني",
+                meaningEn: "Yen, Circle",
+                kunyomi: "-",
+                onyomi: "エン",
+                explanation: "يمثل العملة اليابانية الين والدائرة المستديرة.",
+                examples: [
+                    { jp: "円", read: "えん", ar: "دائرة / ين" },
+                    { jp: "百円", read: "ひゃくえん", ar: "100 ين" }
+                ]
+            },
+            {
+                kanji: "人",
+                meaningAr: "الإنسان / الشخص",
+                meaningEn: "Person, Human",
+                kunyomi: "ひと",
+                onyomi: "ジン、ニン",
+                explanation: "شكل شخص يسير على قدمين.",
+                examples: [
+                    { jp: "人", read: "ひと", ar: "إنسان / شخص" },
+                    { jp: "日本人", read: "にほんじん", ar: "شخص ياباني" },
+                    { jp: "三人", read: "さんにん", ar: "ثلاثة أشخاص" }
+                ]
+            },
+            {
+                kanji: "父",
+                meaningAr: "الأب",
+                meaningEn: "Father",
+                kunyomi: "ちち",
+                onyomi: "フ",
+                explanation: "شكل يرمز لرب الأسرة أو الأب.",
+                examples: [
+                    { jp: "父", read: "ちち", ar: "أبي" },
+                    { jp: "お父さん", read: "おとうさん", ar: "والد / أبا" },
+                    { jp: "父母", read: "ふぼ", ar: "الوالدان" }
+                ]
+            },
+            {
+                kanji: "母",
+                meaningAr: "الأم",
+                meaningEn: "Mother",
+                kunyomi: "はは",
+                onyomi: "ボ",
+                explanation: "يمثل صورة الأم ورضاعة طفلها.",
+                examples: [
+                    { jp: "母", read: "はは", ar: "أمي" },
+                    { jp: "お母さん", read: "おかあさん", ar: "أم / والدة" },
+                    { jp: "母国", read: "ぼこく", ar: "الوطن الأم" }
+                ]
+            },
+            {
+                kanji: "子",
+                meaningAr: "الطفل / الولد",
+                meaningEn: "Child",
+                kunyomi: "こ",
+                onyomi: "シ",
+                explanation: "شكل طفل صغير يبسط ذراعيه.",
+                examples: [
+                    { jp: "子供", read: "こども", ar: "أطفال / طفل" },
+                    { jp: "女の子", read: "おんなのこ", ar: "فتاة / بنت" }
+                ]
+            },
+            {
+                kanji: "男",
+                meaningAr: "الرجل / الذكر",
+                meaningEn: "Male, Man",
+                kunyomi: "おとこ",
+                onyomi: "ダン、ナン",
+                explanation: "يتكون من حقل (田) وقوة (力)، أي الرجل الذي يعمل بالحقل.",
+                examples: [
+                    { jp: "男", read: "おとこ", ar: "رجل" },
+                    { jp: "男の子", read: "おとこのこ", ar: "ولد / صبي" },
+                    { jp: "男子学生", read: "だんしがくせい", ar: "طالب ذكر" }
+                ]
+            },
+            {
+                kanji: "女",
+                meaningAr: "المرأة / الأنثى",
+                meaningEn: "Female, Woman",
+                kunyomi: "おんな",
+                onyomi: "ジョ",
+                explanation: "يمثل هيئة امرأة تجلس بوقار.",
+                examples: [
+                    { jp: "女", read: "おんな", ar: "امرأة" },
+                    { jp: "女の人", read: "おんなのひと", ar: "سيدة / امرأة" },
+                    { jp: "彼女", read: "かのじょ", ar: "هي / صديقة" }
+                ]
+            },
+            {
+                kanji: "上",
+                meaningAr: "أعلى / فوق / يرفع",
+                meaningEn: "Above, Top, Up",
+                kunyomi: "うえ、あがる",
+                onyomi: "ジョウ",
+                explanation: "مؤشر فوق الخط الأساسي يدلك على الاتجاه للأعلى.",
+                examples: [
+                    { jp: "上", read: "うえ", ar: "فوق / أعلى" },
+                    { jp: "上がる", read: "あがる", ar: "يرتفع / يصعد" },
+                    { jp: "上手", read: "じょうず", ar: "ماهر / بارع" }
+                ]
+            },
+            {
+                kanji: "下",
+                meaningAr: "أسفل / تحت / ينزل",
+                meaningEn: "Below, Under",
+                kunyomi: "した、さがる",
+                onyomi: "カ、ゲ",
+                explanation: "مؤشر أسفل الخط الأساسي يتجه للأسفل.",
+                examples: [
+                    { jp: "下", read: "した", ar: "تحت / أسفل" },
+                    { jp: "下がる", read: "さがる", ar: "ينخفض / ينزل" },
+                    { jp: "地下鉄", read: "ちかてつ", ar: "مترو الأنفاق" }
+                ]
+            },
+            {
+                kanji: "右",
+                meaningAr: "اليمين",
+                meaningEn: "Right",
+                kunyomi: "みぎ",
+                onyomi: "ウ、ユウ",
+                explanation: "يمثل اليد التي نأكل بها ونمسك بها الفم (口).",
+                examples: [
+                    { jp: "右", read: "みぎ", ar: "اليمين" },
+                    { jp: "右手", read: "みぎて", ar: "اليد اليمنى" },
+                    { jp: "右側", read: "みぎがわ", ar: "الجانب الأيمن" }
+                ]
+            },
+            {
+                kanji: "左",
+                meaningAr: "اليسار",
+                meaningEn: "Left",
+                kunyomi: "ひだり",
+                onyomi: "サ",
+                explanation: "يمثل اليد المساعدة والأداة.",
+                examples: [
+                    { jp: "左", read: "ひだり", ar: "اليسار" },
+                    { jp: "左手", read: "ひだりて", ar: "اليد اليسرى" },
+                    { jp: "左側", read: "ひだりがわ", ar: "الجانب الأيسر" }
+                ]
+            },
+            {
+                kanji: "中",
+                meaningAr: "الداخل / المنتصف / الصين",
+                meaningEn: "Inside, Middle",
+                kunyomi: "なか",
+                onyomi: "チュウ",
+                explanation: "خط يمر في منتصف مربع يمثل المركز والداخل.",
+                examples: [
+                    { jp: "中", read: "なか", ar: "داخل / منتصف" },
+                    { jp: "中国", read: "ちゅうごく", ar: "الصين" },
+                    { jp: "一日中", read: "いちにちじゅう", ar: "طوال اليوم" }
+                ]
+            },
+            {
+                kanji: "間",
+                meaningAr: "الفترة / بين / الوقت",
+                meaningEn: "Interval, Between",
+                kunyomi: "あいだ、ま",
+                onyomi: "カン",
+                explanation: "الشمس (日) تشرق من بين بوابتين (門).",
+                examples: [
+                    { jp: "間", read: "あいだ", ar: "بين" },
+                    { jp: "時間", read: "じかん", ar: "وقت / زمن" },
+                    { jp: "間に合う", read: "まにあう", ar: "يمسك بالوقت / يصل في الموعد" }
+                ]
+            },
+            {
+                kanji: "外",
+                meaningAr: "الخارج / أجنبي",
+                meaningEn: "Outside",
+                kunyomi: "そと",
+                onyomi: "ガイ、ゲ",
+                explanation: "يعبر عن الأشياء الخارجية عن المكان.",
+                examples: [
+                    { jp: "外", read: "そと", ar: "خارج" },
+                    { jp: "外国", read: "がいこく", ar: "دولة أجنبية" },
+                    { jp: "外国人", read: "がいこくじん", ar: "أجنبي" }
+                ]
+            },
+            {
+                kanji: "前",
+                meaningAr: "أمام / قبل",
+                meaningEn: "Before, In front",
+                kunyomi: "まえ",
+                onyomi: "ゼン",
+                explanation: "يعبر عن التواجد في الأمام أو الزمان السالف.",
+                examples: [
+                    { jp: "前", read: "まえ", ar: "أمام / قبل" },
+                    { jp: "午前", read: "ごぜん", ar: "صباحاً (AM)" },
+                    { jp: "名前", read: "なまえ", ar: "اسم" }
+                ]
+            },
+            {
+                kanji: "後",
+                meaningAr: "خلف / بعد / لاحقاً",
+                meaningEn: "Behind, After",
+                kunyomi: "あと、うしろ",
+                onyomi: "コウ、ゴ",
+                explanation: "يعبر عن التواجد في الخلف أو الزمان اللاحق.",
+                examples: [
+                    { jp: "後ろ", read: "うしろ", ar: "خلف / وراء" },
+                    { jp: "後で", read: "あとで", ar: "لاحقاً" },
+                    { jp: "午後", read: "ごご", ar: "مساءً (PM)" }
+                ]
+            },
+            {
+                kanji: "今",
+                meaningAr: "الآن / الحالي",
+                meaningEn: "Now",
+                kunyomi: "いま",
+                onyomi: "コン",
+                explanation: "يعبر عن اللحظة الحالية.",
+                examples: [
+                    { jp: "今", read: "いま", ar: "الآن" },
+                    { jp: "今月", read: "こんげつ", ar: "هذا الشهر" },
+                    { jp: "今日", read: "きょう", ar: "اليوم" },
+                    { jp: "今年", read: "ことし", ar: "هذه السنة" }
+                ]
+            },
+            {
+                kanji: "分",
+                meaningAr: "دقيقة / يفهم / يقسم",
+                meaningEn: "Minute, Part, Understand",
+                kunyomi: "わける、わかる",
+                onyomi: "ブン、フン、プン",
+                explanation: "سكين تقسم الشيء لنصفين ودقائق.",
+                examples: [
+                    { jp: "五分", read: "ごふん", ar: "5 دقائق" },
+                    { jp: "分かる", read: "わかる", ar: "يفهم" },
+                    { jp: "分ける", read: "わける", ar: "يقسم / يوزع" }
+                ]
+            },
+            {
+                kanji: "午",
+                meaningAr: "الظهيرة",
+                meaningEn: "Noon",
+                kunyomi: "-",
+                onyomi: "ゴ",
+                explanation: "يرتبط بمنتصف النهار والوقت.",
+                examples: [
+                    { jp: "午前", read: "ごぜん", ar: "صباحاً (قبل الظهر)" },
+                    { jp: "午後", read: "ごご", ar: "بعد الظهر" }
+                ]
+            },
+            {
+                kanji: "半",
+                meaningAr: "نصف",
+                meaningEn: "Half",
+                kunyomi: "なかば",
+                onyomi: "ハン",
+                explanation: "قسم الشيء إلى نصفين متساويين.",
+                examples: [
+                    { jp: "三時半", read: "さんじはん", ar: "الساعة 3 ونصف" },
+                    { jp: "半分", read: "はんぶん", ar: "النصف" }
+                ]
+            },
+            {
+                kanji: "時",
+                meaningAr: "الساعة / الوقت",
+                meaningEn: "Time, Hour",
+                kunyomi: "とき",
+                onyomi: "ジ",
+                explanation: "يتكون من الشمس (日) والزمان.",
+                examples: [
+                    { jp: "時", read: "とき", ar: "وقت / عندما" },
+                    { jp: "一時間", read: "いちじかん", ar: "ساعة واحدة" },
+                    { jp: "時計", read: "とけい", ar: "ساعة (يد/حائط)" }
+                ]
+            },
+            {
+                kanji: "先",
+                meaningAr: "سابق / أمان / قادم",
+                meaningEn: "Ahead, Previous",
+                kunyomi: "さき",
+                onyomi: "セン",
+                explanation: "شخص يسير في المطبقة والأمام.",
+                examples: [
+                    { jp: "先", read: "さき", ar: "في الأمام / أولاً" },
+                    { jp: "先月", read: "せんげつ", ar: "الشهر الماضي" },
+                    { jp: "先生", read: "せんせい", ar: "معلم / أستاذ" }
+                ]
+            },
+            {
+                kanji: "年",
+                meaningAr: "السنة / العام",
+                meaningEn: "Year",
+                kunyomi: "とし",
+                onyomi: "ネン",
+                explanation: "يرمز لحصاد المحصول السنوي والدورة الزمنية.",
+                examples: [
+                    { jp: "今年", read: "ことし", ar: "هذه السنة" },
+                    { jp: "来年", read: "らいねん", ar: "السنة القادمة" },
+                    { jp: "去年", read: "きょねん", ar: "السنة الماضية" }
+                ]
+            },
+            {
+                kanji: "毎",
+                meaningAr: "كل (تكرار)",
+                meaningEn: "Every",
+                kunyomi: "-",
+                onyomi: "マイ",
+                explanation: "يعبر عن التكرار الدوري المنتظم.",
+                examples: [
+                    { jp: "毎日", read: "まいにち", ar: "كل يوم" },
+                    { jp: "毎週", read: "まいしゅう", ar: "كل أسبوع" },
+                    { jp: "毎月", read: "まいげつ / まいつき", ar: "كل شهر" }
+                ]
+            },
+            {
+                kanji: "字",
+                meaningAr: "حرف / رمز",
+                meaningEn: "Character, Letter",
+                kunyomi: "あざ",
+                onyomi: "ジ",
+                explanation: "طفل (子) تحت السقف تعلم الحروف.",
+                examples: [
+                    { jp: "字", read: "じ", ar: "حرف / خط" },
+                    { jp: "漢字", read: "かんじ", ar: "كانجي (حروف يابانية)" },
+                    { jp: "辞書", read: "じしょ", ar: "قاموس" }
+                ]
+            },
+            {
+                kanji: "学",
+                meaningAr: "يتعلم / دراسة",
+                meaningEn: "To Learn, Study",
+                kunyomi: "まなぶ",
+                onyomi: "ガク、ガッ-",
+                explanation: "طفل يتعلم تحت غطاء المعرفة.",
+                examples: [
+                    { jp: "学ぶ", read: "まなぶ", ar: "يتعلم" },
+                    { jp: "学生", read: "がくせい", ar: "طالب" },
+                    { jp: "大学", read: "だいがく", ar: "جامعة" },
+                    { jp: "学校", read: "がっこう", ar: "مدرسة" }
+                ]
+            },
+            {
+                kanji: "校",
+                meaningAr: "مدرسة",
+                meaningEn: "School",
+                kunyomi: "-",
+                onyomi: "コウ",
+                explanation: "مبنى خشب للمدرسة والتعليم.",
+                examples: [
+                    { jp: "学校", read: "がっこう", ar: "مدرسة" },
+                    { jp: "高校生", read: "こうこうせい", ar: "طالب ثانوية" }
+                ]
+            },
+            {
+                kanji: "語",
+                meaningAr: "لغة / كلام",
+                meaningEn: "Language, Word",
+                kunyomi: "かたる",
+                onyomi: "ゴ",
+                explanation: "الكلام (言) واللغة.",
+                examples: [
+                    { jp: "日本語", read: "にほんご", ar: "اللغة اليابانية" },
+                    { jp: "英語", read: "えいご", ar: "اللغة الإنجليزية" }
+                ]
+            },
+            {
+                kanji: "国",
+                meaningAr: "دولة / بلد",
+                meaningEn: "Country",
+                kunyomi: "くに",
+                onyomi: "コク",
+                explanation: "جوهرة أو إقليم محاط بالحدود (الجوهرة داخل مربع).",
+                examples: [
+                    { jp: "国", read: "くに", ar: "دولة / بلد" },
+                    { jp: "外国人", read: "がいこくじん", ar: "شخص أجنبي" }
+                ]
+            },
+            {
+                kanji: "東",
+                meaningAr: "الشرق",
+                meaningEn: "East",
+                kunyomi: "ひがし",
+                onyomi: "トウ",
+                explanation: "الشمس تشرق خلف الأشجار في الشرق.",
+                examples: [
+                    { jp: "東", read: "ひがし", ar: "الشرق" },
+                    { jp: "東京", read: "とうきょう", ar: "طوكيو" }
+                ]
+            },
+            {
+                kanji: "西",
+                meaningAr: "الغرب",
+                meaningEn: "West",
+                kunyomi: "にし",
+                onyomi: "セイ、サイ",
+                explanation: "مغروب الشمس والاتجاه الغربي.",
+                examples: [
+                    { jp: "西", read: "にし", ar: "الغرب" },
+                    { jp: "関西", read: "かんさい", ar: "إقليم كانساي" }
+                ]
+            },
+            {
+                kanji: "南",
+                meaningAr: "الجنوب",
+                meaningEn: "South",
+                kunyomi: "みなみ",
+                onyomi: "ナン",
+                explanation: "الاتجاه الجنوبي الدافئ.",
+                examples: [
+                    { jp: "南", read: "みなみ", ar: "الجنوب" },
+                    { jp: "南口", read: "みなみぐち", ar: "المخرج الجنوبي" }
+                ]
+            },
+            {
+                kanji: "北",
+                meaningAr: "الشمال",
+                meaningEn: "North",
+                kunyomi: "きた",
+                onyomi: "ホク",
+                explanation: "شخصان يتعاكسان لجهة الشمال البرد.",
+                examples: [
+                    { jp: "北", read: "きた", ar: "الشمال" },
+                    { jp: "北海道", read: "ほっかいどう", ar: "هوكايدو" }
+                ]
+            },
+            {
+                kanji: "大",
+                meaningAr: "كبير",
+                meaningEn: "Big, Large",
+                kunyomi: "おおきい",
+                onyomi: "ダイ、タイ",
+                explanation: "شخص يبسط ذراعيه ليدل على الكبر.",
+                examples: [
+                    { jp: "大きい", read: "おおきい", ar: "كبير" },
+                    { jp: "大学", read: "だいがく", ar: "جامعة" },
+                    { jp: "大人", read: "おとな", ar: "شخص بالغ" }
+                ]
+            },
+            {
+                kanji: "小",
+                meaningAr: "صغير",
+                meaningEn: "Small, Little",
+                kunyomi: "ちいさい",
+                onyomi: "ショウ",
+                explanation: "شيء مصغر وقليل.",
+                examples: [
+                    { jp: "小さい", read: "ちいさい", ar: "صغير" },
+                    { jp: "小学校", read: "しょうがっこう", ar: "مدرسة ابتدائية" }
+                ]
+            },
+            {
+                kanji: "長",
+                meaningAr: "طويل / رئيس",
+                meaningEn: "Long, Leader",
+                kunyomi: "ながい",
+                onyomi: "チョウ",
+                explanation: "الشعر الطويل والرئاسة.",
+                examples: [
+                    { jp: "長い", read: "ながい", ar: "طويل" },
+                    { jp: "社長", read: "しゃちょう", ar: "رئيس الشركة" }
+                ]
+            },
+            {
+                kanji: "高",
+                meaningAr: "عالي / مرتفع / غالي الثمن",
+                meaningEn: "High, Expensive",
+                kunyomi: "たかい",
+                onyomi: "コウ",
+                explanation: "برج أو مبنى مرتفع جداً.",
+                examples: [
+                    { jp: "高い", read: "たかい", ar: "مرتفع / غالي" },
+                    { jp: "高校", read: "こうこう", ar: "مدرسة ثانوية" }
+                ]
+            },
+            {
+                kanji: "白",
+                meaningAr: "أبيض",
+                meaningEn: "White",
+                kunyomi: "しろい",
+                onyomi: "ハク",
+                explanation: "شعاع الشمس الأبيض النقي.",
+                examples: [
+                    { jp: "白い", read: "しろい", ar: "أبيض" },
+                    { jp: "面白い", read: "おもしろい", ar: "ممتع / مشوق" }
+                ]
+            },
+            {
+                kanji: "行",
+                meaningAr: "يذهب / يجري",
+                meaningEn: "To Go",
+                kunyomi: "いく、おこなう",
+                onyomi: "コウ、ギョウ",
+                explanation: "أقدام تسير وتتحرك لكتشاف الطرق.",
+                examples: [
+                    { jp: "行く", read: "いく", ar: "يذهب" },
+                    { jp: "旅行", read: "りょこう", ar: "سفر / رحلة" }
+                ]
+            },
+            {
+                kanji: "来",
+                meaningAr: "يأتي / قادم",
+                meaningEn: "To Come",
+                kunyomi: "くる",
+                onyomi: "ライ",
+                explanation: "شجرة الحصاد القدام مع الوقت.",
+                examples: [
+                    { jp: "来る", read: "くる", ar: "يأتي" },
+                    { jp: "来年", read: "らいねん", ar: "السنة القادمة" },
+                    { jp: "来月", read: "らいげつ", ar: "الشهر القادم" }
+                ]
+            },
+            {
+                kanji: "聞",
+                meaningAr: "يسمع / يسأل",
+                meaningEn: "Hear, Listen, Ask",
+                kunyomi: "きく",
+                onyomi: "ブン",
+                explanation: "أذن (耳) عند الباب (門) تستمع.",
+                examples: [
+                    { jp: "聞く", read: "きく", ar: "يسمع / يسأل" },
+                    { jp: "新聞", read: "しんぶん", ar: "جريدة / جرائد" }
+                ]
+            },
+            {
+                kanji: "食",
+                meaningAr: "يأكل / طعام",
+                meaningEn: "Eat, Food",
+                kunyomi: "たべる",
+                onyomi: "ショク",
+                explanation: "غطاء وطعام يؤكل.",
+                examples: [
+                    { jp: "食べる", read: "たべる", ar: "يأكل" },
+                    { jp: "食べ物", read: "たべもの", ar: "طعام" },
+                    { jp: "食事", read: "しょくじ", ar: "وجبة طعام" }
+                ]
+            },
+            {
+                kanji: "入",
+                meaningAr: "يدخل / يدخل شيئاً",
+                meaningEn: "Enter, Insert",
+                kunyomi: "はい.る、い.れる",
+                onyomi: "ニュウ",
+                explanation: "شخص يدخل للداخل.",
+                examples: [
+                    { jp: "入れる", read: "いれる", ar: "يدخل شيئاً" },
+                    { jp: "入口", read: "いりぐち", ar: "مدخل" },
+                    { jp: "入院", read: "にゅういん", ar: "دخول المستشفى" }
+                ]
+            },
+            {
+                kanji: "出",
+                meaningAr: "يخرج / يخرج شيئاً",
+                meaningEn: "Exit, Leave",
+                kunyomi: "でる、だす",
+                onyomi: "シュツ",
+                explanation: "جبلان فوق بعضهما يخرجان للأعلى.",
+                examples: [
+                    { jp: "出る", read: "でる", ar: "يخرج" },
+                    { jp: "出す", read: "だす", ar: "يخرج شيئاً" },
+                    { jp: "出口", read: "でぐち", ar: "مخرج" }
+                ]
+            },
+            {
+                kanji: "読",
+                meaningAr: "يقرأ",
+                meaningEn: "Read",
+                kunyomi: "よむ",
+                onyomi: "ドク",
+                explanation: "كلام (言) وقراءة الكتب.",
+                examples: [
+                    { jp: "読む", read: "よむ", ar: "يقرأ" },
+                    { jp: "読書", read: "どくしょ", ar: "قراءة الكتب" }
+                ]
+            },
+            {
+                kanji: "話",
+                meaningAr: "يتحدث / قصة",
+                meaningEn: "Talk, Speak, Story",
+                kunyomi: "はなす、はなし",
+                onyomi: "ワ",
+                explanation: "كلام (言) ولسان يتحدث.",
+                examples: [
+                    { jp: "話す", read: "はなす", ar: "يتحدث / يتكلم" },
+                    { jp: "話", read: "はなし", ar: "حديث / قصة" },
+                    { jp: "会話", read: "かいわ", ar: "محادثة" }
+                ]
+            },
+            {
+                kanji: "書",
+                meaningAr: "يكتب / كتابة",
+                meaningEn: "Write",
+                kunyomi: "かく",
+                onyomi: "ショ",
+                explanation: "يد تمسك قلماً وتكتب.",
+                examples: [
+                    { jp: "書く", read: "かく", ar: "يكتب" },
+                    { jp: "書店", read: "しょてん", ar: "مكتبة بيع كتب" },
+                    { jp: "図書館", read: "としょかん", ar: "مكتبة عامة" }
+                ]
+            },
+            {
+                kanji: "見",
+                meaningAr: "يري / ينظر",
+                meaningEn: "See, Look",
+                kunyomi: "みる、みせる",
+                onyomi: "ケン",
+                explanation: "عين كبيرة (目) على أقدام تنظر.",
+                examples: [
+                    { jp: "見る", read: "みる", ar: "يشاهد / ينظر" },
+                    { jp: "見せる", read: "みせる", ar: "يرى / يعرض" },
+                    { jp: "意見", read: "いけん", ar: "رأي" }
+                ]
+            },
+            {
+                kanji: "名",
+                meaningAr: "اسم / شهير",
+                meaningEn: "Name",
+                kunyomi: "な",
+                onyomi: "メイ",
+                explanation: "ينادي باسمه في الظلام (夕 + 口).",
+                examples: [
+                    { jp: "名前", read: "なまえ", ar: "اسم" },
+                    { jp: "有名", read: "ゆうめい", ar: "مشهور" }
+                ]
+            },
+            {
+                kanji: "何",
+                meaningAr: "ماذا / ما",
+                meaningEn: "What",
+                kunyomi: "なに、なん",
+                onyomi: "-",
+                explanation: "سؤال عن الشيء والماذية.",
+                examples: [
+                    { jp: "何", read: "なに / なん", ar: "ماذا" },
+                    { jp: "何人", read: "なんにん", ar: "كم شخصاً؟" }
+                ]
+            },
+            {
+                kanji: "車",
+                meaningAr: "سيارة / عربة",
+                meaningEn: "Car, Vehicle",
+                kunyomi: "くるま",
+                onyomi: "シャ",
+                explanation: "رسم لعربة لها عجلات من الأعلى.",
+                examples: [
+                    { jp: "車", read: "くるま", ar: "سيارة" },
+                    { jp: "電車", read: "でんしゃ", ar: "قطار" },
+                    { jp: "自動車", read: "じどうしゃ", ar: "سيارة محرك" }
+                ]
+            },
+            {
+                kanji: "休",
+                meaningAr: "يرتاح / يستريح",
+                meaningEn: "Rest",
+                kunyomi: "やすむ",
+                onyomi: "キュウ",
+                explanation: "شخص (人) يستند إلى شجرة (木) ليستريح.",
+                examples: [
+                    { jp: "休む", read: "やすむ", ar: "يرتاح / يتغيب" },
+                    { jp: "休み", read: "やすみ", ar: "عطلة / استراحة" }
+                ]
+            },
+            {
+                kanji: "本",
+                meaningAr: "كتاب / أصل اليابان",
+                meaningEn: "Book, Origin",
+                kunyomi: "もと",
+                onyomi: "ホン",
+                explanation: "شجرة مع خط في الأسفل يحدد أصل وجذور الشجرة.",
+                examples: [
+                    { jp: "本", read: "ほん", ar: "كتاب" },
+                    { jp: "日本", read: "にほん", ar: "اليابان" },
+                    { jp: "本日", read: "ほんじつ", ar: "هذا اليوم" }
+                ]
+            },
+            {
+                kanji: "友",
+                meaningAr: "صديق",
+                meaningEn: "Friend",
+                kunyomi: "とも",
+                onyomi: "ユウ",
+                explanation: "يدان تتصافحان بالصداقة.",
+                examples: [
+                    { jp: "友達", read: "ともだち", ar: "صديق / أصدقاء" },
+                    { jp: "友人", read: "ゆうじん", ar: "صديق" }
+                ]
+            }
+        ];
+
+        // عرض بطاقات الكانجي في الصفحة
+        function renderKanjiGrid() {
+            const container = document.getElementById('kanji-n5');
+            container.innerHTML = '';
+
+            kanjiN5Data.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'kanji-card';
+                card.innerHTML = `
+                    <button class="info-btn" onclick="openInfoModal(${index})" title="شرح الكانجي بالعربية">!</button>
+                    <div class="kanji-symbol">${item.kanji}</div>
+                    <div class="kanji-meaning-ar">${item.meaningAr}</div>
+                    <div class="kanji-readings">
+                        <strong>Kun:</strong> ${item.kunyomi}<br>
+                        <strong>On:</strong> ${item.onyomi}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // فتح نافذة الشرح بالعربية عند الضغط على !
+        function openInfoModal(index) {
+            const data = kanjiN5Data[index];
+            const modalBody = document.getElementById('modalBody');
+
+            let examplesHTML = '';
+            data.examples.forEach(ex => {
+                examplesHTML += `
+                    <li class="example-item">
+                        <span class="jp-word">${ex.jp}</span> 
+                        <span class="jp-reading">(${ex.read})</span>
+                        <span class="ar-meaning">${ex.ar}</span>
+                    </li>
+                `;
+            });
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-kanji">${data.kanji}</div>
+                    <div class="modal-title-info">
+                        <h2>${data.meaningAr}</h2>
+                        <span style="color:#777;">${data.meaningEn}</span>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h4>💡 شرح الرمز وتركيبه:</h4>
+                    <p style="margin:0; color:#444; line-height:1.6;">${data.explanation}</p>
+                </div>
+
+                <div class="modal-section">
+                    <h4>🗣️ القراءات اليابانية:</h4>
+                    <p style="margin:0;"><strong>Kun-yomi (ياباني):</strong> ${data.kunyomi}</p>
+                    <p style="margin:0;"><strong>On-yomi (صيني):</strong> ${data.onyomi}</p>
+                </div>
+
+                <div class="modal-section">
+                    <h4>📚 أمثلة وكلمات شائعة:</h4>
+                    <ul class="example-list">
+                        ${examplesHTML}
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+
+        function closeModalOnOverlay(e) {
+            if (e.target.id === 'infoModal') {
+                closeModal();
+            }
+        }
+
+        function switchSection(sectionId) {
+            // كود التبديل بين الأقسام
+            console.log("عرض قسم: " + sectionId);
+        }
+
+        // تشغيل العرض فور تحميل الصفحة
+        window.onload = renderKanjiGrid;
+    </script>
+</body>
+</html>

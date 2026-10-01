@@ -587,10 +587,14 @@
 .hintrow.open .hintbtn { display: none; }
 .hlabel { font-size: .98rem; font-weight: 800; color: #ffb86b; }
 .hchip { display: inline-flex; align-items: baseline; gap: 8px; background: rgba(255,184,107,.12); border: 1px solid rgba(255,184,107,.42); border-radius: 14px; padding: 3px 12px; }
+.hchip .he { font-size: 1.25rem; line-height: 1; align-self: center; }
 .hchip .hk { font-size: 1.7rem; font-weight: 700; line-height: 1.2; }
 .hchip .hr { font-size: 1rem; font-weight: 700; color: var(--accent-2); direction: ltr; }
+.hchip .hr::before { content: 'فردي: '; font-size: .78rem; font-weight: 700; color: var(--muted); }
 .hchip .hm { font-size: 1.05rem; font-weight: 600; color: var(--text); }
 .hplus { font-weight: 800; color: var(--muted); }
+.hfull { flex-basis: 100%; margin-top: 6px; font-size: .96rem; font-weight: 700; color: var(--text); background: rgba(120,180,255,.12); border: 1px solid rgba(120,180,255,.4); border-radius: 12px; padding: 5px 14px; direction: rtl; }
+.hfull b { color: var(--accent-2); direction: ltr; display: inline-block; }
 
 /* ===== زر «التالي» داخل بطاقة السؤال (في التدرّب) ===== */
 .qnext { display: block; margin: 10px auto 0; max-width: 100%; white-space: nowrap; font: inherit; font-size: 1.05rem; font-weight: 800; color: #fff; background: linear-gradient(135deg, #7a68ff, #ff6fae); border: 0; border-radius: 14px; padding: 8px 20px; cursor: pointer; box-shadow: 0 8px 22px rgba(122,104,255,.35); visibility: hidden; }
@@ -649,6 +653,10 @@
 .mcard .me { font-size: clamp(1.9rem, 6.5vw, 3.1rem); line-height: 1; }
 .mcard .mk { font-size: clamp(1.15rem, 3.6vw, 2.05rem); font-weight: 800; line-height: 1.25; text-align: center; color: #ffffff; }
 .mcard .mr { font-size: clamp(.72rem, 2.1vw, 1rem); color: var(--muted); direction: ltr; }
+.mcard-romaji { justify-content: center; }
+.mcard-romaji .mk.big { font-size: clamp(1.35rem, 4.4vw, 2.3rem); font-weight: 800; color: #ffffff; line-height: 1.2; }
+.mcard-romaji .mr.big { font-size: clamp(1.1rem, 3.4vw, 1.8rem); font-weight: 800; color: #ffffff; direction: ltr; letter-spacing: .3px; }
+.mcard-romaji.matched .mk.big, .mcard-romaji.matched .mr.big { color: var(--ok); }
 .mcard.sel { border-color: var(--accent); background: rgba(139,123,255,.16); box-shadow: 0 0 0 3px rgba(139,123,255,.18); }
 .mcard.matched { border-color: var(--ok); background: var(--ok-bg); opacity: 1; cursor: default; box-shadow: 0 0 0 3px rgba(61,220,151,.35), 0 0 22px rgba(61,220,151,.55); animation: matchGlow .6s ease-out; }
 .mcard.matched .mk { color: var(--ok); } .mcard.matched .mr { color: var(--ok); }
@@ -656,6 +664,15 @@
 .mcard:disabled { cursor: default; }
 @keyframes matchGlow { 0% { box-shadow: 0 0 0 3px rgba(61,220,151,.35), 0 0 34px rgba(61,220,151,.85); } 100% { box-shadow: 0 0 0 3px rgba(61,220,151,.35), 0 0 22px rgba(61,220,151,.55); } }
 .mdone { text-align: center; padding-top: 26px; }
+.mrounddone { text-align: center; padding-top: 26px; }
+.antoreview-wrap { max-width: 640px; margin: 10px auto 4px; max-height: 46vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 14px; }
+table.antoreview { width: 100%; border-collapse: collapse; }
+table.antoreview td { padding: 9px 10px; font-size: 1.05rem; border-bottom: 1px solid var(--line); text-align: center; }
+table.antoreview tr:last-child td { border-bottom: none; }
+table.antoreview td.jp { font-weight: 800; font-size: 1.2rem; }
+table.antoreview td.jp .rm { color: var(--muted); direction: ltr; font-size: .82rem; font-weight: 600; margin-top: 2px; }
+table.antoreview td.op { color: #ffb86b; font-weight: 800; text-align: center; width: 30px; }
+table.antoreview tr:nth-child(odd) { background: rgba(255,255,255,.03); }
 
 /* ===== قسم الكانجي: «خلاص تعلّمته» ===== */
 .knownrow { grid-column: 1 / -1; grid-row: 4; direction: rtl; text-align: center; margin-top: 8px; }
@@ -680,6 +697,25 @@
 }
 </style>
 
+
+<style id="anto-test-style">
+/* ترجمة عربية عند الضغط على بطاقة في كويز الأضداد */
+#mgrid .mcard-romaji .ma.ar { display: none; }
+#mgrid .mcard-romaji.showar .ma.ar { display: block; animation: arPop .25s ease-out; }
+@keyframes arPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+/* زر الاختبار الثالث */
+.go.test { background: transparent; color: var(--text); border: 1.5px solid rgba(255,184,107,.7); }
+.go.test:hover { background: rgba(255,184,107,.14); }
+/* شاشة اختبار الأضداد */
+.atq { text-align: center; background: linear-gradient(180deg, var(--surface-2), var(--surface)); border: 2px solid var(--line); border-radius: 22px; padding: 18px 16px; margin: 6px 0 16px; }
+.atlabel { color: var(--muted); font-size: 1.05rem; }
+.atword { font-size: clamp(2.6rem, 10vw, 4.6rem); font-weight: 800; line-height: 1.2; color: #fff; }
+.atromaji { direction: ltr; color: var(--accent-2); font-weight: 700; font-size: 1.2rem; }
+.atmeaning { font-family: "Cairo", "Noto Sans Arabic", sans-serif; color: #fff; font-size: 1.25rem; font-weight: 600; margin-top: 4px; }
+.atnext { display: flex; justify-content: center; margin-top: 14px; }
+#atNextWrap[hidden], #atDone[hidden], #atBody[hidden] { display: none; }
+#atDone { text-align: center; padding-top: 22px; }
+</style>
 
 <style id="countdown-only-black-card">
 /* ===== العدّ التنازلي فقط ===== */
@@ -1176,7 +1212,28 @@ const CLOCK_SEC_RM = ["rei-byou", "ichi-byou", "ni-byou", "san-byou", "yon-byou"
     </div>
     <p class="msub">اضغط على كلمة، ثم اضغط على الكلمة التي تضادّها لتطابقهما.</p>
     <div class="mgrid" id="mgrid"></div>
+    <div class="mrounddone" id="mrounddone" hidden></div>
     <div class="mdone" id="mdone" hidden></div>
+  </section>
+
+  <!-- Antonyms multiple-choice test -->
+  <section id="antotest" class="screen">
+    <div class="hud">
+      <div class="row"><span class="sec" id="atSec"></span><span class="pc" id="atCount"></span></div>
+      <div class="bar"><i id="atFill"></i></div>
+    </div>
+    <div id="atBody">
+      <div class="atq">
+        <div class="atlabel">ما ضدّ هذه الكلمة؟</div>
+        <div class="atword jp" id="atWord" lang="ja"></div>
+        <div class="atromaji" id="atRomaji"></div>
+        <div class="atmeaning" id="atMeaning"></div>
+      </div>
+      <div class="options" id="atOptions"></div>
+      <div class="feedback" id="atFeedback" aria-live="polite"></div>
+      <div class="atnext" id="atNextWrap" hidden><button class="btn-main" id="atNext" type="button">التالي ←</button></div>
+    </div>
+    <div id="atDone" hidden></div>
   </section>
 
   <!-- End of session -->
@@ -2865,15 +2922,232 @@ SECTIONS.forEach(s => {
   for (let i = 0; i < ants.length; i += 2) { ants[i].pairId = ants[i + 1].id; ants[i + 1].pairId = ants[i].id; }
 })();
 const ANTO_BATCH = 10;
+/* كتابة الكانجي لكل الأضداد (الكلمات المكتوبة بالكانا في البيانات الأصلية). «はい» و«いいえ» لا كانجي معتمد لهما */
+const ANTO_KANJI = {
+  'みじかい': '短い', 'やさしい': '易しい', 'つまらない': '詰まらない', 'きれい': '綺麗', 'きたない': '汚い',
+  'にぎやか': '賑やか', 'いい': '良い', 'わるい': '悪い', 'あける': '開ける', 'しめる': '閉める',
+  'のぼる': '登る', 'おりる': '降りる', 'あげる': '上げる', 'もらう': '貰う', 'なく': '泣く',
+  'つける': '点ける', '子ども': '子供'
+};
+function antoKj(w) { return ANTO_KANJI[w.japanese] || w.kj || w.japanese; }
+const ANTO_TEST_SIZE = 20;
+const ANTO_TEST_KEY = 'jlpt-n5-antotest-best-v1';
+let antoTestBest = null;
+try { const v = JSON.parse(localStorage.getItem(ANTO_TEST_KEY)); antoTestBest = (typeof v === 'number') ? v : null; } catch (e) {}
 
-/* ---------- بيانات التلميح: معنى وقراءة كل كانجي داخل الكلمة المركّبة ---------- */
-const EXTRA_KANJI = {   // رموز تظهر في الاختبار المركّب وليست في قسم الكانجي
-  '天': ['ame · ten', 'سماء'], '毎': ['mai', 'كل / كل مرة'], '週': ['shuu', 'أسبوع'], '年': ['toshi · nen', 'سنة'],
-  '今': ['ima · kon', 'الآن / هذا'], '半': ['han · nakaba', 'نصف'], '分': ['bun · fun · wa(keru)', 'جزء / دقيقة'], '内': ['uchi · nai', 'داخل']
+/* ---------- بيانات التلميح: معنى وقراءة وإيموجي كل كانجي مفردًا (لتفكيك الكلمات المركّبة) ---------- */
+const EXTRA_KANJI = {   // رموز أساسية تظهر في الاختبار المركّب وليست في قسم الكانجي الـ119
+  '天': ['ame · ten', 'سماء', '🌤️'], '毎': ['mai', 'كل / كل مرة', '🔁'], '週': ['shuu', 'أسبوع', '📅'], '年': ['toshi · nen', 'سنة', '🗓️'],
+  '今': ['ima · kon', 'الآن / هذا', '⏰'], '半': ['han · nakaba', 'نصف', '➗'], '分': ['bun · fun · wa(keru)', 'جزء / دقيقة', '⏱️'], '内': ['uchi · nai', 'داخل', '📥']
+};
+/* رموز إضافية تظهر داخل كلمات المفردات والأفعال المركّبة (المكتوبة بالكانجي) وغير موجودة في القائمتين أعلاه */
+const EXTRA_KANJI2 = {
+  '乗': ['noru', 'ركوب', '🚗'],
+  '乳': ['nyuu', 'حليب', '🥛'],
+  '事': ['koto/ji', 'أمر / شيء', '📌'],
+  '交': ['kou', 'تبادل / تقاطع', '🔀'],
+  '仕': ['shi', 'خدمة / عمل', '💼'],
+  '伝': ['tsutaeru/den', 'نقل / إخبار', '📨'],
+  '作': ['tsukuru/saku', 'صنع', '🛠️'],
+  '使': ['tsukau/shi', 'استخدام', '🔧'],
+  '便': ['ben/bin', 'راحة / بريد', '📮'],
+  '借': ['kariru/shaku', 'استعارة', '🤝'],
+  '傘': ['kasa', 'مظلة', '☂️'],
+  '働': ['hataraku/dou', 'عمل', '👷'],
+  '元': ['moto/gen', 'أصل / نشاط', '💪'],
+  '兄': ['ani/kyou', 'أخ أكبر', '👨'],
+  '公': ['kou', 'عامّ', '🏛️'],
+  '写': ['utsusu/sha', 'نسخ / تصوير', '📸'],
+  '冬': ['fuyu', 'شتاء', '❄️'],
+  '冷': ['tsumetai/rei', 'بارد', '🧊'],
+  '切': ['kiru/setsu', 'قطع / تذكرة', '✂️'],
+  '利': ['ri', 'نفع / فائدة', '👍'],
+  '刺': ['sasu/shi', 'طعن / سشيمي', '🍣'],
+  '勉': ['ben', 'اجتهاد', '📚'],
+  '危': ['abunai/ki', 'خطر', '⚠️'],
+  '卵': ['tamago', 'بيضة', '🥚'],
+  '取': ['toru/shu', 'أخذ', '✋'],
+  '台': ['dai', 'منضدة / عدّاد', '🗄️'],
+  '司': ['tsukasa/shi', 'إدارة', '📋'],
+  '吸': ['suu/kyuu', 'شفط / تدخين', '🚬'],
+  '呂': ['ro', 'جزء من كلمة «حمّام»', '🛁'],
+  '味': ['aji/mi', 'طعم', '😋'],
+  '呼': ['yobu/ko', 'نداء', '📢'],
+  '咲': ['saku', 'تفتّح الزهور', '🌸'],
+  '員': ['in', 'عضو / موظّف', '👤'],
+  '喫': ['kitsu', 'شرب / تناول', '☕'],
+  '図': ['zu/to', 'رسم / مخطّط', '📚'],
+  '園': ['en', 'حديقة', '🌳'],
+  '地': ['chi/ji', 'أرض', '🌍'],
+  '塩': ['shio', 'ملح', '🧂'],
+  '士': ['shi', 'محترف / رجل', '👨‍⚖️'],
+  '売': ['uru/bai', 'بيع', '🏪'],
+  '夏': ['natsu', 'صيف', '☀️'],
+  '太': ['futoi/tai', 'سمين / شمس', '🌞'],
+  '夫': ['otto/fu', 'زوج', '🤵'],
+  '好': ['suki/kou', 'محبوب', '❤️'],
+  '妹': ['imouto', 'أخت صغرى', '👧'],
+  '姉': ['ane', 'أخت كبرى', '👩'],
+  '始': ['hajimaru/shi', 'بدء', '▶️'],
+  '婚': ['kon', 'زواج', '💍'],
+  '婦': ['fu', 'امرأة / زوجة', '👰'],
+  '嫌': ['kirai/ken', 'كراهية', '😒'],
+  '官': ['kan', 'موظّف حكومي', '👮'],
+  '家': ['ie/ka', 'منزل / عائلة', '🏠'],
+  '容': ['you', 'محتوى / شكل', '📦'],
+  '宿': ['yado/shuku', 'نُزل / سكن', '🏨'],
+  '寒': ['samui', 'بارد (طقس)', '🥶'],
+  '寝': ['neru/shin', 'نوم', '😴'],
+  '察': ['satsu', 'استنتاج / شرطة', '🕵️'],
+  '寿': ['kotobuki/ju', 'بركة / طول عمر', '🎊'],
+  '局': ['kyoku', 'مكتب', '🏢'],
+  '屋': ['ya', 'محلّ / متجر', '🏪'],
+  '履': ['haku/ri', 'ارتداء الحذاء', '👞'],
+  '差': ['sa', 'فرق', '📊'],
+  '布': ['nuno/fu', 'قماش', '🧵'],
+  '師': ['shi', 'معلّم / أستاذ', '🎓'],
+  '帰': ['kaeru/ki', 'عودة', '🏠'],
+  '帽': ['bou', 'قبّعة', '🎩'],
+  '幹': ['miki/kan', 'جذع', '🚄'],
+  '広': ['hiroi/kou', 'واسع', '↔️'],
+  '座': ['suwaru/za', 'جلوس', '🪑'],
+  '庭': ['niwa', 'حديقة منزل', '🌳'],
+  '庫': ['ko', 'مخزن', '🗄️'],
+  '弁': ['ben', 'محامٍ / خطيب', '⚖️'],
+  '弟': ['otouto', 'أخ أصغر', '👦'],
+  '強': ['tsuyoi/kyou', 'قوي', '💪'],
+  '彼': ['kare/hi', 'هو', '👨'],
+  '待': ['matsu/tai', 'انتظار', '⏳'],
+  '忘': ['wasureru/bou', 'نسيان', '🤔'],
+  '忙': ['isogashii/bou', 'مشغول', '⏰'],
+  '悪': ['warui/aku', 'سيّئ', '👎'],
+  '悲': ['kanashii/hi', 'حزين', '😢'],
+  '所': ['tokoro/sho', 'مكان', '📍'],
+  '押': ['osu/ou', 'دفع / ضغط', '👉'],
+  '持': ['motsu/ji', 'حمل / امتلاك', '🤲'],
+  '掃': ['sou', 'كنس', '🧹'],
+  '授': ['ju', 'تدريس', '🎓'],
+  '教': ['oshieru/kyou', 'تعليم', '👩‍🏫'],
+  '散': ['san', 'تفرّق / تنزّه', '🚶'],
+  '料': ['ryou', 'رسوم / مواد', '🍳'],
+  '族': ['zoku', 'عائلة', '👨‍👩‍👧'],
+  '易': ['yasashii/i', 'سهل', '✅'],
+  '星': ['hoshi/sei', 'نجمة', '⭐'],
+  '映': ['utsuru/ei', 'انعكاس / فيلم', '🎬'],
+  '春': ['haru', 'ربيع', '🌸'],
+  '暇': ['hima', 'وقت فراغ', '😌'],
+  '曲': ['magaru/kyoku', 'انعطاف / أغنية', '🎵'],
+  '有': ['aru/yuu', 'وجود / مشهور', '✨'],
+  '机': ['tsukue', 'مكتب (طاولة)', '🪑'],
+  '果': ['ka', 'ثمرة', '🍎'],
+  '桜': ['sakura', 'شجرة الكرز', '🌸'],
+  '森': ['mori', 'غابة', '🌲'],
+  '椅': ['i', 'كرسي', '🪑'],
+  '業': ['gyou', 'عمل / دراسة', '📖'],
+  '楽': ['tanoshii/raku', 'ممتع / موسيقى', '🎶'],
+  '橋': ['hashi/kyou', 'جسر', '🌉'],
+  '機': ['ki', 'آلة', '✈️'],
+  '欲': ['hoshii/yoku', 'رغبة', '🙏'],
+  '歌': ['uta/ka', 'أغنية', '🎤'],
+  '止': ['tomaru/shi', 'توقّف', '🛑'],
+  '歩': ['aruku/ho', 'مشي', '🚶'],
+  '泳': ['oyogu/ei', 'سباحة', '🏊'],
+  '洗': ['arau/sen', 'غسل', '🧼'],
+  '浴': ['abiru/yoku', 'استحمام', '🚿'],
+  '海': ['umi/kai', 'بحر', '🌊'],
+  '渡': ['wataru/to', 'عبور', '🌉'],
+  '港': ['minato/kou', 'ميناء', '⚓'],
+  '濯': ['taku', 'غسيل الملابس', '🧺'],
+  '点': ['ten', 'نقطة / علامة', '🔵'],
+  '熱': ['netsu', 'حرارة / حمّى', '🌡️'],
+  '牛': ['ushi/gyuu', 'بقرة', '🐄'],
+  '物': ['mono/butsu', 'شيء', '📦'],
+  '狭': ['semai/kyou', 'ضيّق', '↔️'],
+  '球': ['kyuu', 'كرة', '⚾'],
+  '理': ['ri', 'منطق / طبخ', '🍳'],
+  '画': ['ga/kaku', 'رسم / فيلم', '🎨'],
+  '病': ['yamai/byou', 'مرض', '🤒'],
+  '登': ['noboru/tou', 'صعود', '⛰️'],
+  '看': ['kan', 'مراقبة / رعاية', '👀'],
+  '真': ['ma/shin', 'حقيقي / صورة', '📷'],
+  '眼': ['me/gan', 'عين', '👓'],
+  '着': ['kiru/chaku', 'ارتداء / وصول', '👕'],
+  '知': ['shiru/chi', 'معرفة', '🧠'],
+  '短': ['mijikai/tan', 'قصير', '📏'],
+  '秋': ['aki/shuu', 'خريف', '🍂'],
+  '窓': ['mado', 'نافذة', '🪟'],
+  '笑': ['warau/shou', 'ضحك', '😄'],
+  '符': ['fu', 'رمز / تذكرة', '🎫'],
+  '箸': ['hashi', 'عيدان الطعام', '🥢'],
+  '紙': ['kami/shi', 'ورقة', '📄'],
+  '終': ['owaru/shuu', 'انتهاء', '🏁'],
+  '結': ['musubu/ketsu', 'ربط / زواج', '💍'],
+  '線': ['sen', 'خطّ', '➖'],
+  '美': ['utsukushii/bi', 'جميل', '💄'],
+  '習': ['narau/shuu', 'تعلّم', '📖'],
+  '自': ['ji', 'نفس / ذات', '🚲'],
+  '船': ['fune/sen', 'سفينة', '🚢'],
+  '菓': ['ka', 'حلوى', '🍬'],
+  '菜': ['na/sai', 'خضار', '🥬'],
+  '蔵': ['kura/zou', 'مخزن', '🗄️'],
+  '薬': ['kusuri/yaku', 'دواء', '💊'],
+  '被': ['kaburu/hi', 'ارتداء (القبّعة)', '🧢'],
+  '覚': ['oboeru/kaku', 'تذكّر', '🧠'],
+  '言': ['iu/gen', 'قول', '💬'],
+  '試': ['kokoromiru/shi', 'اختبار / محاولة', '📝'],
+  '誌': ['shi', 'مجلّة', '📰'],
+  '誕': ['tan', 'ميلاد', '🎂'],
+  '警': ['kei', 'تحذير / شرطة', '🚨'],
+  '護': ['go', 'حماية', '🛡️'],
+  '豚': ['buta', 'خنزير', '🐷'],
+  '財': ['zai', 'ثروة', '👛'],
+  '貸': ['kasu/tai', 'إقراض', '🤝'],
+  '走': ['hashiru/sou', 'جري', '🏃'],
+  '起': ['okiru/ki', 'استيقاظ', '⏰'],
+  '趣': ['shu', 'هواية', '🎨'],
+  '身': ['mi/shin', 'جسد', '🧍'],
+  '転': ['korobu/ten', 'دوران', '🔄'],
+  '軽': ['karui/kei', 'خفيف', '🪶'],
+  '辞': ['ji', 'استقالة / قاموس', '📕'],
+  '農': ['nou', 'زراعة', '🌾'],
+  '返': ['kaesu/hen', 'إرجاع', '↩️'],
+  '遅': ['osoi/chi', 'متأخّر', '🐢'],
+  '遊': ['asobu/yuu', 'لعب', '🎮'],
+  '運': ['hakobu/un', 'نقل / حظّ', '🚚'],
+  '部': ['bu', 'قسم / غرفة', '🚪'],
+  '郵': ['yuu', 'بريد', '📮'],
+  '酒': ['sake/shu', 'خمر', '🍶'],
+  '重': ['omoi/juu', 'ثقيل', '🏋️'],
+  '野': ['no/ya', 'حقل', '🌾'],
+  '鉄': ['tetsu', 'حديد', '🚇'],
+  '銀': ['gin', 'فضّة', '🥈'],
+  '鍵': ['kagi', 'مفتاح', '🔑'],
+  '鏡': ['kagami/kyou', 'مرآة', '🪞'],
+  '閉': ['shimeru/hei', 'إغلاق', '🔒'],
+  '開': ['akeru/kai', 'فتح', '🔓'],
+  '降': ['oriru/kou', 'نزول / هطول', '🌧️'],
+  '院': ['in', 'مؤسّسة', '🏥'],
+  '除': ['jo', 'إزالة', '🧹'],
+  '陽': ['you', 'شمس', '☀️'],
+  '雑': ['zatsu', 'متنوّع', '📰'],
+  '難': ['muzukashii/nan', 'صعب', '😖'],
+  '静': ['shizuka', 'هادئ', '🤫'],
+  '面': ['men', 'وجه', '😀'],
+  '靴': ['kutsu', 'حذاء', '👞'],
+  '音': ['oto/on', 'صوت', '🎵'],
+  '頭': ['atama/tou', 'رأس', '🧠'],
+  '頼': ['tanomu/rai', 'طلب / اعتماد', '🙏'],
+  '題': ['dai', 'عنوان / موضوع', '📝'],
+  '顔': ['kao/gan', 'وجه', '😊'],
+  '飛': ['tobu/hi', 'طيران', '✈️'],
+  '飯': ['meshi/han', 'أرز مطهو / وجبة', '🍚'],
+  '館': ['kan', 'مبنى كبير', '🏛️'],
+  '験': ['ken', 'اختبار / تجربة', '📝'],
 };
 const KANJI_INFO = {};
-WORDS.forEach(w => { if (w.category === 'kanji') KANJI_INFO[w.japanese] = { rom: w.romaji, ar: w.ar }; });
-Object.keys(EXTRA_KANJI).forEach(c => { if (!KANJI_INFO[c]) KANJI_INFO[c] = { rom: EXTRA_KANJI[c][0], ar: EXTRA_KANJI[c][1] }; });
+WORDS.forEach(w => { if (w.category === 'kanji') KANJI_INFO[w.japanese] = { rom: w.romaji, ar: w.ar, emoji: w.hintEmoji }; });
+Object.keys(EXTRA_KANJI).forEach(c => { if (!KANJI_INFO[c]) KANJI_INFO[c] = { rom: EXTRA_KANJI[c][0], ar: EXTRA_KANJI[c][1], emoji: EXTRA_KANJI[c][2] }; });
+Object.keys(EXTRA_KANJI2).forEach(c => { if (!KANJI_INFO[c]) KANJI_INFO[c] = { rom: EXTRA_KANJI2[c][0], ar: EXTRA_KANJI2[c][1], emoji: EXTRA_KANJI2[c][2] }; });
 
 /* ============================================================
    قسم «الحروف والقواعد»: الشرح + تمارين إكمال الفراغ
@@ -3378,6 +3652,12 @@ function renderChrome() {
       c.querySelector('.prac').textContent = 'ابدأ المطابقة';
       c.querySelector('.prac').onclick = () => startMatch('antonyms', ANTO_BATCH);
       c.querySelector('.quiz').onclick = () => startMatch('antonyms', null);
+      c.querySelector('.quiz').textContent = '🧲 التحدي الكامل · ' + Math.floor(WORDS.filter(w => w.category === 'antonyms').length / 2) + ' زوجًا';
+      const tb = document.createElement('button');
+      tb.className = 'go test'; tb.type = 'button'; tb.textContent = '🎯 اختبار الأضداد · ' + ANTO_TEST_SIZE + ' سؤالًا';
+      tb.onclick = () => startAntoTest();
+      c.querySelector('.cardbtns').appendChild(tb);
+      if (antoTestBest != null) c.querySelector('.bst').textContent = 'أفضل اختبار: ' + antoTestBest + ' / ' + ANTO_TEST_SIZE;
     } else {
       c.querySelector('.prac').onclick = () => startSession(s.id);
       c.querySelector('.quiz').onclick = () => startQuiz(s.id);
@@ -3561,7 +3841,7 @@ function renderQuestion(first) {
   qn.textContent = idx >= quizData.length - 1 ? 'إنهاء ✓' : 'التالي ←';
 
   const hrow = $('hintrow');
-  hrow.hidden = q.category !== 'exam';
+  hrow.hidden = !HINT_CATS.includes(q.category) || wordKanjiChars(q).length === 0;
   hrow.classList.remove('open');
   $('hinttext').innerHTML = '';
   $('hintBtn').disabled = false;
@@ -3588,23 +3868,36 @@ function renderQuestion(first) {
   }
 }
 
-/* ---------- التلميح (اختبار الكانجي المركّب فقط) ---------- */
+/* ---------- التلميح: يفصل رموز الكانجي في الكلمة، ويشرح كل رمز على حدة ----------
+   يعمل في: المفردات، الأفعال، واختبار الكانجي المركّب (كل قسم فيه كلمات بالكانجي).
+   لكل رمز: إيموجي + الرمز نفسه + «القراءة الفردية» (قراءته حين يكون وحده) + معناه بالعربية.
+   وتحت الرموز: «القراءة المركّبة»، أي كيف تُقرأ الكلمة كاملةً كما هي منطوقة فعلًا. */
+const HINT_CATS = ['exam', 'verbs', 'vocabulary'];
+function wordKanjiChars(q) {
+  if (!q) return [];
+  const src = q.kj || q.japanese || '';
+  return [...src].filter(c => KANJI_RE.test(c));
+}
 function showHint() {
   const q = quizData[idx], row = $('hintrow');
-  if (!q || q.category !== 'exam' || row.hidden || row.classList.contains('open') || locked) return;
+  if (!q || !HINT_CATS.includes(q.category) || row.hidden || row.classList.contains('open') || locked) return;
   const box = $('hinttext');
   box.innerHTML = '';
-  const chars = [...q.japanese];
+  const chars = wordKanjiChars(q);
+  if (!chars.length) return;
   // سؤال «المعنى ← الكلمة» يكشف الرمز الأول فقط؛ الأنواع الأخرى تعرض كل الرموز مع قراءتها ومعناها
   const list = q.type === 'word' ? chars.slice(0, 1) : chars;
   const lab = document.createElement('span');
   lab.className = 'hlabel';
-  lab.textContent = q.type === 'word' ? 'الكلمة من ' + (chars.length === 2 ? 'رمزين' : chars.length + ' رموز') + '، وأولها:' : 'مكوّنات الكلمة:';
+  lab.textContent = q.type === 'word'
+    ? 'الكلمة من ' + (chars.length === 1 ? 'رمز واحد' : chars.length === 2 ? 'رمزين' : chars.length + ' رموز') + (chars.length > 1 ? '، وأولها:' : ':')
+    : (chars.length > 1 ? 'رموز الكلمة كلٌّ على حدة:' : 'رمز الكلمة:');
   box.appendChild(lab);
   list.forEach((c, k) => {
     if (k > 0) { const pl = document.createElement('span'); pl.className = 'hplus'; pl.textContent = '+'; box.appendChild(pl); }
     const info = KANJI_INFO[c];
     const chip = document.createElement('span'); chip.className = 'hchip';
+    const he = document.createElement('span'); he.className = 'he'; he.textContent = (info && info.emoji) ? info.emoji : '🈶'; chip.appendChild(he);
     const hk = document.createElement('span'); hk.className = 'hk jp'; hk.lang = 'ja'; hk.textContent = c; chip.appendChild(hk);
     if (info) {
       const hr = document.createElement('span'); hr.className = 'hr'; hr.textContent = info.rom; chip.appendChild(hr);
@@ -3612,6 +3905,12 @@ function showHint() {
     }
     box.appendChild(chip);
   });
+  // القراءة المركّبة: قراءة الكلمة كاملةً كما تُنطق فعليًا داخل هذه الكلمة (قد تختلف عن قراءة كل رمز منفردًا أعلاه)
+  if (q.kana) {
+    const full = document.createElement('span'); full.className = 'hfull';
+    full.innerHTML = '📖 القراءة المركّبة لهذه الكلمة: <b class="jp" lang="ja">' + q.kana + '</b>' + (q.romaji ? '  ·  ' + q.romaji : '');
+    box.appendChild(full);
+  }
   row.classList.add('open');
 }
 $('hintBtn').onclick = showHint;
@@ -3873,27 +4172,50 @@ function openLesson(g) {
 
 /* ---------- لعبة مطابقة الأضداد ---------- */
 let matchState = null;
+const ANTO_ROUND_PAIRS = 6;   // 12 بطاقة (6 أزواج) في كل مرحلة من التحدي الكامل
+function pairsOf(secId) {
+  const pool = WORDS.filter(w => w.category === secId);
+  const seen = new Set(), pairs = [];
+  pool.forEach(w => { if (seen.has(w.id)) return; seen.add(w.id); seen.add(w.pairId); const partner = pool.find(x => x.id === w.pairId); pairs.push([w, partner]); });
+  return pairs;
+}
 function startMatch(secId, batchSize) {
-  batchSize = 6;
+  // batchSize = ANTO_BATCH (10) في وضع «التدريب»: يبقى كما هو (دفعة واحدة من الأزواج الضعيفة).
+  // batchSize = null في وضع «الكويز / التحدي الكامل»: كل الأزواج مقسّمة على مراحل من 12 بطاقة (6 أزواج) لكل مرحلة،
+  // وبعد كل مرحلة زر «التالي» للانتقال للمرحلة التالية، وفي النهاية مراجعة لكل الأضداد معًا زوجًا زوجًا.
   unlockSpeech(); stopAll();
   mode = 'match'; curSec = secId;
-  const pool = WORDS.filter(w => w.category === secId);
-  let chosen;
-  if (batchSize) {
-    const seen = new Set(), pairs = [];
-    pool.forEach(w => { if (seen.has(w.id)) return; seen.add(w.id); seen.add(w.pairId); const partner = pool.find(x => x.id === w.pairId); pairs.push([w, partner]); });
-    const weak = shuffle(pairs.filter(p => !progress[p[0].key] || !progress[p[1].key]));
-    // التركيز على الأزواج الضعيفة فقط؛ إن أُتقنت كلها تُعاد كل الأزواج للمراجعة
-    chosen = (weak.length ? weak : shuffle(pairs)).slice(0, Math.min(batchSize, pairs.length)).flat();
-  } else {
-    chosen = pool.slice();
-  }
-  matchState = { secId, pairsTotal: chosen.length / 2, pairsDone: 0, mistakes: 0, sel: null, isTraining: !!batchSize };
-  renderMatchHud();
-  renderMatchGrid(shuffle(chosen));
+  $('mrounddone').hidden = true;
   $('mdone').hidden = true;
   $('mgrid').style.display = '';
+  if (batchSize) {
+    const pairs = pairsOf(secId);
+    const weak = shuffle(pairs.filter(p => !progress[p[0].key] || !progress[p[1].key]));
+    // التركيز على الأزواج الضعيفة فقط؛ إن أُتقنت كلها تُعاد كل الأزواج للمراجعة
+    const chosen = (weak.length ? weak : shuffle(pairs)).slice(0, Math.min(batchSize, pairs.length)).flat();
+    matchState = { secId, isTraining: true, pairsTotal: chosen.length / 2, pairsDone: 0, mistakes: 0, sel: null };
+    renderMatchHud();
+    renderMatchGrid(shuffle(chosen));
+  } else {
+    const shuffledPairs = shuffle(pairsOf(secId));
+    const rounds = [];
+    for (let i = 0; i < shuffledPairs.length; i += ANTO_ROUND_PAIRS) rounds.push(shuffledPairs.slice(i, i + ANTO_ROUND_PAIRS));
+    matchState = {
+      secId, isTraining: false, allPairs: shuffledPairs, rounds, roundIndex: 0,
+      pairsTotal: shuffledPairs.length, pairsDone: 0,
+      roundPairsTotal: rounds[0].length, roundPairsDone: 0,
+      mistakes: 0, sel: null
+    };
+    renderMatchHud();
+    renderMatchRound();
+  }
   show('match');
+}
+function renderMatchRound() {
+  const round = matchState.rounds[matchState.roundIndex];
+  matchState.roundPairsTotal = round.length;
+  matchState.roundPairsDone = 0;
+  renderMatchGrid(shuffle(round.flat()));
 }
 function renderMatchHud() {
   const s = secById(matchState.secId);
@@ -3901,7 +4223,9 @@ function renderMatchHud() {
   updateMatchHud();
 }
 function updateMatchHud() {
-  $('mHudCount').textContent = matchState.pairsDone + ' / ' + matchState.pairsTotal + ' أزواج';
+  let label = matchState.pairsDone + ' / ' + matchState.pairsTotal + ' أزواج';
+  if (!matchState.isTraining) label += '  ·  المرحلة ' + (matchState.roundIndex + 1) + ' / ' + matchState.rounds.length;
+  $('mHudCount').textContent = label;
   $('mFill').style.width = (matchState.pairsDone / matchState.pairsTotal * 100) + '%';
 }
 function renderMatchGrid(cards) {
@@ -3913,23 +4237,30 @@ function renderMatchGrid(cards) {
 
     /* الأضداد:
        - التدريب: إيموجي + ياباني + رومaji + ترجمة عربية
-       - الكويز الكامل: إيموجي + ياباني + رومaji فقط، بدون عربي */
+       - الكويز الكامل: الكتابة اليابانية + الرومaji فقط، بخط كبير وعريض وواضح، بلا إيموجي وبلا عربي */
     if (matchState.isTraining) {
       b.innerHTML = '<span class="me"></span><span class="mk jp" lang="ja"></span><span class="mr romaji"></span><span class="ma ar"></span>';
+      b.querySelector('.me').textContent = w.hintEmoji;
+      b.querySelector('.mk').textContent = antoKj(w);
+      b.querySelector('.mr').textContent = w.romaji;
       b.querySelector('.ma').textContent = w.ar;
     } else {
-      b.innerHTML = '<span class="me"></span><span class="mk jp" lang="ja"></span><span class="mr romaji"></span>';
+      b.classList.add('mcard-romaji');
+      b.innerHTML = '<span class="mk jp big" lang="ja"></span><span class="mr romaji big"></span><span class="ma ar"></span>';
+      b.querySelector('.mk').textContent = antoKj(w);
+      b.querySelector('.mr').textContent = w.romaji;
+      b.querySelector('.ma').textContent = w.ar;
     }
 
-    b.querySelector('.me').textContent = w.hintEmoji;
-    b.querySelector('.mk').textContent = w.japanese;
-    b.querySelector('.mr').textContent = w.romaji;
     b.onclick = () => onMatchClick(w, b);
     g.appendChild(b);
   });
 }
 function onMatchClick(w, btn) {
   if (btn.disabled || btn.classList.contains('matched')) return;
+  const isQuiz = !matchState.isTraining;
+  if (isQuiz && matchState.sel && matchState.sel.btn === btn) btn.classList.remove('showar');   // إلغاء التحديد
+  else if (isQuiz) btn.classList.add('showar');                                                    // إظهار الترجمة العربية أولًا
   if (!matchState.sel) { matchState.sel = { w, btn }; btn.classList.add('sel'); return; }
   if (matchState.sel.btn === btn) { btn.classList.remove('sel'); matchState.sel = null; return; }
   const a = matchState.sel; matchState.sel = null;
@@ -3938,18 +4269,63 @@ function onMatchClick(w, btn) {
     progress[a.w.key] = 1; progress[w.key] = 1; saveProgress(); renderChromeLight();
     playCorrect();
     matchState.pairsDone++;
+    if (!matchState.isTraining) matchState.roundPairsDone++;
     updateMatchHud();
-    if (matchState.pairsDone >= matchState.pairsTotal) setTimeout(finishMatch, 280);
+    if (matchState.isTraining) {
+      if (matchState.pairsDone >= matchState.pairsTotal) setTimeout(finishMatch, 280);
+    } else if (matchState.roundPairsDone >= matchState.roundPairsTotal) {
+      setTimeout(matchState.roundIndex >= matchState.rounds.length - 1 ? finishFullChallenge : showRoundDone, 280);
+    }
   } else {
     a.btn.classList.remove('sel');
     [a.btn, btn].forEach(el => el.classList.add('wrong'));
     matchState.mistakes++;
     document.querySelectorAll('.mcard').forEach(el => { if (!el.classList.contains('matched')) el.disabled = true; });
     setTimeout(() => {
-      [a.btn, btn].forEach(el => el.classList.remove('wrong'));
+      [a.btn, btn].forEach(el => el.classList.remove('wrong', 'showar'));
       document.querySelectorAll('.mcard').forEach(el => { if (!el.classList.contains('matched')) el.disabled = false; });
     }, 550);
   }
+}
+/* ---------- التحدي الكامل: نهاية مرحلة (12 بطاقة) وزر «التالي» للمرحلة التالية ---------- */
+function showRoundDone() {
+  $('mgrid').style.display = 'none';
+  const box = $('mrounddone');
+  box.hidden = false;
+  box.innerHTML = '<div class="medal">✅</div><h2>أحسنت! أنهيت المرحلة ' + (matchState.roundIndex + 1) + ' من ' + matchState.rounds.length + '</h2>' +
+    '<div class="scoreline"><b>' + matchState.pairsDone + '</b> / ' + matchState.pairsTotal + '</div>' +
+    '<div class="bestline">أزواج أُتقنت حتى الآن</div>' +
+    '<div class="actions"><button class="btn-main" id="mNextRound">التالي ←</button></div>';
+  $('mNextRound').onclick = nextRound;
+}
+function nextRound() {
+  matchState.roundIndex++;
+  $('mrounddone').hidden = true;
+  $('mgrid').style.display = '';
+  renderMatchRound();
+}
+/* ---------- نهاية التحدي الكامل: مراجعة كل الأضداد معًا، كل زوج جنب بعضه ---------- */
+function finishFullChallenge() {
+  try { speechSynthesis.cancel(); } catch (e) {}
+  $('mgrid').style.display = 'none';
+  $('mrounddone').hidden = true;
+  const box = $('mdone');
+  box.hidden = false;
+  const mistakeLine = matchState.mistakes ? ('عدد المحاولات الخاطئة: ' + matchState.mistakes) : 'بلا أي خطأ 🎊';
+  const rows = matchState.allPairs.map(p =>
+    '<tr><td class="jp" lang="ja">' + antoKj(p[0]) + '<div class="rm">' + p[0].romaji + '</div></td>' +
+    '<td class="op">⇔</td>' +
+    '<td class="jp" lang="ja">' + antoKj(p[1]) + '<div class="rm">' + p[1].romaji + '</div></td></tr>'
+  ).join('');
+  box.innerHTML = '<div class="medal">🎉</div><h2>أحسنت! أنهيت كل المراحل (' + matchState.rounds.length + ')</h2>' +
+    '<div class="scoreline"><b>' + matchState.pairsTotal + '</b> / ' + matchState.pairsTotal + '</div>' +
+    '<div class="bestline">' + mistakeLine + '</div>' +
+    '<p class="msub" style="margin-top:14px">📖 مراجعة: كل الأضداد معًا، زوجًا زوجًا</p>' +
+    '<div class="antoreview-wrap"><table class="antoreview"><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="actions"><button class="btn-main" id="mAgain">دورة جديدة 🔁</button><button class="btn-ghost" id="mHome">الرئيسية</button></div>';
+  $('mAgain').onclick = () => startMatch(matchState.secId, null);
+  $('mHome').onclick = goHome;
+  renderChrome();
 }
 function finishMatch() {
   try { speechSynthesis.cancel(); } catch (e) {}
@@ -3961,10 +4337,115 @@ function finishMatch() {
     '<div class="scoreline"><b>' + matchState.pairsTotal + '</b> / ' + matchState.pairsTotal + '</div>' +
     '<div class="bestline">' + mistakeLine + '</div>' +
     '<div class="actions"><button class="btn-main" id="mAgain">دورة جديدة 🔁</button><button class="btn-ghost" id="mHome">الرئيسية</button></div>';
-  $('mAgain').onclick = () => startMatch(matchState.secId, matchState.pairsTotal >= WORDS.filter(w => w.category === matchState.secId).length / 2 ? null : ANTO_BATCH);
+  $('mAgain').onclick = () => startMatch(matchState.secId, ANTO_BATCH);
   $('mHome').onclick = goHome;
   renderChrome();
 }
+
+/* ---------- اختبار الأضداد (اختيار من متعدد) ---------- */
+let atState = null;
+function atClass(w) { const r = w.romaji; return /u$/.test(r) ? 'v' : /i$/.test(r) ? 'a' : 'n'; }   // فعل / صفة / اسم (لتقريب الخيارات الخاطئة)
+function buildAtQ(w) {
+  const all = WORDS.filter(x => x.category === 'antonyms');
+  const partner = all.find(x => x.id === w.pairId);
+  const cls = atClass(w);
+  const others = all.filter(x => x.id !== w.id && x.id !== partner.id);
+  const distract = shuffle(others.filter(x => atClass(x) === cls)).concat(shuffle(others.filter(x => atClass(x) !== cls))).slice(0, 3);
+  return { w, partner, options: shuffle([partner].concat(distract)) };
+}
+function startAntoTest() {
+  unlockSpeech(); stopAll();
+  mode = 'antotest'; curSec = 'antonyms';
+  const qs = shuffle(WORDS.filter(w => w.category === 'antonyms')).slice(0, ANTO_TEST_SIZE).map(buildAtQ);
+  atState = { qs, i: 0, score: 0, answered: false, missed: [] };
+  $('atDone').hidden = true; $('atBody').hidden = false;
+  show('antotest');
+  renderAtQ();
+}
+function renderAtQ() {
+  const q = atState.qs[atState.i];
+  atState.answered = false;
+  $('atSec').textContent = '⚖️ ' + secById('antonyms').ar + ' · اختبار';
+  $('atCount').textContent = (atState.i + 1) + ' / ' + atState.qs.length;
+  $('atFill').style.width = (atState.i / atState.qs.length * 100) + '%';
+  $('atWord').textContent = antoKj(q.w);
+  $('atRomaji').textContent = q.w.romaji;
+  $('atMeaning').textContent = q.w.ar;
+  const fb = $('atFeedback'); fb.className = 'feedback'; fb.textContent = '';
+  $('atNextWrap').hidden = true;
+  const box = $('atOptions'); box.innerHTML = '';
+  q.options.forEach((o, k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt';
+    b.innerHTML = '<span class="mark"></span><span class="obody"><span class="otext"><span class="kk big jp" lang="ja"></span></span><span class="orom"></span><span class="omean"></span></span>';
+    b.querySelector('.kk').textContent = antoKj(o);
+    b.querySelector('.orom').textContent = o.romaji;
+    b.onclick = () => chooseAt(k);
+    box.appendChild(b);
+  });
+}
+function chooseAt(k) {
+  if (!atState || atState.answered) return;
+  atState.answered = true;
+  const q = atState.qs[atState.i];
+  const ok = q.options[k].id === q.partner.id;
+  const btns = $('atOptions').querySelectorAll('.opt');
+  btns.forEach((b, j) => {
+    const o = q.options[j];
+    b.disabled = true;
+    b.querySelector('.omean').textContent = o.ar;              // تظهر الترجمة العربية لكل الخيارات بعد الإجابة
+    if (o.id === q.partner.id) { b.classList.add('correct'); b.querySelector('.mark').textContent = '✅'; }
+    else if (j === k) { b.classList.add('wrong'); b.querySelector('.mark').textContent = '❌'; }
+    else b.classList.add('dim');
+  });
+  const fb = $('atFeedback');
+  if (ok) {
+    atState.score++;
+    progress[q.w.key] = 1; saveProgress(); renderChromeLight();
+    try { playCorrect(); } catch (e) {}
+    fb.className = 'feedback show ok'; fb.textContent = '✅ أحسنت! ' + antoKj(q.w) + ' ⇔ ' + antoKj(q.partner);
+  } else {
+    atState.missed.push(q);
+    fb.className = 'feedback show bad'; fb.textContent = '❌ الضدّ الصحيح: ' + antoKj(q.partner) + ' (' + q.partner.ar + ')';
+  }
+  const last = atState.i >= atState.qs.length - 1;
+  $('atNext').textContent = last ? 'النتيجة 🏁' : 'التالي ←';
+  $('atNextWrap').hidden = false;
+}
+function nextAt() {
+  if (!atState || !atState.answered) return;
+  if (atState.i >= atState.qs.length - 1) return finishAntoTest();
+  atState.i++;
+  renderAtQ();
+}
+function finishAntoTest() {
+  const total = atState.qs.length, sc = atState.score;
+  let newBest = false;
+  if (antoTestBest == null || sc > antoTestBest) { antoTestBest = sc; newBest = true; try { localStorage.setItem(ANTO_TEST_KEY, JSON.stringify(sc)); } catch (e) {} }
+  $('atFill').style.width = '100%';
+  $('atBody').hidden = true;
+  const box = $('atDone'); box.hidden = false;
+  const pct = Math.round(sc / total * 100);
+  const medal = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪';
+  const rows = atState.missed.map(q =>
+    '<tr><td class="jp" lang="ja">' + antoKj(q.w) + '<div class="rm">' + q.w.romaji + ' · ' + q.w.ar + '</div></td>' +
+    '<td class="op">⇔</td>' +
+    '<td class="jp" lang="ja">' + antoKj(q.partner) + '<div class="rm">' + q.partner.romaji + ' · ' + q.partner.ar + '</div></td></tr>').join('');
+  box.innerHTML = '<div class="medal">' + medal + '</div><h2>انتهى اختبار الأضداد</h2>' +
+    '<div class="scoreline"><b>' + sc + '</b> من ' + total + ' — ' + pct + '%</div>' +
+    '<div class="bestline">' + (newBest ? '🌟 أفضل نتيجة جديدة!' : ('أفضل نتيجة: ' + antoTestBest + ' / ' + ANTO_TEST_SIZE)) + '</div>' +
+    (rows ? '<p class="msub" style="margin-top:14px">📖 راجع الأزواج التي أخطأت فيها</p><div class="antoreview-wrap"><table class="antoreview"><tbody>' + rows + '</tbody></table></div>' : '<p class="msub" style="margin-top:14px">بلا أي خطأ 🎊</p>') +
+    '<div class="actions"><button class="btn-main" id="atAgain" type="button">اختبار جديد 🔁</button><button class="btn-ghost" id="atHome" type="button">الرئيسية</button></div>';
+  $('atAgain').onclick = startAntoTest;
+  $('atHome').onclick = goHome;
+  renderChrome();
+}
+$('atNext').onclick = nextAt;
+document.addEventListener('keydown', (e) => {
+  if (!$('antotest').classList.contains('active') || !atState) return;
+  if (!atState.answered) { const n = parseInt(e.key, 10); if (n >= 1 && n <= 4) chooseAt(n - 1); }
+  else if (!$('atBody').hidden && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowLeft')) { e.preventDefault(); nextAt(); }
+});
 
 /* ---------- الأحداث ---------- */
 $('brandBtn').onclick = goHome;
